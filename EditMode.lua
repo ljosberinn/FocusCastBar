@@ -1,0 +1,3 @@
+---@type string, FocusCastBar
+local addonName, Private = ...
+local LibEditMode = LibStub("LibEditMode")
