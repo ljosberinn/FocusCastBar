@@ -156,6 +156,8 @@ table.insert(Private.LoginFnQueue, function()
 	---@param GetValue fun(): string
 	---@param SetValue fun(value: string)
 	local function CreateColorPicker(key, label, tooltip, GetValue, SetValue)
+		-- todo: test on beta, Settings.CreateColorSwatch should be there
+
 		-- this doesn't actually do anything and is only there so clicking the checkbox
 		-- which also doesn't do anything doesn't throw errors when toggled. we're here for the
 		-- color picker after all
@@ -806,9 +808,9 @@ table.insert(Private.LoginFnQueue, function()
 			)
 
 			Settings.CreateCheckbox(category, setting, L.Settings.ShowBorderTooltip)
+		else
+			error(string.format("CreateSetting not implemented for key '%s'", key))
 		end
-
-		error(string.format("CreateSetting not implemented for key '%s'", key))
 	end
 
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(L.Settings.EditModeReminder))
