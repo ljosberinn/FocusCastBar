@@ -51,25 +51,44 @@ L.Settings.GlowTypeLabels = {
 	[Private.Enum.GlowType.AutoCastGlow] = "Auto Cast Glow",
 	[Private.Enum.GlowType.ButtonGlow] = "Button Glow",
 	[Private.Enum.GlowType.ProcGlow] = "Proc Glow",
-	[Private.Enum.GlowType.Star4] = "Star 4",
 }
 
-L.Settings.ShowDurationLabel = "Show Duration"
-L.Settings.ShowDurationTooltip = nil
+L.Settings.ShowCastTimeLabel = "Show Cast Time"
+L.Settings.ShowCastTimeTooltip = nil
 
-L.Settings.ShowDurationFractionsLabel = "Show Fractions"
-L.Settings.ShowDurationFractionsTooltip = nil
+L.Settings.ShowCastTimeFractionsLabel = "Show Cast Time Fractions"
+L.Settings.ShowCastTimeFractionsTooltip = nil
+
+L.Settings.ShowBorderLabel = "Show Border"
+L.Settings.ShowBorderTooltip = nil
 
 L.Settings.OpacityLabel = "Opacity"
 L.Settings.OpacityTooltip = nil
 
-L.Settings.FrameOffsetXLabel = "Offset X"
-L.Settings.FrameOffsetXTooltip = nil
+L.Settings.OffsetXLabel = "Offset X"
+L.Settings.OffsetXTooltip = nil
 
-L.Settings.FrameOffsetYLabel = "Offset Y"
-L.Settings.FrameOffsetYTooltip = nil
+L.Settings.OffsetYLabel = "Offset Y"
+L.Settings.OffsetYTooltip = nil
 
 L.Settings.ClickToOpenSettingsLabel = "Click to open settings"
 
 L.Settings.Import = "Import"
 L.Settings.Export = "Export"
+
+L.Settings.ShowIconLabel = "Show Icon"
+L.Settings.ShowIconTooltip = nil
+
+L.Settings.ColorUninterruptibleLabel = "Uninterruptible"
+
+L.Settings.ColorInterruptibleCanInterruptLabel = "Interruptible & Can Interrupt"
+
+L.Settings.ColorInterruptibleCannotInterruptLabel = "Interruptible & Cannot Interrupt"
+L.Settings.ColorInterruptibleCannotInterruptTooltip =
+	"When you cannot interrupt because your spec has no interrupt, you haven't talented or it you're too low level."
+
+L.Settings.ColorInterruptTickLabel = "Tick Color"
+
+L.Settings.SettingsCheckboxInfo1 = "The checkboxes below DO NOT do anything."
+L.Settings.SettingsCheckboxInfo2 = "It's all about the color pickers, click those!"
+L.Settings.SettingsCheckboxInfo3 = "There's just no better way to do this via settings at this time."

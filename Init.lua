@@ -24,8 +24,6 @@ EventUtil.ContinueOnAddOnLoaded(addonName, function()
 
 	---@class FocusCastBarSettings
 	FocusCastBarSaved.Settings = FocusCastBarSaved.Settings or {}
-	---@class SavedVariablesSettings
-	FocusCastBarSaved.Settings = FocusCastBarSaved.Settings or {}
 
 	for key, value in pairs(Private.Settings.GetDefaultSettings()) do
 		if FocusCastBarSaved.Settings[key] == nil or type(value) ~= type(FocusCastBarSaved.Settings[key]) then

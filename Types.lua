@@ -26,9 +26,29 @@
 ---@field point string
 ---@field x number
 ---@field y number
----@
+
 ---@class SavedVariables
 ---@field Settings SavedVariablesSettings
+
+---@class SavedVariablesSettings
+---@field Width number
+---@field Height number
+---@field Direction number
+---@field LoadConditionContentType boolean[]
+---@field LoadConditionRole boolean[]
+---@field ShowIcon boolean
+---@field ShowCastTime boolean
+---@field ShowCastTimeFractions boolean
+---@field Opacity number
+---@field ShowBorder boolean
+---@field GlowImportant boolean
+---@field GlowType number
+---@field OffsetX number
+---@field OffsetY number
+---@field ColorUninterruptible string
+---@field ColorInterruptibleCanInterrupt string
+---@field ColorInterruptibleCannotInterrupt string
+---@field ColorInterruptTick string
 
 ---@class LibEditModeSetting
 ---@field name string
@@ -109,12 +129,34 @@ PlayerUtil = {
 
 ---@param unit string
 ---@return DurationObjectDummy
-UnitCastingDuration = function(unit)
+function UnitCastingDuration(unit)
 	return {}
 end
 
 ---@param unit string
 ---@return DurationObjectDummy
-UnitChannelDuration = function(unit)
+function UnitChannelDuration(unit)
+	return {}
+end
+
+---@param label string
+---@return table
+function CreateSettingsListSectionHeaderInitializer(label) end
+
+---@param setting table
+---@param OpenColorPicker fun(swatch: table, button: table, isDown: boolean)
+---@param clickRequiresSet boolean
+---@param invertClickRequiresSet boolean
+---@param tooltip string?
+---@param GetColor fun(): ColorMixin
+---@return table
+function CreateSettingsCheckboxWithColorSwatchInitializer(
+	setting,
+	OpenColorPicker,
+	clickRequiresSet,
+	invertClickRequiresSet,
+	tooltip,
+	GetColor
+)
 	return {}
 end

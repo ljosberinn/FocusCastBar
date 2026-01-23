@@ -39,5 +39,4 @@ Private.Enum.GlowType = {
 	AutoCastGlow = 2,
 	ButtonGlow = 3,
 	ProcGlow = 4,
-	Star4 = 5,
 }

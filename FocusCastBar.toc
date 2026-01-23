@@ -19,11 +19,12 @@
 ## Version: @project-version@
 ## Author: Xephyris-Blackrock-EU
 
-## X-Curse-Project-ID: 
+## X-Curse-Project-ID: 1441078
 ## X-Wago-ID: 
 
 Libs\LibEditMode\embed.xml
 
+Enum.lua
 Init.lua
 Localization\enUS.lua
 Localization\[TextLocale].lua [AllowLoadTextLocale deDE]
