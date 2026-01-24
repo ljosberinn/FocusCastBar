@@ -1,5 +1,6 @@
 ---@type string, FocusCastBar
 local addonName, Private = ...
+local LibSharedMedia = LibStub("LibSharedMedia-3.0")
 
 ---@class FocusCastBarSettings
 Private.Settings = {}
@@ -25,6 +26,8 @@ Private.Settings.Keys = {
 	ColorInterruptibleCanInterrupt = "COLOR_INTERRUPTIBLE_CAN_INTERRUPT",
 	ColorInterruptibleCannotInterrupt = "COLOR_INTERRUPTIBLE_CANNOT_INTERRUPT",
 	ColorInterruptTick = "COLOR_INTERRUPT_TICK",
+	-- target indication?
+	-- raidmarker?
 }
 
 function Private.Settings.GetSettingsDisplayOrder()
@@ -66,15 +69,15 @@ function Private.Settings.GetSliderSettingsForOption(key)
 	if key == Private.Settings.Keys.Width or key == Private.Settings.Keys.Height then
 		return {
 			min = 10,
-			max = 200,
+			max = 400,
 			step = 1,
 		}
 	end
 
 	if key == Private.Settings.Keys.OffsetX or key == Private.Settings.Keys.OffsetY then
 		return {
-			min = -200,
-			max = 200,
+			min = -400,
+			max = 400,
 			step = 1,
 		}
 	end
@@ -90,8 +93,8 @@ end
 ---@return SavedVariablesSettings
 function Private.Settings.GetDefaultSettings()
 	return {
-		Width = 200,
-		Height = 20,
+		Width = 250,
+		Height = 16,
 		Direction = Private.Enum.Direction.Horizontal,
 		LoadConditionContentType = {
 			[Private.Enum.ContentType.OpenWorld] = false,
@@ -111,7 +114,7 @@ function Private.Settings.GetDefaultSettings()
 		Position = Private.Settings.GetDefaultEditModeFramePosition(),
 		Opacity = 1,
 		ShowBorder = true,
-		Texture = "",
+		Texture = "Interface\\TargetingFrame\\UI-StatusBar",
 		GlowImportant = true,
 		ShowIcon = true,
 		OffsetX = 0,
@@ -122,6 +125,38 @@ function Private.Settings.GetDefaultSettings()
 		ColorInterruptibleCannotInterrupt = "FFFF0000",
 		ColorInterruptTick = "FF00FF00",
 	}
+end
+
+function Private.Settings.GetTextureOptions()
+	local source = LibSharedMedia:HashTable(LibSharedMedia.MediaType.STATUSBAR)
+
+	---@param str string
+	---@param prefix string
+	---@return boolean
+	local function StartsWith(str, prefix)
+		return str:find(prefix, 1, true) == 1
+	end
+
+	-- for label, path in pairs(source) do
+	-- 	local key = Private.L.Settings.Custom
+
+	-- 	if StartsWith(path, "Interface") then
+	-- 		-- path is case insensitive, normalize it
+	-- 		path = path:gsub([[\Addons\]], "\\AddOns\\")
+
+	-- 		---@type string|nil
+	-- 		local maybeAddonName = path:match([[AddOns[\/]([^\/]+)]])
+
+	-- 		if maybeAddonName then
+	-- 			key = maybeAddonName
+	-- 		end
+	-- 	end
+
+	-- 	-- some sounds are labelled e.g. `Plater Steel` and get patched to only render `Steel`
+	-- 	if string.find(label, key) ~= nil then
+	-- 		label = label:gsub(key .. ": ", ""):gsub(key, ""):trim()
+	-- 	end
+	-- end
 end
 
 table.insert(Private.LoginFnQueue, function()

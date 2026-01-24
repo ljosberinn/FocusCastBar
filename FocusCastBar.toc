@@ -22,7 +22,9 @@
 ## X-Curse-Project-ID: 1441078
 ## X-Wago-ID: 
 
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
 Libs\LibEditMode\embed.xml
+Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
 
 Enum.lua
 Init.lua

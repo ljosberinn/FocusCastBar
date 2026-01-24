@@ -49,6 +49,7 @@
 ---@field ColorInterruptibleCanInterrupt string
 ---@field ColorInterruptibleCannotInterrupt string
 ---@field ColorInterruptTick string
+---@field Texture string
 
 ---@class LibEditModeSetting
 ---@field name string
