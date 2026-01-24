@@ -15,6 +15,7 @@ Private.Settings.Keys = {
 	ShowCastTimeFractions = "SHOW_CAST_TIME_FRACTIONS",
 	Opacity = "OPACITY",
 	ShowBorder = "SHOW_BORDER",
+	Texture = "TEXTURE",
 	GlowImportant = "GLOW_IMPORTANT",
 	GlowType = "GLOW_TYPE",
 	OffsetX = "OFFSET_X",
@@ -39,6 +40,7 @@ function Private.Settings.GetSettingsDisplayOrder()
 		Private.Settings.Keys.ShowCastTimeFractions,
 		Private.Settings.Keys.Opacity,
 		Private.Settings.Keys.ShowBorder,
+		Private.Settings.Keys.Texture,
 		Private.Settings.Keys.GlowImportant,
 		Private.Settings.Keys.GlowType,
 		Private.Settings.Keys.ColorUninterruptible,
@@ -109,6 +111,7 @@ function Private.Settings.GetDefaultSettings()
 		Position = Private.Settings.GetDefaultEditModeFramePosition(),
 		Opacity = 1,
 		ShowBorder = true,
+		Texture = "",
 		GlowImportant = true,
 		ShowIcon = true,
 		OffsetX = 0,
@@ -147,6 +150,8 @@ table.insert(Private.LoginFnQueue, function()
 		return bit.band(mask, bit.lshift(1, value - 1)) ~= 0
 	end
 
+	local supportsCreatingColorPickersInSettings = Settings.CreateColorSwatch ~= nil
+
 	-- shared color between all pickers
 	local currentColor = CreateColor(0, 0, 0, 0)
 
@@ -155,8 +160,22 @@ table.insert(Private.LoginFnQueue, function()
 	---@param tooltip string?
 	---@param GetValue fun(): string
 	---@param SetValue fun(value: string)
-	local function CreateColorPicker(key, label, tooltip, GetValue, SetValue)
-		-- todo: test on beta, Settings.CreateColorSwatch should be there
+	---@param default string
+	local function CreateColorPicker(key, label, tooltip, GetValue, SetValue, default)
+		if supportsCreatingColorPickersInSettings then
+			local setting = Settings.RegisterProxySetting(
+				category,
+				key,
+				Settings.VarType.String,
+				label,
+				default,
+				GetValue,
+				SetValue
+			)
+
+			Settings.CreateColorSwatch(category, setting, tooltip)
+			return
+		end
 
 		-- this doesn't actually do anything and is only there so clicking the checkbox
 		-- which also doesn't do anything doesn't throw errors when toggled. we're here for the
@@ -197,7 +216,7 @@ table.insert(Private.LoginFnQueue, function()
 			ColorPickerFrame:SetupColorPickerAndShow(info)
 		end
 
-		return CreateSettingsCheckboxWithColorSwatchInitializer(
+		local initializer = CreateSettingsCheckboxWithColorSwatchInitializer(
 			dummySetting,
 			OpenColorPicker,
 			false,
@@ -207,12 +226,15 @@ table.insert(Private.LoginFnQueue, function()
 				return CreateColorFromHexString(GetValue())
 			end
 		)
+
+		layout:AddInitializer(initializer)
 	end
 
 	---@param key string
 	---@param defaults SavedVariablesSettings
 	local function CreateSetting(key, defaults)
-		if key == Private.Settings.Keys.ColorUninterruptible then
+		if key == Private.Settings.Keys.Texture then
+		elseif key == Private.Settings.Keys.ColorUninterruptible then
 			local function GetValue()
 				return FocusCastBarSaved.Settings.ColorUninterruptible
 			end
@@ -221,9 +243,14 @@ table.insert(Private.LoginFnQueue, function()
 				FocusCastBarSaved.Settings.ColorUninterruptible = value
 			end
 
-			local initializer = CreateColorPicker(key, L.Settings.ColorUninterruptibleLabel, nil, GetValue, SetValue)
-
-			layout:AddInitializer(initializer)
+			CreateColorPicker(
+				key,
+				L.Settings.ColorUninterruptibleLabel,
+				nil,
+				GetValue,
+				SetValue,
+				defaults.ColorUninterruptible
+			)
 		elseif key == Private.Settings.Keys.ColorInterruptibleCanInterrupt then
 			local function GetValue()
 				return FocusCastBarSaved.Settings.ColorInterruptibleCanInterrupt
@@ -233,10 +260,14 @@ table.insert(Private.LoginFnQueue, function()
 				FocusCastBarSaved.Settings.ColorInterruptibleCanInterrupt = value
 			end
 
-			local initializer =
-				CreateColorPicker(key, L.Settings.ColorInterruptibleCanInterruptLabel, nil, GetValue, SetValue)
-
-			layout:AddInitializer(initializer)
+			CreateColorPicker(
+				key,
+				L.Settings.ColorInterruptibleCanInterruptLabel,
+				nil,
+				GetValue,
+				SetValue,
+				defaults.ColorInterruptibleCanInterrupt
+			)
 		elseif key == Private.Settings.Keys.ColorInterruptibleCannotInterrupt then
 			local function GetValue()
 				return FocusCastBarSaved.Settings.ColorInterruptibleCannotInterrupt
@@ -246,15 +277,14 @@ table.insert(Private.LoginFnQueue, function()
 				FocusCastBarSaved.Settings.ColorInterruptibleCannotInterrupt = value
 			end
 
-			local initializer = CreateColorPicker(
+			CreateColorPicker(
 				key,
 				L.Settings.ColorInterruptibleCannotInterruptLabel,
 				L.Settings.ColorInterruptibleCannotInterruptTooltip,
 				GetValue,
-				SetValue
+				SetValue,
+				defaults.ColorInterruptibleCannotInterrupt
 			)
-
-			layout:AddInitializer(initializer)
 		elseif key == Private.Settings.Keys.ColorInterruptTick then
 			local function GetValue()
 				return FocusCastBarSaved.Settings.ColorInterruptTick
@@ -264,9 +294,14 @@ table.insert(Private.LoginFnQueue, function()
 				FocusCastBarSaved.Settings.ColorInterruptTick = value
 			end
 
-			local initializer = CreateColorPicker(key, L.Settings.ColorInterruptTickLabel, nil, GetValue, SetValue)
-
-			layout:AddInitializer(initializer)
+			CreateColorPicker(
+				key,
+				L.Settings.ColorInterruptTickLabel,
+				nil,
+				GetValue,
+				SetValue,
+				defaults.ColorInterruptTick
+			)
 		elseif key == Private.Settings.Keys.OffsetX then
 			local sliderSettings = Private.Settings.GetSliderSettingsForOption(key)
 
@@ -819,7 +854,7 @@ table.insert(Private.LoginFnQueue, function()
 	local defaults = Private.Settings.GetDefaultSettings()
 
 	for i, key in ipairs(settingsOrder) do
-		if key == Private.Settings.Keys.ColorUninterruptible then
+		if key == Private.Settings.Keys.ColorUninterruptible and not supportsCreatingColorPickersInSettings then
 			layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(L.Settings.SettingsCheckboxInfo1))
 			layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(L.Settings.SettingsCheckboxInfo2))
 			layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(L.Settings.SettingsCheckboxInfo3))
