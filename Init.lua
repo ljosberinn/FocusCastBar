@@ -1,4 +1,4 @@
----@type string, FocusCastBar
+---@type string, AdvancedFocusCastBar
 local addonName, Private = ...
 
 Private.L = {}
@@ -20,14 +20,17 @@ Private.LoginFnQueue = {}
 
 EventUtil.ContinueOnAddOnLoaded(addonName, function()
 	---@class SavedVariables
-	FocusCastBarSaved = FocusCastBarSaved or {}
+	AdvancedFocusCastBarSaved = AdvancedFocusCastBarSaved or {}
 
-	---@class FocusCastBarSettings
-	FocusCastBarSaved.Settings = FocusCastBarSaved.Settings or {}
+	---@class AdvancedFocusCastBarSettings
+	AdvancedFocusCastBarSaved.Settings = AdvancedFocusCastBarSaved.Settings or {}
 
 	for key, value in pairs(Private.Settings.GetDefaultSettings()) do
-		if FocusCastBarSaved.Settings[key] == nil or type(value) ~= type(FocusCastBarSaved.Settings[key]) then
-			FocusCastBarSaved.Settings[key] = value
+		if
+			AdvancedFocusCastBarSaved.Settings[key] == nil
+			or type(value) ~= type(AdvancedFocusCastBarSaved.Settings[key])
+		then
+			AdvancedFocusCastBarSaved.Settings[key] = value
 		end
 	end
 

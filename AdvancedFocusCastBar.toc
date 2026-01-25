@@ -1,7 +1,7 @@
 ## Interface: 120000, 120001
-## Title: Focus Cast Bar
+## Title: Advanced Focus Cast Bar
 ## DefaultState: Enabled
-## SavedVariables: FocusCastBarSaved
+## SavedVariables: AdvancedFocusCastBarSaved
 ## IconTexture: Interface\Icons\spell_hunter_focusingshot
 ## OptionalDeps: !!AddonLocale
 ## Category: Combat
@@ -26,11 +26,16 @@ Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
 Libs\LibEditMode\embed.xml
 Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
 
+Templates\AdvancedFocusCastBar.xml
+
 Enum.lua
 Init.lua
+Utils.lua
+
 Localization\enUS.lua
 Localization\[TextLocale].lua [AllowLoadTextLocale deDE]
 
 Settings.lua
+AdvancedFocusCastBarMixin.lua
 EditMode.lua
 Driver.lua

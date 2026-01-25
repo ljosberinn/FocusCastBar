@@ -1,4 +1,4 @@
----@type string, FocusCastBar
+---@type string, AdvancedFocusCastBar
 local addonName, Private = ...
 
 local addonNameWithIcon = ""

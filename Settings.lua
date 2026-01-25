@@ -1,8 +1,8 @@
----@type string, FocusCastBar
+---@type string, AdvancedFocusCastBar
 local addonName, Private = ...
 local LibSharedMedia = LibStub("LibSharedMedia-3.0")
 
----@class FocusCastBarSettings
+---@class AdvancedFocusCastBarSettings
 Private.Settings = {}
 
 Private.Settings.Keys = {
@@ -13,7 +13,6 @@ Private.Settings.Keys = {
 	LoadConditionRole = "LOAD_CONDITION_ROLE",
 	ShowIcon = "SHOW_ICON",
 	ShowCastTime = "SHOW_CAST_TIME",
-	ShowCastTimeFractions = "SHOW_CAST_TIME_FRACTIONS",
 	Opacity = "OPACITY",
 	ShowBorder = "SHOW_BORDER",
 	Texture = "TEXTURE",
@@ -40,7 +39,6 @@ function Private.Settings.GetSettingsDisplayOrder()
 		Private.Settings.Keys.OffsetY,
 		Private.Settings.Keys.ShowIcon,
 		Private.Settings.Keys.ShowCastTime,
-		Private.Settings.Keys.ShowCastTimeFractions,
 		Private.Settings.Keys.Opacity,
 		Private.Settings.Keys.ShowBorder,
 		Private.Settings.Keys.Texture,
@@ -97,7 +95,7 @@ function Private.Settings.GetDefaultSettings()
 		Height = 16,
 		Direction = Private.Enum.Direction.Horizontal,
 		LoadConditionContentType = {
-			[Private.Enum.ContentType.OpenWorld] = false,
+			[Private.Enum.ContentType.OpenWorld] = true,
 			[Private.Enum.ContentType.Delve] = true,
 			[Private.Enum.ContentType.Dungeon] = true,
 			[Private.Enum.ContentType.Raid] = true,
@@ -110,7 +108,6 @@ function Private.Settings.GetDefaultSettings()
 			[Private.Enum.Role.Damager] = true,
 		},
 		ShowCastTime = true,
-		ShowCastTimeFractions = true,
 		Position = Private.Settings.GetDefaultEditModeFramePosition(),
 		Opacity = 1,
 		ShowBorder = true,
@@ -271,11 +268,11 @@ table.insert(Private.LoginFnQueue, function()
 		if key == Private.Settings.Keys.Texture then
 		elseif key == Private.Settings.Keys.ColorUninterruptible then
 			local function GetValue()
-				return FocusCastBarSaved.Settings.ColorUninterruptible
+				return AdvancedFocusCastBarSaved.Settings.ColorUninterruptible
 			end
 
 			local function SetValue(value)
-				FocusCastBarSaved.Settings.ColorUninterruptible = value
+				AdvancedFocusCastBarSaved.Settings.ColorUninterruptible = value
 			end
 
 			CreateColorPicker(
@@ -288,11 +285,11 @@ table.insert(Private.LoginFnQueue, function()
 			)
 		elseif key == Private.Settings.Keys.ColorInterruptibleCanInterrupt then
 			local function GetValue()
-				return FocusCastBarSaved.Settings.ColorInterruptibleCanInterrupt
+				return AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCanInterrupt
 			end
 
 			local function SetValue(value)
-				FocusCastBarSaved.Settings.ColorInterruptibleCanInterrupt = value
+				AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCanInterrupt = value
 			end
 
 			CreateColorPicker(
@@ -305,11 +302,11 @@ table.insert(Private.LoginFnQueue, function()
 			)
 		elseif key == Private.Settings.Keys.ColorInterruptibleCannotInterrupt then
 			local function GetValue()
-				return FocusCastBarSaved.Settings.ColorInterruptibleCannotInterrupt
+				return AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCannotInterrupt
 			end
 
 			local function SetValue(value)
-				FocusCastBarSaved.Settings.ColorInterruptibleCannotInterrupt = value
+				AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCannotInterrupt = value
 			end
 
 			CreateColorPicker(
@@ -322,11 +319,11 @@ table.insert(Private.LoginFnQueue, function()
 			)
 		elseif key == Private.Settings.Keys.ColorInterruptTick then
 			local function GetValue()
-				return FocusCastBarSaved.Settings.ColorInterruptTick
+				return AdvancedFocusCastBarSaved.Settings.ColorInterruptTick
 			end
 
 			local function SetValue(value)
-				FocusCastBarSaved.Settings.ColorInterruptTick = value
+				AdvancedFocusCastBarSaved.Settings.ColorInterruptTick = value
 			end
 
 			CreateColorPicker(
@@ -341,12 +338,12 @@ table.insert(Private.LoginFnQueue, function()
 			local sliderSettings = Private.Settings.GetSliderSettingsForOption(key)
 
 			local function GetValue()
-				return FocusCastBarSaved.Settings.OffsetX
+				return AdvancedFocusCastBarSaved.Settings.OffsetX
 			end
 
 			local function SetValue(value)
-				if FocusCastBarSaved.Settings.OffsetX ~= value then
-					FocusCastBarSaved.Settings.OffsetX = value
+				if AdvancedFocusCastBarSaved.Settings.OffsetX ~= value then
+					AdvancedFocusCastBarSaved.Settings.OffsetX = value
 
 					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 				end
@@ -369,12 +366,12 @@ table.insert(Private.LoginFnQueue, function()
 			local sliderSettings = Private.Settings.GetSliderSettingsForOption(key)
 
 			local function GetValue()
-				return FocusCastBarSaved.Settings.OffsetY
+				return AdvancedFocusCastBarSaved.Settings.OffsetY
 			end
 
 			local function SetValue(value)
-				if FocusCastBarSaved.Settings.OffsetY ~= value then
-					FocusCastBarSaved.Settings.OffsetY = value
+				if AdvancedFocusCastBarSaved.Settings.OffsetY ~= value then
+					AdvancedFocusCastBarSaved.Settings.OffsetY = value
 
 					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 				end
@@ -397,12 +394,12 @@ table.insert(Private.LoginFnQueue, function()
 			local sliderSettings = Private.Settings.GetSliderSettingsForOption(key)
 
 			local function GetValue()
-				return FocusCastBarSaved.Settings.Height
+				return AdvancedFocusCastBarSaved.Settings.Height
 			end
 
 			local function SetValue(value)
-				if FocusCastBarSaved.Settings.Height ~= value then
-					FocusCastBarSaved.Settings.Height = value
+				if AdvancedFocusCastBarSaved.Settings.Height ~= value then
+					AdvancedFocusCastBarSaved.Settings.Height = value
 
 					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 				end
@@ -425,12 +422,12 @@ table.insert(Private.LoginFnQueue, function()
 			local sliderSettings = Private.Settings.GetSliderSettingsForOption(key)
 
 			local function GetValue()
-				return FocusCastBarSaved.Settings.Width
+				return AdvancedFocusCastBarSaved.Settings.Width
 			end
 
 			local function SetValue(value)
-				if value ~= FocusCastBarSaved.Settings.Width then
-					FocusCastBarSaved.Settings.Width = value
+				if value ~= AdvancedFocusCastBarSaved.Settings.Width then
+					AdvancedFocusCastBarSaved.Settings.Width = value
 
 					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 				end
@@ -456,7 +453,7 @@ table.insert(Private.LoginFnQueue, function()
 
 			local function GetValue()
 				return GetMask(Private.Enum.Role, function(id)
-					return FocusCastBarSaved.Settings.LoadConditionRole[id]
+					return AdvancedFocusCastBarSaved.Settings.LoadConditionRole[id]
 				end)
 			end
 
@@ -466,8 +463,8 @@ table.insert(Private.LoginFnQueue, function()
 				for label, id in pairs(Private.Enum.Role) do
 					local enabled = DecodeBitToBool(mask, id)
 
-					if enabled ~= FocusCastBarSaved.Settings.LoadConditionRole[id] then
-						FocusCastBarSaved.Settings.LoadConditionRole[id] = enabled
+					if enabled ~= AdvancedFocusCastBarSaved.Settings.LoadConditionRole[id] then
+						AdvancedFocusCastBarSaved.Settings.LoadConditionRole[id] = enabled
 						hasChanges = true
 					end
 				end
@@ -479,7 +476,7 @@ table.insert(Private.LoginFnQueue, function()
 				Private.EventRegistry:TriggerEvent(
 					Private.Enum.Events.SETTING_CHANGED,
 					key,
-					FocusCastBarSaved.Settings.LoadConditionRole
+					AdvancedFocusCastBarSaved.Settings.LoadConditionRole
 				)
 			end
 
@@ -515,7 +512,7 @@ table.insert(Private.LoginFnQueue, function()
 
 			local function GetValue()
 				return GetMask(Private.Enum.ContentType, function(id)
-					return FocusCastBarSaved.Settings.LoadConditionContentType[id]
+					return AdvancedFocusCastBarSaved.Settings.LoadConditionContentType[id]
 				end)
 			end
 
@@ -525,8 +522,8 @@ table.insert(Private.LoginFnQueue, function()
 				for label, id in pairs(Private.Enum.ContentType) do
 					local enabled = DecodeBitToBool(mask, id)
 
-					if enabled ~= FocusCastBarSaved.Settings.LoadConditionContentType[id] then
-						FocusCastBarSaved.Settings.LoadConditionContentType[id] = enabled
+					if enabled ~= AdvancedFocusCastBarSaved.Settings.LoadConditionContentType[id] then
+						AdvancedFocusCastBarSaved.Settings.LoadConditionContentType[id] = enabled
 						hasChanges = true
 					end
 				end
@@ -538,7 +535,7 @@ table.insert(Private.LoginFnQueue, function()
 				Private.EventRegistry:TriggerEvent(
 					Private.Enum.Events.SETTING_CHANGED,
 					key,
-					FocusCastBarSaved.Settings.LoadConditionContentType
+					AdvancedFocusCastBarSaved.Settings.LoadConditionContentType
 				)
 			end
 
@@ -557,12 +554,12 @@ table.insert(Private.LoginFnQueue, function()
 
 				for label, id in pairs(Private.Enum.ContentType) do
 					local function IsEnabled()
-						return FocusCastBarSaved.Settings.LoadConditionContentType[id]
+						return AdvancedFocusCastBarSaved.Settings.LoadConditionContentType[id]
 					end
 
 					local function Toggle()
-						FocusCastBarSaved.Settings.LoadConditionContentType[id] =
-							not FocusCastBarSaved.Settings.LoadConditionContentType[id]
+						AdvancedFocusCastBarSaved.Settings.LoadConditionContentType[id] =
+							not AdvancedFocusCastBarSaved.Settings.LoadConditionContentType[id]
 					end
 
 					local translated = L.Settings.LoadConditionContentTypeLabels[id]
@@ -578,11 +575,11 @@ table.insert(Private.LoginFnQueue, function()
 			initializer.hideSteppers = true
 		elseif key == Private.Settings.Keys.Direction then
 			local function GetValue()
-				return FocusCastBarSaved.Settings.Direction
+				return AdvancedFocusCastBarSaved.Settings.Direction
 			end
 
 			local function SetValue(value)
-				FocusCastBarSaved.Settings.Direction = value
+				AdvancedFocusCastBarSaved.Settings.Direction = value
 
 				Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 			end
@@ -610,41 +607,16 @@ table.insert(Private.LoginFnQueue, function()
 			)
 
 			Settings.CreateDropdown(category, setting, GetOptions, L.Settings.FrameDirectionTooltip)
-		elseif key == Private.Settings.Keys.ShowCastTimeFractions then
-			local function GetValue()
-				return FocusCastBarSaved.Settings.ShowCastTimeFractions
-			end
-
-			local function SetValue(value)
-				FocusCastBarSaved.Settings.ShowCastTimeFractions = not FocusCastBarSaved.Settings.ShowCastTimeFractions
-				Private.EventRegistry:TriggerEvent(
-					Private.Enum.Events.SETTING_CHANGED,
-					key,
-					FocusCastBarSaved.Settings.ShowCastTimeFractions
-				)
-			end
-
-			local setting = Settings.RegisterProxySetting(
-				category,
-				key,
-				Settings.VarType.Boolean,
-				L.Settings.ShowCastTimeFractionsLabel,
-				defaults.ShowCastTimeFractions,
-				GetValue,
-				SetValue
-			)
-
-			Settings.CreateCheckbox(category, setting, L.Settings.ShowCastTimeFractionsTooltip)
 		elseif key == Private.Settings.Keys.OffsetY then
 			local sliderSettings = Private.Settings.GetSliderSettingsForOption(key)
 
 			local function GetValue()
-				return FocusCastBarSaved.Settings.OffsetY
+				return AdvancedFocusCastBarSaved.Settings.OffsetY
 			end
 
 			local function SetValue(value)
-				if value ~= FocusCastBarSaved.Settings.OffsetY then
-					FocusCastBarSaved.Settings.OffsetY = value
+				if value ~= AdvancedFocusCastBarSaved.Settings.OffsetY then
+					AdvancedFocusCastBarSaved.Settings.OffsetY = value
 
 					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 				end
@@ -667,12 +639,12 @@ table.insert(Private.LoginFnQueue, function()
 			local sliderSettings = Private.Settings.GetSliderSettingsForOption(key)
 
 			local function GetValue()
-				return FocusCastBarSaved.Settings.OffsetX
+				return AdvancedFocusCastBarSaved.Settings.OffsetX
 			end
 
 			local function SetValue(value)
-				if value ~= FocusCastBarSaved.Settings.OffsetX then
-					FocusCastBarSaved.Settings.OffsetX = value
+				if value ~= AdvancedFocusCastBarSaved.Settings.OffsetX then
+					AdvancedFocusCastBarSaved.Settings.OffsetX = value
 
 					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 				end
@@ -695,12 +667,12 @@ table.insert(Private.LoginFnQueue, function()
 			local sliderSettings = Private.Settings.GetSliderSettingsForOption(key)
 
 			local function GetValue()
-				return FocusCastBarSaved.Settings.Opacity
+				return AdvancedFocusCastBarSaved.Settings.Opacity
 			end
 
 			local function SetValue(value)
-				if value ~= FocusCastBarSaved.Settings.Opacity then
-					FocusCastBarSaved.Settings.Opacity = value
+				if value ~= AdvancedFocusCastBarSaved.Settings.Opacity then
+					AdvancedFocusCastBarSaved.Settings.Opacity = value
 
 					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 				end
@@ -721,15 +693,15 @@ table.insert(Private.LoginFnQueue, function()
 			Settings.CreateSlider(category, setting, options, L.Settings.OpacityTooltip)
 		elseif key == Private.Settings.Keys.ShowBorder then
 			local function GetValue()
-				return FocusCastBarSaved.Settings.ShowBorder
+				return AdvancedFocusCastBarSaved.Settings.ShowBorder
 			end
 
 			local function SetValue(value)
-				FocusCastBarSaved.Settings.ShowBorder = not FocusCastBarSaved.Settings.ShowBorder
+				AdvancedFocusCastBarSaved.Settings.ShowBorder = not AdvancedFocusCastBarSaved.Settings.ShowBorder
 				Private.EventRegistry:TriggerEvent(
 					Private.Enum.Events.SETTING_CHANGED,
 					key,
-					FocusCastBarSaved.Settings.ShowBorder
+					AdvancedFocusCastBarSaved.Settings.ShowBorder
 				)
 			end
 
@@ -746,15 +718,15 @@ table.insert(Private.LoginFnQueue, function()
 			Settings.CreateCheckbox(category, setting, L.Settings.ShowBorderTooltip)
 		elseif key == Private.Settings.Keys.ShowCastTime then
 			local function GetValue()
-				return FocusCastBarSaved.Settings.ShowCastTime
+				return AdvancedFocusCastBarSaved.Settings.ShowCastTime
 			end
 
 			local function SetValue(value)
-				FocusCastBarSaved.Settings.ShowCastTime = not FocusCastBarSaved.Settings.ShowCastTime
+				AdvancedFocusCastBarSaved.Settings.ShowCastTime = not AdvancedFocusCastBarSaved.Settings.ShowCastTime
 				Private.EventRegistry:TriggerEvent(
 					Private.Enum.Events.SETTING_CHANGED,
 					key,
-					FocusCastBarSaved.Settings.ShowCastTime
+					AdvancedFocusCastBarSaved.Settings.ShowCastTime
 				)
 			end
 
@@ -771,11 +743,11 @@ table.insert(Private.LoginFnQueue, function()
 			Settings.CreateCheckbox(category, setting, L.Settings.ShowCastTimeTooltip)
 		elseif key == Private.Settings.Keys.GlowType then
 			local function GetValue()
-				return FocusCastBarSaved.Settings.GlowType
+				return AdvancedFocusCastBarSaved.Settings.GlowType
 			end
 
 			local function SetValue(value)
-				FocusCastBarSaved.Settings.GlowType = value
+				AdvancedFocusCastBarSaved.Settings.GlowType = value
 
 				Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 			end
@@ -805,15 +777,15 @@ table.insert(Private.LoginFnQueue, function()
 			Settings.CreateDropdown(category, setting, GetOptions, L.Settings.GlowTypeTooltip)
 		elseif key == Private.Settings.Keys.GlowImportant then
 			local function GetValue()
-				return FocusCastBarSaved.Settings.GlowImportant
+				return AdvancedFocusCastBarSaved.Settings.GlowImportant
 			end
 
 			local function SetValue(value)
-				FocusCastBarSaved.Settings.GlowImportant = not FocusCastBarSaved.Settings.GlowImportant
+				AdvancedFocusCastBarSaved.Settings.GlowImportant = not AdvancedFocusCastBarSaved.Settings.GlowImportant
 				Private.EventRegistry:TriggerEvent(
 					Private.Enum.Events.SETTING_CHANGED,
 					key,
-					FocusCastBarSaved.Settings.GlowImportant
+					AdvancedFocusCastBarSaved.Settings.GlowImportant
 				)
 			end
 
@@ -830,15 +802,15 @@ table.insert(Private.LoginFnQueue, function()
 			Settings.CreateCheckbox(category, setting, L.Settings.GlowImportantTooltip)
 		elseif key == Private.Settings.Keys.ShowIcon then
 			local function GetValue()
-				return FocusCastBarSaved.Settings.ShowIcon
+				return AdvancedFocusCastBarSaved.Settings.ShowIcon
 			end
 
 			local function SetValue(value)
-				FocusCastBarSaved.Settings.ShowIcon = not FocusCastBarSaved.Settings.ShowIcon
+				AdvancedFocusCastBarSaved.Settings.ShowIcon = not AdvancedFocusCastBarSaved.Settings.ShowIcon
 				Private.EventRegistry:TriggerEvent(
 					Private.Enum.Events.SETTING_CHANGED,
 					key,
-					FocusCastBarSaved.Settings.ShowIcon
+					AdvancedFocusCastBarSaved.Settings.ShowIcon
 				)
 			end
 
@@ -855,15 +827,15 @@ table.insert(Private.LoginFnQueue, function()
 			Settings.CreateCheckbox(category, setting, L.Settings.ShowIconTooltip)
 		elseif key == Private.Settings.Keys.ShowBorder then
 			local function GetValue()
-				return FocusCastBarSaved.Settings.ShowBorder
+				return AdvancedFocusCastBarSaved.Settings.ShowBorder
 			end
 
 			local function SetValue(value)
-				FocusCastBarSaved.Settings.ShowBorder = not FocusCastBarSaved.Settings.ShowBorder
+				AdvancedFocusCastBarSaved.Settings.ShowBorder = not AdvancedFocusCastBarSaved.Settings.ShowBorder
 				Private.EventRegistry:TriggerEvent(
 					Private.Enum.Events.SETTING_CHANGED,
 					key,
-					FocusCastBarSaved.Settings.ShowBorder
+					AdvancedFocusCastBarSaved.Settings.ShowBorder
 				)
 			end
 

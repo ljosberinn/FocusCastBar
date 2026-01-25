@@ -1,4 +1,4 @@
----@type string, FocusCastBar
+---@type string, AdvancedFocusCastBar
 local addonName, Private = ...
 
 local addonNameWithIcon = ""
@@ -55,9 +55,6 @@ L.Settings.GlowTypeLabels = {
 
 L.Settings.ShowCastTimeLabel = "Show Cast Time"
 L.Settings.ShowCastTimeTooltip = nil
-
-L.Settings.ShowCastTimeFractionsLabel = "Show Cast Time Fractions"
-L.Settings.ShowCastTimeFractionsTooltip = nil
 
 L.Settings.ShowBorderLabel = "Show Border"
 L.Settings.ShowBorderTooltip = nil

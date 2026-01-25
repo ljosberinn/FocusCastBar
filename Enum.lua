@@ -1,7 +1,7 @@
----@type string, FocusCastBar
+---@type string, AdvancedFocusCastBar
 local addonName, Private = ...
 
----@class FocusCastBarEnums
+---@class AdvancedFocusCastBarEnums
 Private.Enum = {}
 
 ---@enum CustomEvents
@@ -11,13 +11,32 @@ Private.Enum.Events = {
 }
 
 ---@enum Direction
-Private.Enum.Direction = EnumUtil.MakeEnum("Horizontal", "Vertical")
+Private.Enum.Direction = {
+	Horizontal = 0,
+	Vertical = 1,
+}
 
 ---@enum ContentType
-Private.Enum.ContentType = EnumUtil.MakeEnum("OpenWorld", "Delve", "Dungeon", "Raid", "Arena", "Battleground")
+Private.Enum.ContentType = {
+	OpenWorld = 0,
+	Delve = 1,
+	Dungeon = 2,
+	Raid = 3,
+	Arena = 4,
+	Battleground = 5,
+}
 
 ---@enum Role
-Private.Enum.Role = EnumUtil.MakeEnum("Healer", "Tank", "Damager")
+Private.Enum.Role = {
+	Healer = 0,
+	Tank = 1,
+	Damager = 2,
+}
 
 ---@enum GlowType
-Private.Enum.GlowType = EnumUtil.MakeEnum("PixelGlow", "AutoCastGlow", "ButtonGlow", "ProcGlow")
+Private.Enum.GlowType = {
+	PixelGlow = 0,
+	AutoCastGlow = 1,
+	ButtonGlow = 2,
+	ProcGlow = 3,
+}
