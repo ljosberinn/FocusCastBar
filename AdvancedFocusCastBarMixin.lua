@@ -6,7 +6,6 @@ AdvancedFocusCastBarMixin = {}
 
 function AdvancedFocusCastBarMixin:OnLoad()
 	self.Icon:SetWidth(16)
-	print("OnLoad")
 
 	self:SetStatusBarTexture(AdvancedFocusCastBarSaved.Settings.Texture)
 	do
@@ -86,8 +85,6 @@ function AdvancedFocusCastBarMixin:AdjustDirection(isChannel)
 end
 
 function AdvancedFocusCastBarMixin:SetBarSize(width, height)
-	print("SetBarSize")
-
 	self:SetSize(width, height)
 	self.InterruptBar:SetSize(width, height)
 	self.InterruptBar.Tick:SetHeight(height)
