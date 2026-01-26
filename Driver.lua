@@ -19,6 +19,7 @@ function FocusCastBarDriver:Init()
 		ColorInterruptTick = CreateColorFromHexString(AdvancedFocusCastBarSaved.Settings.ColorInterruptTick),
 	}
 
+	---@type AdvancedFocusCastBarMixin
 	self.frame = CreateFrame("StatusBar", "AdvancedFocusCastBarParent", UIParent, "AdvancedFocusCastBarTemplate")
 	self.frame:OnLoad()
 	self.frame:SetBarSize(AdvancedFocusCastBarSaved.Settings.Width, AdvancedFocusCastBarSaved.Settings.Height)
@@ -34,11 +35,9 @@ function FocusCastBarDriver:Init()
 	self.frame:SetTickColor(self.colors.ColorInterruptTick)
 
 	local driver = self
-	local frame = self.frame
-	local interruptBar = self.frame.InterruptBar
 
 	---@param elapsed number
-	function frame:OnUpdate(elapsed)
+	function self.frame:OnUpdate(elapsed)
 		if AdvancedFocusCastBarSaved.Settings.ShowCastTime then
 			self.elapsed = (self.elapsed or 0) + elapsed
 
@@ -52,9 +51,14 @@ function FocusCastBarDriver:Init()
 
 		if driver.interruptId ~= nil then
 			local cooldownDuration = C_Spell.GetSpellCooldownDuration(driver.interruptId)
+
+			if cooldownDuration == nil then
+				return
+			end
+
 			driver:DeriveAndSetNextColor(self.notInterruptible, cooldownDuration)
-			interruptBar:SetValue(cooldownDuration:GetRemainingDuration())
-			interruptBar:SetAlphaFromBoolean(
+			self.InterruptBar:SetValue(cooldownDuration:GetRemainingDuration())
+			self.InterruptBar:SetAlphaFromBoolean(
 				cooldownDuration:IsZero(),
 				0,
 				C_CurveUtil.EvaluateColorValueFromBoolean(self.notInterruptible, 0, 1)
@@ -62,7 +66,7 @@ function FocusCastBarDriver:Init()
 		end
 	end
 
-	self.frame:SetScript("OnUpdate", frame.OnUpdate)
+	self.frame:SetScript("OnUpdate", self.frame.OnUpdate)
 
 	self.frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	self.frame:RegisterEvent("LOADING_SCREEN_DISABLED")

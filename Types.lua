@@ -69,9 +69,6 @@
 ---@field Texture string
 ---@field Position FramePosition
 
----@class StatusBar
----@field SetTimerDuration fun(self: StatusBar, duration: DurationObjectDummy)
-
 ---@class InterruptBar: StatusBar
 ---@field Tick Texture
 
@@ -82,28 +79,30 @@
 ---@field Border BackdropTemplate
 ---@field InterruptBar InterruptBar
 ---@field Mask MaskTexture
+---@field GetTimerDuration fun(self: AdvancedFocusCastBarMixin)
+---@field elapsed number?
 
 ---@class CastMetaInformation
----@field castingInfo DurationObjectDummy
+---@field castingInfo LuaDurationObject
 ---@field isChannel boolean
 ---@field name string
 ---@field texture string
 ---@field notInterruptible boolean
 
 ---@class AdvancedFocusCastBarDriver
----@field private interruptId number?
+---@field interruptId number?
 ---@field private role number
 ---@field private contentType number
 ---@field private colors table<string, ColorMixin>
 ---@field private frame AdvancedFocusCastBarMixin
----@field Init fun()
----@field LoadConditionsProhibitExecution fun(): boolean
----@field OnSettingsChanged fun(key: string, value: number|string|boolean|table)
----@field UnitIsIrrelevant fun(): boolean
----@field GetCastMetaInformation fun(): CastMetaInformation
----@field DetectInterruptId fun(): number
----@field DeriveAndSetNextColor fun(notInterruptible: boolean, cooldownDuration: DurationObjectDummy|nil)
----@field OnFrameEvent fun(self: Frame, event: string, ...)
+---@field Init fun(self: AdvancedFocusCastBarDriver)
+---@field LoadConditionsProhibitExecution fun(self: AdvancedFocusCastBarDriver): boolean
+---@field OnSettingsChanged fun(self: AdvancedFocusCastBarDriver, key: string, value: number|string|boolean|table)
+---@field UnitIsIrrelevant fun(self: AdvancedFocusCastBarDriver): boolean
+---@field GetCastMetaInformation fun(self: AdvancedFocusCastBarDriver): CastMetaInformation
+---@field DetectInterruptId fun(self: AdvancedFocusCastBarDriver): number|nil
+---@field DeriveAndSetNextColor fun(self: AdvancedFocusCastBarDriver, notInterruptible: boolean, cooldownDuration: LuaDurationObject|nil)
+---@field OnFrameEvent fun(self: AdvancedFocusCastBarDriver, event: string, ...)
 
 ---@class LibEditModeSetting
 ---@field name string
@@ -162,35 +161,35 @@ PlayerUtil = {
 	end,
 }
 
----@class DurationObjectDummy
----@field Assign fun(self: DurationObjectDummy, other: DurationObjectDummy)
----@field copy fun(self: DurationObjectDummy): DurationObjectDummy
----@field EvaluateElapsedPercent fun(self: DurationObjectDummy, curve: CurveObjectDummy, modifier: number?): number
----@field EvaluateRemainingPercent fun(self: DurationObjectDummy, curve: CurveObjectDummy, modifier: number?): number
----@field GetElapsedDuration fun(self: DurationObjectDummy, modifier: number?): number
----@field GetElapsedPercent fun(self: DurationObjectDummy, modifier: number?): number
----@field GetEndTime fun(self: DurationObjectDummy, modifier: number?): number
----@field GetModRate fun(self: DurationObjectDummy): number
----@field GetRemainingDuration fun(self: DurationObjectDummy, modifier: number?): number
----@field GetRemainingPercent fun(self: DurationObjectDummy, modifier: number?): number
----@field GetStartTime fun(self: DurationObjectDummy, modifier: number?): number
----@field GetTotalDuration fun(self: DurationObjectDummy, modifier: number?): number
----@field HasSecretValues fun(self: DurationObjectDummy): boolean
----@field IsZero fun(self: DurationObjectDummy): boolean
----@field Reset fun(self: DurationObjectDummy)
----@field SetTimeFromEnd fun(self: DurationObjectDummy, endTime: number, duration: number, modRate: number?)
----@field SetTimeFromStart fun(self: DurationObjectDummy, startTime: number, duration: number, modRate: number?)
----@field SetTimeSpan fun(self: DurationObjectDummy, startTime: number, endTime: number)
----@field SetToDefaults fun(self: DurationObjectDummy)
+---@class LuaDurationObject
+---@field Assign fun(self: LuaDurationObject, other: LuaDurationObject)
+---@field copy fun(self: LuaDurationObject): LuaDurationObject
+---@field EvaluateElapsedPercent fun(self: LuaDurationObject, curve: LuaCurveObject, modifier: number?): number
+---@field EvaluateRemainingPercent fun(self: LuaDurationObject, curve: LuaCurveObject, modifier: number?): number
+---@field GetElapsedDuration fun(self: LuaDurationObject, modifier: number?): number
+---@field GetElapsedPercent fun(self: LuaDurationObject, modifier: number?): number
+---@field GetEndTime fun(self: LuaDurationObject, modifier: number?): number
+---@field GetModRate fun(self: LuaDurationObject): number
+---@field GetRemainingDuration fun(self: LuaDurationObject, modifier: number?): number
+---@field GetRemainingPercent fun(self: LuaDurationObject, modifier: number?): number
+---@field GetStartTime fun(self: LuaDurationObject, modifier: number?): number
+---@field GetTotalDuration fun(self: LuaDurationObject, modifier: number?): number
+---@field HasSecretValues fun(self: LuaDurationObject): boolean
+---@field IsZero fun(self: LuaDurationObject): boolean
+---@field Reset fun(self: LuaDurationObject)
+---@field SetTimeFromEnd fun(self: LuaDurationObject, endTime: number, duration: number, modRate: number?)
+---@field SetTimeFromStart fun(self: LuaDurationObject, startTime: number, duration: number, modRate: number?)
+---@field SetTimeSpan fun(self: LuaDurationObject, startTime: number, endTime: number)
+---@field SetToDefaults fun(self: LuaDurationObject)
 
 ---@param unit string
----@return DurationObjectDummy
+---@return LuaDurationObject
 function UnitCastingDuration(unit)
 	return {}
 end
 
 ---@param unit string
----@return DurationObjectDummy
+---@return LuaDurationObject
 function UnitChannelDuration(unit)
 	return {}
 end
