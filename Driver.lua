@@ -1,4 +1,4 @@
------@type string, AdvancedFocusCastBar
+---@type string, AdvancedFocusCastBar
 local addonName, Private = ...
 
 ---@class AdvancedFocusCastBarDriver
@@ -6,6 +6,7 @@ local FocusCastBarDriver = {}
 
 function FocusCastBarDriver:Init()
 	self.interruptId = nil
+	self.castInfo = nil
 	self.role = Private.Enum.Role.Damager
 	self.contentType = Private.Enum.ContentType.OpenWorld
 	self.colors = {
@@ -38,6 +39,10 @@ function FocusCastBarDriver:Init()
 
 	---@param elapsed number
 	function self.frame:OnUpdate(elapsed)
+		if driver.castInfo == nil then
+			return
+		end
+
 		if AdvancedFocusCastBarSaved.Settings.ShowCastTime then
 			self.elapsed = (self.elapsed or 0) + elapsed
 
@@ -56,12 +61,12 @@ function FocusCastBarDriver:Init()
 				return
 			end
 
-			driver:DeriveAndSetNextColor(self.notInterruptible, cooldownDuration)
+			driver:DeriveAndSetNextColor(cooldownDuration)
 			self.InterruptBar:SetValue(cooldownDuration:GetRemainingDuration())
 			self.InterruptBar:SetAlphaFromBoolean(
 				cooldownDuration:IsZero(),
 				0,
-				C_CurveUtil.EvaluateColorValueFromBoolean(self.notInterruptible, 0, 1)
+				C_CurveUtil.EvaluateColorValueFromBoolean(driver.castInfo.notInterruptible, 0, 1)
 			)
 		end
 	end
@@ -153,12 +158,12 @@ function FocusCastBarDriver:UnitIsIrrelevant()
 	return false
 end
 
-function FocusCastBarDriver:GetCastMetaInformation()
-	local castingInfo = UnitCastingDuration("focus")
+function FocusCastBarDriver:SetCastMetaInformation()
+	local duration = UnitCastingDuration("focus")
 	local isChannel = false
 
-	if castingInfo == nil then
-		castingInfo = UnitChannelDuration("focus")
+	if duration == nil then
+		duration = UnitChannelDuration("focus")
 		isChannel = true
 	end
 
@@ -170,8 +175,8 @@ function FocusCastBarDriver:GetCastMetaInformation()
 		_, name, texture, _, _, _, _, notInterruptible = UnitCastingInfo("focus")
 	end
 
-	return {
-		castingInfo = castingInfo,
+	self.castInfo = {
+		duration = duration,
 		isChannel = isChannel,
 		name = name,
 		texture = texture,
@@ -235,26 +240,26 @@ function FocusCastBarDriver:DetectInterruptId()
 	return nil
 end
 
-function FocusCastBarDriver:DeriveAndSetNextColor(notInterruptible, cooldownDuration)
+function FocusCastBarDriver:DeriveAndSetNextColor(cooldownDuration)
 	local texture = self.frame:GetStatusBarTexture()
 
 	if self.interruptId == nil then
 		texture:SetVertexColorFromBoolean(
-			notInterruptible,
+			self.castInfo.notInterruptible,
 			self.colors.ColorUninterruptible,
 			self.colors.ColorInterruptibleCannotInterrupt
 		)
 	else
-		local duration = cooldownDuration or C_Spell.GetSpellCooldownDuration(self.interruptId)
-		local bool = duration:IsZero()
+		local bool = (cooldownDuration or C_Spell.GetSpellCooldownDuration(self.interruptId)):IsZero()
 
 		local canInterruptR, canInterruptG, canInterruptB = self.colors.ColorInterruptibleCanInterrupt:GetRGB()
 		local cannotInterruptR, cannotInterruptG, cannotInterruptB =
 			self.colors.ColorInterruptibleCannotInterrupt:GetRGB()
 
 		texture:SetVertexColorFromBoolean(
-			notInterruptible,
+			self.castInfo.notInterruptible,
 			self.colors.ColorUninterruptible,
+			-- C_CurveUtil.EvaluateColorFromBoolean exists and works but has perf problems
 			CreateColor(
 				C_CurveUtil.EvaluateColorValueFromBoolean(bool, canInterruptR, cannotInterruptR),
 				C_CurveUtil.EvaluateColorValueFromBoolean(bool, canInterruptG, cannotInterruptG),
@@ -262,6 +267,16 @@ function FocusCastBarDriver:DeriveAndSetNextColor(notInterruptible, cooldownDura
 			)
 		)
 	end
+	-- end
+end
+
+function FocusCastBarDriver:ApplyCastInfo()
+	self.frame:SetTimerDuration(self.castInfo.duration)
+	self.frame.InterruptBar:SetMinMaxValues(0, self.castInfo.duration:GetTotalDuration())
+	self.frame:SetReverseFill(self.castInfo.isChannel)
+	self.frame.Icon:SetTexture(self.castInfo.texture)
+	self.frame.SpellNameText:SetText(self.castInfo.name)
+	self.frame:AdjustDirection(self.castInfo.isChannel)
 end
 
 ---@param _ Frame
@@ -279,15 +294,15 @@ function FocusCastBarDriver:OnFrameEvent(_, event, ...)
 			return
 		end
 
-		local info = self:GetCastMetaInformation()
+		self:SetCastMetaInformation()
 
-		if info.castingInfo == nil then
+		if self.castInfo.duration == nil then
 			return
 		end
 
 		self.frame:Show()
-		self.frame:ApplyCastInfo(info)
-		self:DeriveAndSetNextColor(info.notInterruptible)
+		self:ApplyCastInfo()
+		self:DeriveAndSetNextColor()
 
 		print(event, "showing")
 	elseif
@@ -301,17 +316,17 @@ function FocusCastBarDriver:OnFrameEvent(_, event, ...)
 			return
 		end
 
-		local info = self:GetCastMetaInformation()
+		self:SetCastMetaInformation()
 
-		if info.castingInfo == nil then
+		if self.castInfo.duration == nil then
 			self.frame:Hide()
 			print(event, "focus stopped casting")
 			return
 		end
 
 		self.frame:Show()
-		self.frame:ApplyCastInfo(info)
-		self:DeriveAndSetNextColor(info.notInterruptible)
+		self:ApplyCastInfo()
+		self:DeriveAndSetNextColor()
 
 		print(event, "showing")
 	elseif event == "PLAYER_FOCUS_CHANGED" then
@@ -329,9 +344,9 @@ function FocusCastBarDriver:OnFrameEvent(_, event, ...)
 			return
 		end
 
-		local info = self:GetCastMetaInformation()
+		self:SetCastMetaInformation()
 
-		if info.castingInfo == nil then
+		if self.castInfo.duration == nil then
 			if self.frame:IsShown() then
 				self.frame:Hide()
 				print(event, "hiding, focus is present but not casting")
@@ -341,8 +356,8 @@ function FocusCastBarDriver:OnFrameEvent(_, event, ...)
 		end
 
 		self.frame:Show()
-		self.frame:ApplyCastInfo(info)
-		self:DeriveAndSetNextColor(info.notInterruptible)
+		self:ApplyCastInfo()
+		self:DeriveAndSetNextColor()
 
 		print(event, "showing")
 	elseif event == "UNIT_SPELLCAST_INTERRUPTIBLE" then
@@ -350,15 +365,15 @@ function FocusCastBarDriver:OnFrameEvent(_, event, ...)
 			return
 		end
 
-		local info = self:GetCastMetaInformation()
-		self.frame:SetNotInterruptible(info.notInterruptible)
+		self:SetCastMetaInformation()
+		self:DeriveAndSetNextColor()
 	elseif event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" then
 		if self:LoadConditionsProhibitExecution() then
 			return
 		end
 
-		local info = self:GetCastMetaInformation()
-		self.frame:SetNotInterruptible(info.notInterruptible)
+		self:SetCastMetaInformation()
+		self:DeriveAndSetNextColor()
 	elseif
 		event == "ZONE_CHANGED_NEW_AREA"
 		or event == "LOADING_SCREEN_DISABLED"

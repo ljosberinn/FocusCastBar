@@ -79,18 +79,19 @@
 ---@field Border BackdropTemplate
 ---@field InterruptBar InterruptBar
 ---@field Mask MaskTexture
----@field GetTimerDuration fun(self: AdvancedFocusCastBarMixin)
+---@field GetTimerDuration fun(self: AdvancedFocusCastBarMixin): LuaDurationObject
 ---@field elapsed number?
 
 ---@class CastMetaInformation
----@field castingInfo LuaDurationObject
+---@field duration LuaDurationObject|nil
 ---@field isChannel boolean
----@field name string
----@field texture string
----@field notInterruptible boolean
+---@field name string|nil -- secret
+---@field texture number|string|nil -- secret
+---@field notInterruptible boolean? -- secret
 
 ---@class AdvancedFocusCastBarDriver
 ---@field interruptId number?
+---@field castInfo CastMetaInformation|nil
 ---@field private role number
 ---@field private contentType number
 ---@field private colors table<string, ColorMixin>
@@ -99,10 +100,10 @@
 ---@field LoadConditionsProhibitExecution fun(self: AdvancedFocusCastBarDriver): boolean
 ---@field OnSettingsChanged fun(self: AdvancedFocusCastBarDriver, key: string, value: number|string|boolean|table)
 ---@field UnitIsIrrelevant fun(self: AdvancedFocusCastBarDriver): boolean
----@field GetCastMetaInformation fun(self: AdvancedFocusCastBarDriver): CastMetaInformation
+---@field SetCastMetaInformation fun(self: AdvancedFocusCastBarDriver)
 ---@field DetectInterruptId fun(self: AdvancedFocusCastBarDriver): number|nil
----@field DeriveAndSetNextColor fun(self: AdvancedFocusCastBarDriver, notInterruptible: boolean, cooldownDuration: LuaDurationObject|nil)
----@field OnFrameEvent fun(self: AdvancedFocusCastBarDriver, event: string, ...)
+---@field DeriveAndSetNextColor fun(self: AdvancedFocusCastBarDriver, cooldownDuration: LuaDurationObject|nil)
+---@field OnFrameEvent fun(self: AdvancedFocusCastBarDriver, frame: Frame, event: string, ...)
 
 ---@class LibEditModeSetting
 ---@field name string
@@ -183,13 +184,13 @@ PlayerUtil = {
 ---@field SetToDefaults fun(self: LuaDurationObject)
 
 ---@param unit string
----@return LuaDurationObject
+---@return LuaDurationObject|nil
 function UnitCastingDuration(unit)
 	return {}
 end
 
 ---@param unit string
----@return LuaDurationObject
+---@return LuaDurationObject|nil
 function UnitChannelDuration(unit)
 	return {}
 end

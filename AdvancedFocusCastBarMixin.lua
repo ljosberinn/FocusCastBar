@@ -44,10 +44,6 @@ function AdvancedFocusCastBarMixin:OnLoad()
 	self.InterruptBar.Tick:SetSize(2, AdvancedFocusCastBarSaved.Settings.Height)
 end
 
-function AdvancedFocusCastBarMixin:SetNotInterruptible(notInterruptible)
-	self.notInterruptible = notInterruptible
-end
-
 function AdvancedFocusCastBarMixin:SetShowBorder(shown)
 	self.Border:SetShown(shown)
 end
@@ -102,14 +98,4 @@ function AdvancedFocusCastBarMixin:SetBarHeight(height)
 	self.InterruptBar:SetHeight(height)
 	self.InterruptBar.Tick:SetHeight(height)
 	self.Mask:SetHeight(height)
-end
-
-function AdvancedFocusCastBarMixin:ApplyCastInfo(info)
-	self:SetNotInterruptible(info.notInterruptible)
-	self:SetTimerDuration(info.castingInfo)
-	self.InterruptBar:SetMinMaxValues(0, info.castingInfo:GetTotalDuration())
-	self:SetReverseFill(info.isChannel)
-	self.Icon:SetTexture(info.texture)
-	self.SpellNameText:SetText(info.name)
-	self:AdjustDirection(info.isChannel)
 end
