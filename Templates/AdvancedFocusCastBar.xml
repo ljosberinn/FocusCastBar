@@ -6,7 +6,7 @@
                     <Color r="0.1" g="0.1" b="0.1" a="1" />
                 </Texture>
             </Layer>
-            <Layer level="ARTWORK">
+            <Layer level="OVERLAY">
                 <Texture parentKey="Icon">
                     <TexCoords left="0.06" right="0.94" top="0.06" bottom="0.94" />
                     <Anchors>
@@ -14,8 +14,6 @@
                         <Anchor point="BOTTOMLEFT" />
                     </Anchors>
                 </Texture>
-            </Layer>
-            <Layer level="OVERLAY">
                 <FontString parentKey="SpellNameText" inherits="GameFontHighlightSmall" justifyH="LEFT">
                     <Anchors>
                         <Anchor point="LEFT" x="4" y="0" />
