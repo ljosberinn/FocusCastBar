@@ -22,9 +22,11 @@
 ## X-Curse-Project-ID: 1441078
 ## X-Wago-ID: 
 
+Libs\LibStub\LibStub.lua
+Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
 Libs\LibEditMode\embed.xml
-Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
+Libs\LibSharedMedia-3.0\lib.xml
 
 Templates\AdvancedFocusCastBar.xml
 
