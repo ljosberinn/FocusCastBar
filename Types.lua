@@ -8,23 +8,7 @@
 ---@field LoginFnQueue table<string, function>
 ---@field L table<string, table<string, string|nil>>
 ---@field Utils AdvancedFocusCastBar
-
----@class AdvancedFocusCastBarUtils
----@field ShowStaticPopup fun(args: StaticPopupDialogsArgs)
----@field Import fun(string: string): boolean
----@field Export fun(): string
----@field RegisterEditModeFrame fun(frame: Frame)
----@field RollDice fun(): boolean
-
----@class StaticPopupDialogsArgs
----@field text string
----@field button1 string
----@field button2 string?
----@field OnAccept fun()?
----@field hasEditBox boolean?
----@field hasWideEditBox boolean?
----@field editBoxWidth number?
----@field hideOnEscape boolean?
+---@field Driver AdvancedFocusCastBarMixin
 
 ---@class AdvancedFocusCastBarEnums
 
@@ -33,77 +17,84 @@
 ---@field max number
 ---@field step number
 
----@class AdvancedFocusCastBarSettings
----@field Keys table<string, string>>
----@field GetSettingsDisplayOrder fun(): string[]
----@field GetDefaultEditModeFramePosition fun(): FramePosition
----@field GetSliderSettingsForOption fun(key: string): SliderSettings
----@field GetDefaultSettings fun(): SavedVariablesSettings
-
 ---@class FramePosition
 ---@field point string
 ---@field x number
 ---@field y number
 
 ---@class SavedVariables
----@field Settings SavedVariablesSettings
+---@field Settings AdvancedFocusCastBarSettings
 
----@class SavedVariablesSettings
+---@class AdvancedFocusCastBarSettings
 ---@field Width number
 ---@field Height number
----@field Direction number
----@field LoadConditionContentType boolean[]
----@field LoadConditionRole boolean[]
----@field ShowIcon boolean
+---@field Direction Direction
+---@field LoadConditionContentType table<ContentType, boolean>
+---@field LoadConditionRole table<Role, boolean>
 ---@field ShowCastTime boolean
+---@field Position FramePosition
 ---@field Opacity number
 ---@field ShowBorder boolean
+---@field Texture string
 ---@field GlowImportant boolean
----@field GlowType number
+---@field GlowType GlowType
 ---@field OffsetX number
 ---@field OffsetY number
+---@field ShowInterruptTick boolean
 ---@field ColorUninterruptible string
 ---@field ColorInterruptibleCanInterrupt string
 ---@field ColorInterruptibleCannotInterrupt string
 ---@field ColorInterruptTick string
----@field Texture string
----@field Position FramePosition
+---@field Font string
+---@field FontSize number
+---@field ManualAnchorName string
 
----@class InterruptBar: StatusBar
+---@class AdvancedFocusCastBarSettings
+---@field GetSettingsDisplayOrder fun(): string[]
+---@field GetSliderSettingsForOption fun(key: string): SliderSettings
+---@field GetDefaultSettings fun(): SavedVariables
+
+---@class InterruptBar : StatusBar
 ---@field Tick Texture
 
----@class AdvancedFocusCastBarMixin: StatusBar
----@field Icon Texture
+---@class InterruptMarkerBar : StatusBar
+---@field InterruptMarkerPoint Texture
+
+---@class CustomCastBar : StatusBar
 ---@field SpellNameText FontString
 ---@field CastTimeText FontString
----@field Border BackdropTemplate
 ---@field InterruptBar InterruptBar
+---@field Positioner StatusBar
+---@field InterruptMarker InterruptMarkerBar
 ---@field Mask MaskTexture
----@field GetTimerDuration fun(self: AdvancedFocusCastBarMixin): LuaDurationObject
----@field elapsed number?
 
----@class CastMetaInformation
----@field duration LuaDurationObject|nil
+---@class CastInformation
+---@field duration LuaDurationObject
 ---@field isChannel boolean
----@field name string|nil -- secret
----@field texture number|string|nil -- secret
----@field notInterruptible boolean? -- secret
+---@field name string -- secret
+---@field texture string -- secret
+---@field notInterruptible boolean -- secret
 
----@class AdvancedFocusCastBarDriver
----@field interruptId number?
----@field castInfo CastMetaInformation|nil
----@field private role number
----@field private contentType number
----@field private colors table<string, ColorMixin>
----@field private frame AdvancedFocusCastBarMixin
----@field Init fun(self: AdvancedFocusCastBarDriver)
----@field LoadConditionsProhibitExecution fun(self: AdvancedFocusCastBarDriver): boolean
----@field OnSettingsChanged fun(self: AdvancedFocusCastBarDriver, key: string, value: number|string|boolean|table)
----@field UnitIsIrrelevant fun(self: AdvancedFocusCastBarDriver): boolean
----@field SetCastMetaInformation fun(self: AdvancedFocusCastBarDriver)
----@field DetectInterruptId fun(self: AdvancedFocusCastBarDriver): number|nil
----@field DeriveAndSetNextColor fun(self: AdvancedFocusCastBarDriver, cooldownDuration: LuaDurationObject|nil)
----@field OnFrameEvent fun(self: AdvancedFocusCastBarDriver, frame: Frame, event: string, ...)
+---@class AdvancedFocusCastBarMixin : Frame
+---@field Border BackdropTemplate
+---@field CastBar CustomCastBar
+---@field Icon Texture
+---@field private _AutoCastGlow Frame?
+---@field private _ButtonGlow Frame?
+---@field private _PixelGlow Frame?
+---@field private _ProcGlow Frame?
+---@field private interruptId number?
+---@field private contentType number?
+---@field private role number?
+---@field private castInformation CastInformation?
+---@field DetectInterruptId fun(self: AdvancedFocusCastBarMixin): number?
+---@field LoadConditionsProhibitExecution fun(self: AdvancedFocusCastBarMixin): boolean
+---@field UnitIsIrrelevant fun(self: AdvancedFocusCastBarMixin): boolean
+---@field OnLoad fun(self: AdvancedFocusCastBarMixin)
+---@field QueryCastInformation fun(self: AdvancedFocusCastBarMixin): CastInformation?
+---@field DeriveAndSetNextColor fun(self: AdvancedFocusCastBarMixin, cooldownDuration: LuaDurationObject?)
+
+-------- library types
 
 ---@class LibEditModeSetting
 ---@field name string
@@ -143,24 +134,8 @@
 
 ---@class LibEditModeColorPicker : LibEditModeSetting, LibEditModeGetterSetter
 ---@field hasOpacity boolean?
----@field default ColorMixin
 
----@class Frame
----@field SetAlphaFromBoolean fun(self: Frame, value: boolean, alphaIfTrue: number, alphaIfFalse: number)
-
----@class PlayerUtil
----@field GetCurrentSpecID fun(): number?
----@field GetSpecName fun(specId: number): string
-
----@type PlayerUtil
-PlayerUtil = {
-	GetCurrentSpecID = function()
-		return nil
-	end,
-	GetSpecName = function()
-		return ""
-	end,
-}
+-------- type patches
 
 ---@class LuaDurationObject
 ---@field Assign fun(self: LuaDurationObject, other: LuaDurationObject)
@@ -183,6 +158,13 @@ PlayerUtil = {
 ---@field SetTimeSpan fun(self: LuaDurationObject, startTime: number, endTime: number)
 ---@field SetToDefaults fun(self: LuaDurationObject)
 
+---@class Frame
+---@field SetAlphaFromBoolean fun(self: Frame, bool: boolean, alphaIfTrue: number?, alphaIfFalse: number?)
+---@field SetShown fun(self: Frame, bool: boolean)
+
+---@class StatusBar
+---@field SetTimerDuration fun(self: StatusBar, duration: LuaDurationObject)
+
 ---@param unit string
 ---@return LuaDurationObject|nil
 function UnitCastingDuration(unit)
@@ -195,45 +177,6 @@ function UnitChannelDuration(unit)
 	return {}
 end
 
----@param label string
----@return table
-function CreateSettingsListSectionHeaderInitializer(label) end
-
----@param setting table
----@param OpenColorPicker fun(swatch: table, button: table, isDown: boolean)
----@param clickRequiresSet boolean
----@param invertClickRequiresSet boolean
----@param tooltip string?
----@param GetColor fun(): ColorMixin
----@return table
-function CreateSettingsCheckboxWithColorSwatchInitializer(
-	setting,
-	OpenColorPicker,
-	clickRequiresSet,
-	invertClickRequiresSet,
-	tooltip,
-	GetColor
-)
-	return {}
-end
-
-C_CurveUtil = {
-	EvaluateColorValueFromBoolean =
-		---@param bool boolean
-		---@param valueIfTrue number
-		---@param valueifFalse number
-		---@return number
-		function(bool, valueIfTrue, valueifFalse)
-			return 0
-		end,
-}
-
----@class Frame
----@field SetVertexColorFromBoolean fun(self: Frame, bool: boolean, colorIfTrue: ColorMixin, colorIfFalse: ColorMixin)
-
----@class Texture
----@field SetVertexColorFromBoolean fun(self: Texture, bool: boolean, colorIfTrue: ColorMixin, colorIfFalse: ColorMixin)
-
 ---@class PlayerUtil
 ---@field GetCurrentSpecID fun(): number?
 
@@ -243,3 +186,12 @@ PlayerUtil = {
 		return nil
 	end,
 }
+
+---@class Texture
+---@field SetVertexColorFromBoolean fun(self: Texture, bool: boolean, colorIfTrue: ColorMixin, colorIfFalse: ColorMixin)
+
+---@class BackdropTemplate
+---@field SetShown fun(self: BackdropTemplate, bool: boolean)
+
+---@class IconDataProviderMixin
+---@field GetRandomIcon fun(self: IconDataProviderMixin): string

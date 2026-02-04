@@ -46,7 +46,9 @@
     "StaticPopup_Hide",
     "CLOSE",
     "StaticPopupDialogs",
-    "StaticPopup_Show"
+    "StaticPopup_Show",
+    "IconDataProviderMixin",
+    "IconDataProviderExtraType"
   ],
   "Lua.type.weakUnionCheck": true,
   "Lua.diagnostics.disable": ["assign-type-mismatch"]

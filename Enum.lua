@@ -40,3 +40,30 @@ Private.Enum.GlowType = {
 	ButtonGlow = 2,
 	ProcGlow = 3,
 }
+
+---@enum SettingKey
+Private.Enum.SettingsKey = {
+	Width = "WIDTH",
+	Height = "HEIGHT",
+	LoadConditionContentType = "LOAD_CONDITION_CONTENT_TYPE",
+	LoadConditionRole = "LOAD_CONDITION_ROLE",
+	ShowIcon = "SHOW_ICON",
+	ShowCastTime = "SHOW_CAST_TIME",
+	Opacity = "OPACITY",
+	ShowBorder = "SHOW_BORDER",
+	Texture = "TEXTURE",
+	GlowImportant = "GLOW_IMPORTANT",
+	GlowType = "GLOW_TYPE",
+	OffsetX = "OFFSET_X",
+	OffsetY = "OFFSET_Y",
+	ShowInterruptTick = "SHOW_INTERRUPT_TICK",
+	ColorUninterruptible = "COLOR_UNINTERRUPTIBLE",
+	ColorInterruptibleCanInterrupt = "COLOR_INTERRUPTIBLE_CAN_INTERRUPT",
+	ColorInterruptibleCannotInterrupt = "COLOR_INTERRUPTIBLE_CANNOT_INTERRUPT",
+	ColorInterruptTick = "COLOR_INTERRUPT_TICK",
+	Font = "FONT",
+	FontSize = "FontSize",
+	ManualAnchorName = "MANUAL_ANCHOR_NAME",
+	-- target indication?
+	-- raidmarker?
+}

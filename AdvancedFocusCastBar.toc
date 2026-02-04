@@ -28,16 +28,13 @@ Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
 Libs\LibEditMode\embed.xml
 Libs\LibSharedMedia-3.0\lib.xml
 
-Templates\AdvancedFocusCastBar.xml
 
+Templates\AdvancedFocusCastBar.xml
 Enum.lua
 Init.lua
-Utils.lua
 
 Localization\enUS.lua
 Localization\[TextLocale].lua [AllowLoadTextLocale deDE]
 
 Settings.lua
 AdvancedFocusCastBarMixin.lua
-EditMode.lua
-Driver.lua

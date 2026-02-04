@@ -1,11 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/beta/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
-    <StatusBar name="AdvancedFocusCastBarTemplate" mixin="AdvancedFocusCastBarMixin" virtual="true">
+    <Frame name="AdvancedFocusCastBarFrameTemplate" mixin="AdvancedFocusCastBarMixin" virtual="true" clampedToScreen="true">
         <Layers>
-            <Layer level="BACKGROUND">
-                <Texture parentKey="Background" setAllPoints="true">
-                    <Color r="0.1" g="0.1" b="0.1" a="1" />
-                </Texture>
-            </Layer>
             <Layer level="OVERLAY">
                 <Texture parentKey="Icon">
                     <TexCoords left="0.06" right="0.94" top="0.06" bottom="0.94" />
@@ -14,25 +9,38 @@
                         <Anchor point="BOTTOMLEFT" />
                     </Anchors>
                 </Texture>
-                <FontString parentKey="SpellNameText" inherits="GameFontHighlightSmall" justifyH="LEFT">
-                    <Anchors>
-                        <Anchor point="LEFT" x="4" y="0" />
-                    </Anchors>
-                </FontString>
-                <FontString parentKey="CastTimeText" inherits="GameFontHighlightSmall" justifyH="RIGHT">
-                    <Anchors>
-                        <Anchor point="RIGHT" x="-4" y="0" />
-                    </Anchors>
-                </FontString>
             </Layer>
         </Layers>
         <Frames>
-            <StatusBar parentKey="InterruptBar" clipChildren="true">
+            <StatusBar parentKey="CastBar" clipChildren="true">
                 <Layers>
+                    <Layer level="BACKGROUND">
+                        <Texture parentKey="Background" setAllPoints="true">
+                            <Color r="0.1" g="0.1" b="0.1" a="1" />
+                        </Texture>
+                    </Layer>
                     <Layer level="OVERLAY">
-                        <Texture parentKey="Tick" />
+                        <FontString parentKey="SpellNameText" inherits="GameFontHighlightSmall" justifyH="LEFT">
+                            <Anchors>
+                                <Anchor point="LEFT" x="4" y="0" />
+                            </Anchors>
+                        </FontString>
+                        <FontString parentKey="CastTimeText" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+                            <Anchors>
+                                <Anchor point="RIGHT" x="-4" y="0" />
+                            </Anchors>
+                        </FontString>
                     </Layer>
                 </Layers>
+                <Frames>
+                    <StatusBar parentKey="Positioner">
+                        <Anchors>
+                            <Anchor point="CENTER"></Anchor>
+                        </Anchors>
+                    </StatusBar>
+                    <StatusBar parentKey="InterruptBar" clipChildren="true">
+                    </StatusBar>
+                </Frames>
             </StatusBar>
             <Frame parentKey="Border" inherits="BackdropTemplate">
                 <Anchors>
@@ -41,5 +49,10 @@
                 </Anchors>
             </Frame>
         </Frames>
-    </StatusBar>
+        <Scripts>
+            <OnLoad method="OnLoad" />
+            <OnUpdate method="OnUpdate" />
+            <OnEvent method="OnEvent" />
+        </Scripts>
+    </Frame>
 </Ui>

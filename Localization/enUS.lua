@@ -12,6 +12,9 @@ end
 local L = Private.L
 
 L.EditMode = {}
+
+L.EditMode.AddonName = "Advanced Focus Cast Bar"
+
 L.Settings = {}
 
 L.Settings.LoadConditionContentTypeLabel = "Load Condition: Content Type"
@@ -89,3 +92,15 @@ L.Settings.ColorInterruptTickLabel = "Tick Color"
 L.Settings.SettingsCheckboxInfo1 = "The checkboxes below DO NOT do anything."
 L.Settings.SettingsCheckboxInfo2 = "It's all about the color pickers, click those!"
 L.Settings.SettingsCheckboxInfo3 = "There's just no better way to do this via settings at this time."
+
+L.Settings.FontSizeLabel = "Font Size"
+L.Settings.FontSizeTooltip = nil
+
+L.Settings.FontLabel = "Font"
+L.Settings.FontTooltip = nil
+
+L.Settings.ManualAnchorNameLabel = "Manual Anchor Name"
+L.Settings.ManualAnchorNameTooltip = nil
+
+L.Settings.TextureLabel = "Texture"
+L.Settings.TextureTooltip = nil
