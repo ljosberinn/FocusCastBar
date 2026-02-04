@@ -47,15 +47,6 @@ L.Settings.FrameHeightTooltip = nil
 L.Settings.GlowImportantLabel = "Glow Important Spells"
 L.Settings.GlowImportantTooltip = "What's important and what isn't is declared by the game."
 
-L.Settings.GlowTypeLabel = "Glow Type"
-L.Settings.GlowTypeTooltip = nil
-L.Settings.GlowTypeLabels = {
-	[Private.Enum.GlowType.PixelGlow] = "Pixel Glow",
-	[Private.Enum.GlowType.AutoCastGlow] = "Auto Cast Glow",
-	[Private.Enum.GlowType.ButtonGlow] = "Button Glow",
-	[Private.Enum.GlowType.ProcGlow] = "Proc Glow",
-}
-
 L.Settings.ShowCastTimeLabel = "Show Cast Time"
 L.Settings.ShowCastTimeTooltip = nil
 

@@ -37,7 +37,6 @@
 ---@field ShowBorder boolean
 ---@field Texture string
 ---@field GlowImportant boolean
----@field GlowType GlowType
 ---@field OffsetX number
 ---@field OffsetY number
 ---@field ShowInterruptTick boolean
@@ -74,6 +73,7 @@
 ---@field name string -- secret
 ---@field texture string -- secret
 ---@field notInterruptible boolean -- secret
+---@field isImportant boolean -- secret
 
 ---@class AdvancedFocusCastBarMixin : Frame
 ---@field Border BackdropTemplate

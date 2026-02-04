@@ -36,7 +36,6 @@ function Private.Settings.GetDefaultSettings()
 		ShowIcon = true,
 		OffsetX = 0,
 		OffsetY = 0,
-		GlowType = Private.Enum.GlowType.PixelGlow,
 		ColorUninterruptible = "FFE07800",
 		ColorInterruptibleCanInterrupt = "FF00FF00",
 		ColorInterruptibleCannotInterrupt = "FFFF0000",

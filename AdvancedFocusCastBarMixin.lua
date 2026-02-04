@@ -22,7 +22,6 @@ function AdvancedFocusCastBarMixin:OnLoad()
 		self.CastBar.Positioner:SetPoint("CENTER")
 
 		self.CastBar.InterruptBar:SetStatusBarTexture("dungeons/textures/common/transparent")
-		self.CastBar.InterruptBar:SetClipsChildren(true)
 		self.CastBar.InterruptBar.Tick = self.CastBar.InterruptBar:CreateTexture()
 		self.CastBar.InterruptBar.Tick:SetColorTexture(0, 1, 0)
 		self.CastBar.InterruptBar.Tick:SetSize(2, AdvancedFocusCastBarSaved.Settings.Height)
@@ -49,9 +48,9 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 		self.Border:SetBackdrop({
 			edgeFile = "Interface\\Buttons\\WHITE8x8",
-			edgeSize = 1,
+			edgeSize = 2,
 		})
-		self.Border:SetBackdropBorderColor(0, 0, 0, 1)
+		self.Border:SetBackdropBorderColor(0.1, 0.1, 0.1, 0.75)
 		self.Border:SetShown(AdvancedFocusCastBarSaved.Settings.ShowBorder)
 		self:SetFont()
 		self:SetFontSize()
@@ -195,12 +194,6 @@ function AdvancedFocusCastBarMixin:OnLoad()
 					if value ~= AdvancedFocusCastBarSaved.Settings.GlowImportant then
 						AdvancedFocusCastBarSaved.Settings.GlowImportant = value
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
-					end
-
-					if value then
-						LibEditMode:EnableFrameSetting(self, Private.L.Settings.GlowTypeLabel)
-					else
-						LibEditMode:DisableFrameSetting(self, Private.L.Settings.GlowTypeLabel)
 					end
 				end
 
@@ -403,48 +396,6 @@ function AdvancedFocusCastBarMixin:OnLoad()
 					set = Set,
 					get = Get,
 					kind = LibEditMode.SettingType.ColorPicker,
-				}
-			end
-
-			if key == Private.Enum.SettingsKey.GlowType then
-				---@param layoutName string
-				---@param value number
-				local function Set(layoutName, value)
-					if AdvancedFocusCastBarSaved.Settings.GlowType ~= value then
-						AdvancedFocusCastBarSaved.Settings.GlowType = value
-						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
-					end
-				end
-
-				local function Generator(owner, rootDescription, data)
-					for label, id in pairs(Private.Enum.GlowType) do
-						local function IsEnabled()
-							return AdvancedFocusCastBarSaved.Settings.GlowType == id
-						end
-
-						local function SetProxy()
-							Set(LibEditMode:GetActiveLayoutName(), id)
-						end
-
-						local translated = Private.L.Settings.GlowTypeLabels[id]
-
-						rootDescription:CreateCheckbox(translated, IsEnabled, SetProxy, {
-							value = label,
-							multiple = false,
-						})
-					end
-				end
-
-				---@type LibEditModeDropdown
-				return {
-					name = Private.L.Settings.GlowTypeLabel,
-					kind = Enum.EditModeSettingDisplayType.Dropdown,
-					desc = Private.L.Settings.GlowTypeTooltip,
-					default = defaults.GlowType,
-					multiple = false,
-					generator = Generator,
-					set = Set,
-					disabled = not AdvancedFocusCastBarSaved.Settings.GlowImportant,
 				}
 			end
 
@@ -834,7 +785,6 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			Private.Enum.SettingsKey.Font,
 			Private.Enum.SettingsKey.FontSize,
 			Private.Enum.SettingsKey.GlowImportant,
-			Private.Enum.SettingsKey.GlowType,
 			Private.Enum.SettingsKey.ColorUninterruptible,
 			Private.Enum.SettingsKey.ColorInterruptibleCanInterrupt,
 			Private.Enum.SettingsKey.ColorInterruptibleCannotInterrupt,
@@ -994,7 +944,6 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 		else
 			self:HideGlow()
 		end
-	elseif key == Private.Enum.SettingsKey.GlowType then
 	elseif key == Private.Enum.SettingsKey.ColorUninterruptible then
 		self.colors.ColorUninterruptible = CreateColorFromHexString(value)
 	elseif key == Private.Enum.SettingsKey.ColorInterruptibleCanInterrupt then
@@ -1071,72 +1020,39 @@ do
 	end
 end
 
+function AdvancedFocusCastBarMixin:LoopPreview()
+	local dummyDuration = C_DurationUtil.CreateDuration()
+	dummyDuration:SetTimeFromStart(GetTime(), 3)
+
+	self.castInformation = {
+		duration = dummyDuration,
+		isChannel = math.random(0, 1) == 1,
+		name = addonName,
+		notInterruptible = math.random(0, 1) == 1,
+		texture = self:GetRandomIcon(),
+		isImportant = math.random(0, 1) == 1,
+	}
+
+	self:ProcessCastInformation()
+	self:Show()
+end
+
 function AdvancedFocusCastBarMixin:ToggleDemo()
 	if self.demoInterval == nil then
-		local function PlayEditModeLoop()
-			local dummyDuration = C_DurationUtil.CreateDuration()
-			dummyDuration:SetTimeFromStart(GetTime(), 3)
-
-			self.castInformation = {
-				duration = dummyDuration,
-				isChannel = false,
-				name = addonName,
-				notInterruptible = false,
-				texture = self:GetRandomIcon(),
-			}
-
-			self:Show()
-			self.CastBar:SetTimerDuration(self.castInformation.duration)
-			self.CastBar:SetReverseFill(self.castInformation.isChannel)
-			-- self.CastBar.InterruptBar:SetMinMaxValues(0, self.castInformation.duration:GetTotalDuration())
-			self.Icon:SetTexture(self.castInformation.texture)
-			self.CastBar.SpellNameText:SetText(self.castInformation.name)
-			self:DeriveAndSetNextColor()
-		end
-
-		PlayEditModeLoop()
-		self.demoInterval = C_Timer.NewTicker(3, PlayEditModeLoop)
-
-		self:SetScript("OnEvent", nil)
+		self:OnEditModeEnter()
 	else
-		self.demoInterval:Cancel()
-		self.demoInterval = nil
-		self:SetScript("OnEvent", self.OnEvent)
-		self:Hide()
+		self:OnEditModeExit()
 	end
 end
 
 function AdvancedFocusCastBarMixin:OnEditModeEnter()
-	local function PlayEditModeLoop()
-		local dummyDuration = C_DurationUtil.CreateDuration()
-		dummyDuration:SetTimeFromStart(GetTime(), 3)
-
-		self.castInformation = {
-			duration = dummyDuration,
-			isChannel = math.random(0, 1) == 1,
-			name = addonName,
-			notInterruptible = math.random(0, 1) == 1,
-			texture = self:GetRandomIcon(),
-		}
-
-		self:Show()
-		self.CastBar:SetTimerDuration(self.castInformation.duration)
-		self.CastBar:SetReverseFill(self.castInformation.isChannel)
-		-- self.CastBar.InterruptBar:SetMinMaxValues(0, self.castInformation.duration:GetTotalDuration())
-		self.Icon:SetTexture(self.castInformation.texture)
-		self.CastBar.SpellNameText:SetText(self.castInformation.name)
-		self:DeriveAndSetNextColor()
-	end
-
-	PlayEditModeLoop()
-	self.demoInterval = C_Timer.NewTicker(3, PlayEditModeLoop)
-
+	self:LoopPreview()
+	self.demoInterval = C_Timer.NewTicker(3, GenerateClosure(self.LoopPreview, self))
 	self:SetScript("OnEvent", nil)
-	self:Show()
 end
 
 function AdvancedFocusCastBarMixin:OnEditModeExit()
-	if self.demoInterval then
+	if self.demoInterval ~= nil then
 		self.demoInterval:Cancel()
 		self.demoInterval = nil
 	end
@@ -1147,14 +1063,7 @@ end
 
 function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 	if AdvancedFocusCastBarSaved.Settings.ShowCastTime then
-		self.elapsed = (self.elapsed or 0) + elapsed
-
-		if self.elapsed >= 0.099 then
-			self.elapsed = 0
-
-			local duration = self.castInformation.duration
-			self.CastBar.CastTimeText:SetFormattedText("%.1f", duration:GetRemainingDuration())
-		end
+		self.CastBar.CastTimeText:SetFormattedText("%.1f", self.castInformation.duration:GetRemainingDuration())
 	end
 
 	if self.interruptId ~= nil then
@@ -1165,61 +1074,37 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 		end
 
 		self:DeriveAndSetNextColor(interruptDuration)
-		self.CastBar.Positioner:SetMinMaxValues(0, self.castInformation.duration:GetTotalDuration())
+
 		self.CastBar.Positioner:SetValue(self.castInformation.duration:GetElapsedDuration())
-		self.CastBar.InterruptBar:SetMinMaxValues(0, self.castInformation.duration:GetTotalDuration())
 		self.CastBar.InterruptBar:SetValue(interruptDuration:GetRemainingDuration())
 		self.CastBar.InterruptBar:SetAlphaFromBoolean(
 			interruptDuration:IsZero(),
 			0,
 			C_CurveUtil.EvaluateColorValueFromBoolean(self.castInformation.notInterruptible, 0, 1)
 		)
-		-- self.CastBar.InterruptPositioner:SetMinMaxValues(0, self.castInformation.duration:GetTotalDuration())
-		-- self.CastBar.InterruptPositioner:SetValue(self.castInformation.duration:GetElapsedDuration())
-		-- self.CastBar.InterruptMarker:SetMinMaxValues(0, self.castInformation.duration:GetTotalDuration())
-		-- self.CastBar.InterruptMarker:SetValue(interruptDuration:GetRemainingDuration())
-		-- self.CastBar.InterruptMarker:SetAlphaFromBoolean(
-		-- 	interruptDuration:IsZero(),
-		-- 	0,
-		-- 	C_CurveUtil.EvaluateColorValueFromBoolean(self.castInformation.notInterruptible, 0, 1)
-		-- )
-
-		-- self.CastBar.InterruptBar:SetValue(interruptDuration:GetRemainingDuration())
-		-- self.CastBar.InterruptBar:SetAlphaFromBoolean(
-		-- 	interruptDuration:IsZero(),
-		-- 	0,
-		-- 	C_CurveUtil.EvaluateColorValueFromBoolean(self.castInformation.notInterruptible, 0, 1)
-		-- )
 	end
 end
 
 function AdvancedFocusCastBarMixin:ShowGlow(isImportant)
-	local glowType = AdvancedFocusCastBarSaved.Settings.GlowType
+	LibCustomGlow.PixelGlow_Start(
+		self, -- frame
+		nil, -- color
+		nil, -- N
+		nil, -- frequency
+		nil, -- length
+		nil, -- th
+		nil, -- xOffset
+		nil, -- yOffset
+		nil, -- border
+		nil, -- key
+		nil -- frameLevel
+	)
 
-	if glowType == Private.Enum.GlowType.PixelGlow then
-		LibCustomGlow.PixelGlow_Start(self)
-
-		self._PixelGlow:SetAlphaFromBoolean(isImportant)
-	elseif glowType == Private.Enum.GlowType.AutoCastGlow then
-		LibCustomGlow.AutoCastGlow_Start(self)
-
-		self._AutoCastGlow:SetAlphaFromBoolean(isImportant)
-	elseif glowType == Private.Enum.GlowType.ButtonGlow then
-		LibCustomGlow.ButtonGlow_Start(self)
-
-		self._ButtonGlow:SetAlphaFromBoolean(isImportant)
-	elseif glowType == Private.Enum.GlowType.ProcGlow then
-		LibCustomGlow.ProcGlow_Start(self)
-
-		self._ProcGlow:SetAlphaFromBoolean(isImportant)
-	end
+	self._PixelGlow:SetAlphaFromBoolean(isImportant)
 end
 
 function AdvancedFocusCastBarMixin:HideGlow()
 	LibCustomGlow.PixelGlow_Stop(self)
-	LibCustomGlow.AutoCastGlow_Stop(self)
-	LibCustomGlow.ButtonGlow_Stop(self)
-	LibCustomGlow.ProcGlow_Stop(self)
 end
 
 function AdvancedFocusCastBarMixin:LoadConditionsProhibitExecution()
@@ -1283,33 +1168,27 @@ function AdvancedFocusCastBarMixin:DetectInterruptId()
 	return nil
 end
 
-function AdvancedFocusCastBarMixin:DeriveAndSetNextColor(cooldownDuration)
-	local texture = self.CastBar:GetStatusBarTexture()
-
+function AdvancedFocusCastBarMixin:DeriveAndSetNextColor(interruptDuration)
 	if self.interruptId == nil then
-		texture:SetVertexColorFromBoolean(
-			self.castInformation.notInterruptible,
-			self.colors.ColorUninterruptible,
-			self.colors.ColorInterruptibleCannotInterrupt
-		)
-	else
-		local bool = (cooldownDuration or C_Spell.GetSpellCooldownDuration(self.interruptId)):IsZero()
-
-		local canInterruptR, canInterruptG, canInterruptB = self.colors.ColorInterruptibleCanInterrupt:GetRGB()
-		local cannotInterruptR, cannotInterruptG, cannotInterruptB =
-			self.colors.ColorInterruptibleCannotInterrupt:GetRGB()
-
-		texture:SetVertexColorFromBoolean(
-			self.castInformation.notInterruptible,
-			self.colors.ColorUninterruptible,
-			-- C_CurveUtil.EvaluateColorFromBoolean exists and works but has perf problems
-			CreateColor(
-				C_CurveUtil.EvaluateColorValueFromBoolean(bool, canInterruptR, cannotInterruptR),
-				C_CurveUtil.EvaluateColorValueFromBoolean(bool, canInterruptG, cannotInterruptG),
-				C_CurveUtil.EvaluateColorValueFromBoolean(bool, canInterruptB, cannotInterruptB)
-			)
-		)
+		return
 	end
+
+	local bool = (interruptDuration or C_Spell.GetSpellCooldownDuration(self.interruptId)):IsZero()
+
+	-- todo: cache this
+	local canInterruptR, canInterruptG, canInterruptB = self.colors.ColorInterruptibleCanInterrupt:GetRGB()
+	local cannotInterruptR, cannotInterruptG, cannotInterruptB = self.colors.ColorInterruptibleCannotInterrupt:GetRGB()
+
+	self.CastBar:GetStatusBarTexture():SetVertexColorFromBoolean(
+		self.castInformation.notInterruptible,
+		self.colors.ColorUninterruptible,
+		-- C_CurveUtil.EvaluateColorFromBoolean exists and works but has perf problems
+		CreateColor(
+			C_CurveUtil.EvaluateColorValueFromBoolean(bool, canInterruptR, cannotInterruptR),
+			C_CurveUtil.EvaluateColorValueFromBoolean(bool, canInterruptG, cannotInterruptG),
+			C_CurveUtil.EvaluateColorValueFromBoolean(bool, canInterruptB, cannotInterruptB)
+		)
+	)
 end
 
 function AdvancedFocusCastBarMixin:QueryCastInformation()
@@ -1325,12 +1204,12 @@ function AdvancedFocusCastBarMixin:QueryCastInformation()
 		return
 	end
 
-	local name, texture, notInterruptible
+	local name, texture, notInterruptible, spellId
 
 	if isChannel then
-		_, name, texture, _, _, _, notInterruptible = UnitChannelInfo("focus")
+		_, name, texture, _, _, _, notInterruptible, spellId = UnitChannelInfo("focus")
 	else
-		_, name, texture, _, _, _, _, notInterruptible = UnitCastingInfo("focus")
+		_, name, texture, _, _, _, _, notInterruptible, spellId = UnitCastingInfo("focus")
 	end
 
 	return {
@@ -1339,16 +1218,34 @@ function AdvancedFocusCastBarMixin:QueryCastInformation()
 		name = name,
 		texture = texture,
 		notInterruptible = notInterruptible,
+		isImportant = C_Spell.IsSpellImportant(spellId),
 	}
 end
 
 function AdvancedFocusCastBarMixin:ProcessCastInformation()
 	self.CastBar:SetTimerDuration(self.castInformation.duration)
 	self.CastBar:SetReverseFill(self.castInformation.isChannel)
-	-- self.CastBar.InterruptBar:SetMinMaxValues(0, self.castInformation.duration:GetTotalDuration())
+	local totalDuration = self.castInformation.duration:GetTotalDuration()
+	self.CastBar.Positioner:SetMinMaxValues(0, totalDuration)
+	self.CastBar.InterruptBar:SetMinMaxValues(0, totalDuration)
 	self.Icon:SetTexture(self.castInformation.texture)
 	self.CastBar.SpellNameText:SetText(self.castInformation.name)
 	self:DeriveAndSetNextColor()
+
+	if AdvancedFocusCastBarSaved.Settings.GlowImportant then
+		self:ShowGlow(self.castInformation.isImportant)
+	else
+		self:HideGlow()
+	end
+
+	-- interruptId won't change while the castbar is visible, so its set once outside to prevent spamming this
+	if self.interruptId == nil then
+		self.CastBar:GetStatusBarTexture():SetVertexColorFromBoolean(
+			self.castInformation.notInterruptible,
+			self.colors.ColorUninterruptible,
+			self.colors.ColorInterruptibleCannotInterrupt
+		)
+	end
 end
 
 function AdvancedFocusCastBarMixin:OnEvent(event, ...)

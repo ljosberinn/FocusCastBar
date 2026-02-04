@@ -33,14 +33,6 @@ Private.Enum.Role = {
 	Damager = 2,
 }
 
----@enum GlowType
-Private.Enum.GlowType = {
-	PixelGlow = 0,
-	AutoCastGlow = 1,
-	ButtonGlow = 2,
-	ProcGlow = 3,
-}
-
 ---@enum SettingKey
 Private.Enum.SettingsKey = {
 	Width = "WIDTH",
@@ -53,7 +45,6 @@ Private.Enum.SettingsKey = {
 	ShowBorder = "SHOW_BORDER",
 	Texture = "TEXTURE",
 	GlowImportant = "GLOW_IMPORTANT",
-	GlowType = "GLOW_TYPE",
 	OffsetX = "OFFSET_X",
 	OffsetY = "OFFSET_Y",
 	ShowInterruptTick = "SHOW_INTERRUPT_TICK",
