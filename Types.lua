@@ -28,30 +28,32 @@
 ---@class AdvancedFocusCastBarSettings
 ---@field Width number
 ---@field Height number
----@field Direction Direction
 ---@field LoadConditionContentType table<ContentType, boolean>
 ---@field LoadConditionRole table<Role, boolean>
 ---@field ShowCastTime boolean
----@field Position FramePosition
 ---@field Opacity number
 ---@field ShowBorder boolean
 ---@field Texture string
 ---@field GlowImportant boolean
+---@field ShowIcon boolean
+---@field Point string
 ---@field OffsetX number
 ---@field OffsetY number
----@field ShowInterruptTick boolean
 ---@field ColorUninterruptible string
 ---@field ColorInterruptibleCanInterrupt string
 ---@field ColorInterruptibleCannotInterrupt string
 ---@field ColorInterruptTick string
 ---@field Font string
 ---@field FontSize number
----@field ManualAnchorName string
+---@field ShowTargetMarker boolean
+---@field BackgroundOpacity number
+---@field ShowTargetName boolean
+---@field ShowTargetClassColor boolean
+---@field PlayFocusTTSReminder boolean
 
 ---@class AdvancedFocusCastBarSettings
----@field GetSettingsDisplayOrder fun(): string[]
----@field GetSliderSettingsForOption fun(key: string): SliderSettings
----@field GetDefaultSettings fun(): SavedVariables
+---@field GetDefaultEditModeFramePosition fun(): FramePosition
+---@field GetDefaultSettings fun(): AdvancedFocusCastBarSettings
 
 ---@class InterruptBar : StatusBar
 ---@field Tick Texture
@@ -60,6 +62,7 @@
 ---@field InterruptMarkerPoint Texture
 
 ---@class CustomCastBar : StatusBar
+---@field Background Texture
 ---@field SpellNameText FontString
 ---@field CastTimeText FontString
 ---@field InterruptBar InterruptBar
@@ -71,34 +74,74 @@
 ---@field duration LuaDurationObject
 ---@field isChannel boolean
 ---@field name string -- secret
----@field texture string -- secret
+---@field texture number -- secret
 ---@field notInterruptible boolean -- secret
 ---@field isImportant boolean -- secret
 
+---@class AdvancedFocusCastBarTargetMarkerFrame : Frame
+---@field TargetMarker Texture
+
+---@class AdvancedFocusCastBarTargetNameFrame : Frame
+---@field TargetNameText1 FontString
+---@field TargetNameText2 FontString
+---@field TargetNameText3 FontString
+---@field TargetNameText4 FontString
+---@field TargetNameText5 FontString
+
+---@class AdvancedFocusCastBarBorder : BackdropTemplate
+---@field _PixelGlow Frame?
+
+---@class AdvancedFocusCastBarColors
+---@field ColorUninterruptible ColorMixin
+---@field ColorInterruptibleCanInterrupt ColorMixin
+---@field ColorInterruptibleCannotInterrupt ColorMixin
+---@field ColorInterruptTick ColorMixin?
+
 ---@class AdvancedFocusCastBarMixin : Frame
----@field Border BackdropTemplate
----@field CastBar CustomCastBar
 ---@field Icon Texture
----@field private _AutoCastGlow Frame?
----@field private _ButtonGlow Frame?
----@field private _PixelGlow Frame?
----@field private _ProcGlow Frame?
+---@field CastBar CustomCastBar
+---@field Border AdvancedFocusCastBarBorder
+---@field TargetMarkerFrame AdvancedFocusCastBarTargetMarkerFrame
+---@field TargetNameFrame AdvancedFocusCastBarTargetNameFrame
 ---@field private interruptId number?
 ---@field private contentType number?
 ---@field private role number?
 ---@field private castInformation CastInformation?
----@field DetectInterruptId fun(self: AdvancedFocusCastBarMixin): number?
+---@field private colors AdvancedFocusCastBarColors
+---@field private demoInterval table?
+---@field private ttsVoiceId number?
+---@field private firstFrameTimestamp number
+---@field OnLoad fun(self: AdvancedFocusCastBarMixin)
+---@field IsPastLoadingScreen fun(self: AdvancedFocusCastBarMixin): boolean
+---@field ToggleTargetMarkerIntegration fun(self: AdvancedFocusCastBarMixin)
+---@field AdjustIconLayout fun(self: AdvancedFocusCastBarMixin, shown: boolean)
+---@field OnSettingsChange fun(self: AdvancedFocusCastBarMixin, key: string, value: any)
+---@field ToggleTargetNameVisibility fun(self: AdvancedFocusCastBarMixin)
+---@field SetFontAndFontSize fun(self: AdvancedFocusCastBarMixin)
+---@field RestoreEditModePosition fun(self: AdvancedFocusCastBarMixin)
+---@field OnEditModePositionChange fun(self: AdvancedFocusCastBarMixin, frame: Frame, layoutName: string, point: string, x: number, y: number)
+---@field LoopPreview fun(self: AdvancedFocusCastBarMixin)
+---@field ToggleDemo fun(self: AdvancedFocusCastBarMixin)
+---@field OnEditModeEnter fun(self: AdvancedFocusCastBarMixin)
+---@field OnEditModeExit fun(self: AdvancedFocusCastBarMixin)
+---@field OnUpdate fun(self: AdvancedFocusCastBarMixin, elapsed: number)
+---@field ShowGlow fun(self: AdvancedFocusCastBarMixin, isImportant: boolean)
+---@field HideGlow fun(self: AdvancedFocusCastBarMixin)
 ---@field LoadConditionsProhibitExecution fun(self: AdvancedFocusCastBarMixin): boolean
 ---@field UnitIsIrrelevant fun(self: AdvancedFocusCastBarMixin): boolean
----@field OnLoad fun(self: AdvancedFocusCastBarMixin)
+---@field DetectInterruptId fun(self: AdvancedFocusCastBarMixin): number?
+---@field DeriveAndSetNextColor fun(self: AdvancedFocusCastBarMixin, interruptDuration: LuaDurationObject?)
 ---@field QueryCastInformation fun(self: AdvancedFocusCastBarMixin): CastInformation?
----@field DeriveAndSetNextColor fun(self: AdvancedFocusCastBarMixin, cooldownDuration: LuaDurationObject?)
+---@field ProcessCastInformation fun(self: AdvancedFocusCastBarMixin)
+---@field FindApporpriateTTSVoiceID fun(self: AdvancedFocusCastBarMixin): number
+---@field OnEvent fun(self: AdvancedFocusCastBarMixin, event: string, ...)
+---@field GetRandomIcon fun(self: AdvancedFocusCastBarMixin): number
 
 -------- library types
 
 ---@class LibEditModeSetting
 ---@field name string
----@field kind string
+---@field kind string|number
 ---@field desc string?
 ---@field default number|string|boolean|table
 ---@field disabled boolean?
@@ -190,8 +233,17 @@ PlayerUtil = {
 ---@class Texture
 ---@field SetVertexColorFromBoolean fun(self: Texture, bool: boolean, colorIfTrue: ColorMixin, colorIfFalse: ColorMixin)
 
----@class BackdropTemplate
+---@class BackdropTemplate : Frame
 ---@field SetShown fun(self: BackdropTemplate, bool: boolean)
 
 ---@class IconDataProviderMixin
----@field GetRandomIcon fun(self: IconDataProviderMixin): string
+---@field GetRandomIcon fun(self: IconDataProviderMixin): number
+
+IconDataProviderMixin = {
+	GetRandomIcon = function()
+		return 1
+	end,
+}
+
+---@type string?
+GAME_LOCALE = nil

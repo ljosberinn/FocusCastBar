@@ -20,7 +20,7 @@
                         </Texture>
                     </Layer>
                     <Layer level="OVERLAY">
-                        <FontString parentKey="SpellNameText" inherits="GameFontHighlightSmall" justifyH="LEFT">
+                        <FontString parentKey="SpellNameText" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
                             <Anchors>
                                 <Anchor point="LEFT" x="4" y="0" />
                             </Anchors>
@@ -30,15 +30,24 @@
                                 <Anchor point="RIGHT" x="-4" y="0" />
                             </Anchors>
                         </FontString>
+                        <MaskTexture parentKey="Mask" file="Interface\BUTTONS\WHITE8X8" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+                            <TextureSliceMargins left="1" right="1" top="1" bottom="1" />
+                            <Anchors>
+                                <Anchor point="CENTER" />
+                            </Anchors>
+                        </MaskTexture>
                     </Layer>
                 </Layers>
                 <Frames>
                     <StatusBar parentKey="Positioner">
+                        <BarTexture />
                         <Anchors>
                             <Anchor point="CENTER" />
                         </Anchors>
                     </StatusBar>
-                    <StatusBar parentKey="InterruptBar" clipChildren="true" />
+                    <StatusBar parentKey="InterruptBar" clipChildren="true">
+                        <BarTexture />
+                    </StatusBar>
                 </Frames>
             </StatusBar>
             <Frame parentKey="Border" inherits="BackdropTemplate">
@@ -46,6 +55,49 @@
                     <Anchor point="TOPLEFT" x="-1" y="1" />
                     <Anchor point="BOTTOMRIGHT" x="1" y="-1" />
                 </Anchors>
+            </Frame>
+            <Frame parentKey="TargetMarkerFrame" setAllPoints="true">
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <Texture parentKey="TargetMarker" hidden="true" file="Interface/TargetingFrame/UI-RaidTargetingIcons">
+                            <Size x="16" y="16" />
+                            <Anchors>
+                                <Anchor point="CENTER" relativePoint="TOP" x="0" y="0" />
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Frame>
+            <Frame parentKey="TargetNameFrame" setAllPoints="true">
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString parentKey="TargetNameText1" inherits="GameFontHighlightSmall" justifyH="CENTER" text="">
+                            <Anchors>
+                                <Anchor point="BOTTOM" x="0" y="-8" />
+                            </Anchors>
+                        </FontString>
+                        <FontString parentKey="TargetNameText2" inherits="GameFontHighlightSmall" justifyH="CENTER" text="">
+                            <Anchors>
+                                <Anchor point="BOTTOM" x="0" y="-8" />
+                            </Anchors>
+                        </FontString>
+                        <FontString parentKey="TargetNameText3" inherits="GameFontHighlightSmall" justifyH="CENTER" text="">
+                            <Anchors>
+                                <Anchor point="BOTTOM" x="0" y="-8" />
+                            </Anchors>
+                        </FontString>
+                        <FontString parentKey="TargetNameText4" inherits="GameFontHighlightSmall" justifyH="CENTER" text="">
+                            <Anchors>
+                                <Anchor point="BOTTOM" x="0" y="-8" />
+                            </Anchors>
+                        </FontString>
+                        <FontString parentKey="TargetNameText5" inherits="GameFontHighlightSmall" justifyH="CENTER" text="">
+                            <Anchors>
+                                <Anchor point="BOTTOM" x="0" y="-8" />
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
             </Frame>
         </Frames>
         <Scripts>

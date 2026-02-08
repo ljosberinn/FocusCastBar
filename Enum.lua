@@ -10,12 +10,6 @@ Private.Enum.Events = {
 	EDIT_MODE_POSITION_CHANGED = "EDIT_MODE_POSITION_CHANGED",
 }
 
----@enum Direction
-Private.Enum.Direction = {
-	Horizontal = 0,
-	Vertical = 1,
-}
-
 ---@enum ContentType
 Private.Enum.ContentType = {
 	OpenWorld = 0,
@@ -33,6 +27,15 @@ Private.Enum.Role = {
 	Damager = 2,
 }
 
+---@enum Point
+Private.Enum.Point = {
+	CENTER = "CENTER",
+	TOP = "TOP",
+	BOTTOM = "BOTTOM",
+	LEFT = "LEFT",
+	RIGHT = "RIGHT",
+}
+
 ---@enum SettingKey
 Private.Enum.SettingsKey = {
 	Width = "WIDTH",
@@ -45,6 +48,7 @@ Private.Enum.SettingsKey = {
 	ShowBorder = "SHOW_BORDER",
 	Texture = "TEXTURE",
 	GlowImportant = "GLOW_IMPORTANT",
+	Point = "POINT",
 	OffsetX = "OFFSET_X",
 	OffsetY = "OFFSET_Y",
 	ShowInterruptTick = "SHOW_INTERRUPT_TICK",
@@ -54,7 +58,9 @@ Private.Enum.SettingsKey = {
 	ColorInterruptTick = "COLOR_INTERRUPT_TICK",
 	Font = "FONT",
 	FontSize = "FontSize",
-	ManualAnchorName = "MANUAL_ANCHOR_NAME",
-	-- target indication?
-	-- raidmarker?
+	ShowTargetMarker = "SHOW_TARGET_MARKER",
+	BackgroundOpacity = "BACKGROUND_OPACITY",
+	ShowTargetName = "SHOW_TARGET_NAME",
+	ShowTargetClassColor = "SHOW_TARGET_CLASS_COLOR",
+	PlayFocusTTSReminder = "PLAY_FOCUS_TTS_REMINDER",
 }

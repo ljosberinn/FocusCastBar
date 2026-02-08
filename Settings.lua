@@ -4,16 +4,11 @@ local addonName, Private = ...
 ---@class AdvancedFocusCastBarSettings
 Private.Settings = {}
 
-function Private.Settings.GetDefaultEditModeFramePosition()
-	return { point = "CENTER", x = 0, y = 100 }
-end
-
 ---@return SavedVariables
 function Private.Settings.GetDefaultSettings()
 	return {
 		Width = 300,
-		Height = 25,
-		Direction = Private.Enum.Direction.Horizontal,
+		Height = 22,
 		LoadConditionContentType = {
 			[Private.Enum.ContentType.OpenWorld] = true,
 			[Private.Enum.ContentType.Delve] = true,
@@ -28,21 +23,25 @@ function Private.Settings.GetDefaultSettings()
 			[Private.Enum.Role.Damager] = true,
 		},
 		ShowCastTime = true,
-		Position = Private.Settings.GetDefaultEditModeFramePosition(),
 		Opacity = 1,
 		ShowBorder = true,
 		Texture = "Interface\\TargetingFrame\\UI-StatusBar",
 		GlowImportant = true,
 		ShowIcon = true,
+		Point = Private.Enum.Point.CENTER,
 		OffsetX = 0,
-		OffsetY = 0,
+		OffsetY = 200,
 		ColorUninterruptible = "FFE07800",
 		ColorInterruptibleCanInterrupt = "FF00FF00",
 		ColorInterruptibleCannotInterrupt = "FFFF0000",
 		ColorInterruptTick = "FF00FF00",
 		Font = "Fonts\\FRIZQT__.TTF",
-		FontSize = 20,
-		ManualAnchorName = "",
+		FontSize = 18,
+		ShowTargetMarker = true,
+		BackgroundOpacity = 0.35,
+		ShowTargetName = true,
+		ShowTargetClassColor = false,
+		PlayFocusTTSReminder = true,
 	}
 end
 

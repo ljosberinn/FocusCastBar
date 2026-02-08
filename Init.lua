@@ -19,10 +19,10 @@ end
 Private.LoginFnQueue = {}
 
 EventUtil.ContinueOnAddOnLoaded(addonName, function()
-	---@class SavedVariables
+	---@type SavedVariables
 	AdvancedFocusCastBarSaved = AdvancedFocusCastBarSaved or {}
 
-	---@class AdvancedFocusCastBarSettings
+	---@type AdvancedFocusCastBarSettings
 	AdvancedFocusCastBarSaved.Settings = AdvancedFocusCastBarSaved.Settings or {}
 
 	for key, value in pairs(Private.Settings.GetDefaultSettings()) do

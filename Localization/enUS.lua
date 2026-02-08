@@ -17,6 +17,8 @@ L.EditMode.AddonName = "Advanced Focus Cast Bar"
 
 L.Settings = {}
 
+L.Settings.EditModeReminder = "Settings are exclusively available through Edit Mode."
+
 L.Settings.LoadConditionContentTypeLabel = "Load Condition: Content Type"
 L.Settings.LoadConditionContentTypeLabelAbbreviated = "Load in Content"
 L.Settings.LoadConditionContentTypeTooltip = nil
@@ -90,8 +92,28 @@ L.Settings.FontSizeTooltip = nil
 L.Settings.FontLabel = "Font"
 L.Settings.FontTooltip = nil
 
-L.Settings.ManualAnchorNameLabel = "Manual Anchor Name"
-L.Settings.ManualAnchorNameTooltip = nil
-
 L.Settings.TextureLabel = "Texture"
 L.Settings.TextureTooltip = nil
+
+L.Settings.ShowTargetNameLabel = "Show Target Name"
+L.Settings.ShowTargetNameTooltip = "Only in Mythic+!"
+
+L.Settings.ShowTargetClassColorLabel = "Show Target Class Color"
+L.Settings.ShowTargetClassColorTooltip = "Can have contrast problems depending on background and bar color."
+
+L.Settings.ShowTargetMarkerLabel = "Show Target Marker"
+L.Settings.ShowTargetMarkerTooltip = nil
+
+L.Settings.BackgroundOpacityLabel = "Background Opacity"
+L.Settings.BackgroundOpacityTooltip = nil
+
+L.Settings.PlayFocusTTSReminderLabel = "Play Focus TTS Reminder"
+L.Settings.PlayFocusTTSReminderTooltip =
+	"Plays 'focus' text-to-speech when your current focus target disappears as a reminder to pick a new one. Only in dungeons!"
+
+L.Settings.TargetMarkerPositionLabel = "Target Marker Position"
+L.Settings.TargetMarkerPositionTooltip = nil
+
+L.Settings.PointLabel = "Point"
+L.Settings.PointTooltip =
+	"Together with Offset X / Offset Y, allows more granular positioning control in contrast to drag & drop."
