@@ -89,6 +89,9 @@ L.Settings.SettingsCheckboxInfo3 = "There's just no better way to do this via se
 L.Settings.FontSizeLabel = "Font Size"
 L.Settings.FontSizeTooltip = nil
 
+L.Settings.TickWidthLabel = "Tick Width"
+L.Settings.TickWidthTooltip = "0 hides the tick."
+
 L.Settings.FontLabel = "Font"
 L.Settings.FontTooltip = nil
 

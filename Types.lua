@@ -45,6 +45,7 @@
 ---@field ColorInterruptTick string
 ---@field Font string
 ---@field FontSize number
+---@field TickWidth number
 ---@field ShowTargetMarker boolean
 ---@field BackgroundOpacity number
 ---@field ShowTargetName boolean
@@ -115,7 +116,7 @@
 ---@field IsPastLoadingScreen fun(self: AdvancedFocusCastBarMixin): boolean
 ---@field ToggleTargetMarkerIntegration fun(self: AdvancedFocusCastBarMixin)
 ---@field AdjustIconLayout fun(self: AdvancedFocusCastBarMixin, shown: boolean)
----@field OnSettingsChange fun(self: AdvancedFocusCastBarMixin, key: string, value: any)
+---@field OnSettingsChange fun(self: AdvancedFocusCastBarMixin, key: SettingKey, value: any)
 ---@field ToggleTargetNameVisibility fun(self: AdvancedFocusCastBarMixin)
 ---@field SetFontAndFontSize fun(self: AdvancedFocusCastBarMixin)
 ---@field RestoreEditModePosition fun(self: AdvancedFocusCastBarMixin)
@@ -247,3 +248,11 @@ IconDataProviderMixin = {
 
 ---@type string?
 GAME_LOCALE = nil
+
+PixelUtil = {
+	SetSize =
+		---@param frame Frame|Texture|MaskTexture
+		---@param width number
+		---@param height number
+		function(frame, width, height) end,
+}

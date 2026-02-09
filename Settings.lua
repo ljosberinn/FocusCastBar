@@ -42,6 +42,7 @@ function Private.Settings.GetDefaultSettings()
 		ShowTargetName = true,
 		ShowTargetClassColor = false,
 		PlayFocusTTSReminder = true,
+		TickWidth = 2,
 	}
 end
 

@@ -76,6 +76,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 		---@param key SettingKey
 		---@return SliderSettings
 		local function GetSliderSettingsForOption(key)
+			if key == Private.Enum.SettingsKey.TickWidth then
+				return {
+					min = 0,
+					max = 16,
+					step = 1,
+				}
+			end
+
 			if key == Private.Enum.SettingsKey.FontSize then
 				return {
 					min = 8,
@@ -236,6 +244,38 @@ function AdvancedFocusCastBarMixin:OnLoad()
 					maxValue = sliderSettings.max,
 					valueStep = sliderSettings.step,
 					formatter = FormatPercentage,
+				}
+			end
+
+			if key == Private.Enum.SettingsKey.TickWidth then
+				local sliderSettings = GetSliderSettingsForOption(key)
+
+				---@param layoutName string
+				---@return number
+				local function Get(layoutName)
+					return AdvancedFocusCastBarSaved.Settings.TickWidth
+				end
+
+				---@param layoutName string
+				---@param value number
+				local function Set(layoutName, value)
+					if value ~= AdvancedFocusCastBarSaved.Settings.TickWidth then
+						AdvancedFocusCastBarSaved.Settings.TickWidth = value
+						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+					end
+				end
+
+				---@type LibEditModeSlider
+				return {
+					name = Private.L.Settings.TickWidthLabel,
+					kind = Enum.EditModeSettingDisplayType.Slider,
+					default = defaults.TickWidth,
+					desc = Private.L.Settings.TickWidthTooltip,
+					get = Get,
+					set = Set,
+					minValue = sliderSettings.min,
+					maxValue = sliderSettings.max,
+					valueStep = sliderSettings.step,
 				}
 			end
 
@@ -1031,6 +1071,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			Private.Enum.SettingsKey.ColorInterruptibleCanInterrupt,
 			Private.Enum.SettingsKey.ColorInterruptibleCannotInterrupt,
 			Private.Enum.SettingsKey.ColorInterruptTick,
+			Private.Enum.SettingsKey.TickWidth,
 			Private.Enum.SettingsKey.ShowTargetMarker,
 			Private.Enum.SettingsKey.ShowTargetName,
 			Private.Enum.SettingsKey.ShowTargetClassColor,
@@ -1169,7 +1210,11 @@ function AdvancedFocusCastBarMixin:AdjustIconLayout(shown)
 		PixelUtil.SetSize(self.CastBar.Mask, adjustedWidth, AdvancedFocusCastBarSaved.Settings.Height)
 		PixelUtil.SetSize(self.CastBar.Positioner, adjustedWidth, AdvancedFocusCastBarSaved.Settings.Height)
 		PixelUtil.SetSize(self.CastBar.InterruptBar, adjustedWidth, AdvancedFocusCastBarSaved.Settings.Height)
-		PixelUtil.SetSite(self.CastBar.InterruptBar.Tick, 2, AdvancedFocusCastBarSaved.Settings.Height)
+		PixelUtil.SetSize(
+			self.CastBar.InterruptBar.Tick,
+			AdvancedFocusCastBarSaved.Settings.TickWidth,
+			AdvancedFocusCastBarSaved.Settings.Height
+		)
 	else
 		self.Icon:Hide()
 
@@ -1197,7 +1242,11 @@ function AdvancedFocusCastBarMixin:AdjustIconLayout(shown)
 			AdvancedFocusCastBarSaved.Settings.Width,
 			AdvancedFocusCastBarSaved.Settings.Height
 		)
-		PixelUtil.SetSite(self.CastBar.InterruptBar.Tick, 2, AdvancedFocusCastBarSaved.Settings.Height)
+		PixelUtil.SetSize(
+			self.CastBar.InterruptBar.Tick,
+			AdvancedFocusCastBarSaved.Settings.TickWidth,
+			AdvancedFocusCastBarSaved.Settings.Height
+		)
 	end
 end
 
@@ -1246,6 +1295,9 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 		self.CastBar.Background:SetAlpha(value)
 	elseif key == Private.Enum.SettingsKey.ShowTargetName then
 		self:ToggleTargetNameVisibility()
+	elseif key == Private.Enum.SettingsKey.TickWidth then
+		self.CastBar.InterruptBar.Tick:SetShown(value > 0)
+		self.CastBar.InterruptBar.Tick:SetWidth(value)
 	end
 end
 

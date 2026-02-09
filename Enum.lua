@@ -63,4 +63,5 @@ Private.Enum.SettingsKey = {
 	ShowTargetName = "SHOW_TARGET_NAME",
 	ShowTargetClassColor = "SHOW_TARGET_CLASS_COLOR",
 	PlayFocusTTSReminder = "PLAY_FOCUS_TTS_REMINDER",
+	TickWidth = "TICK_WIDTH",
 }
