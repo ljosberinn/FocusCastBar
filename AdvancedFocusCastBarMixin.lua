@@ -1684,12 +1684,10 @@ end
 
 function AdvancedFocusCastBarMixin:LoadConditionsProhibitExecution()
 	if not AdvancedFocusCastBarSaved.Settings.LoadConditionRole[self.role] then
-		print("bailing because LoadConditionRole")
 		return true
 	end
 
 	if not AdvancedFocusCastBarSaved.Settings.LoadConditionContentType[self.contentType] then
-		print("bailing because LoadConditionContentType")
 		return true
 	end
 
@@ -1895,8 +1893,6 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 
 		self:ProcessCastInformation()
 		self:Show()
-
-		print(event, "showing")
 	elseif
 		event == "UNIT_SPELLCAST_STOP"
 		or event == "UNIT_SPELLCAST_FAILED"
@@ -1912,24 +1908,19 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 
 		if self.castInformation == nil then
 			self:Hide()
-			print(event, "focus stopped casting")
 			return
 		end
 
 		self:ProcessCastInformation()
 		self:Show()
-
-		print(event, "showing")
 	elseif event == "PLAYER_FOCUS_CHANGED" then
 		if self:LoadConditionsProhibitExecution() then
 			return
 		end
 
-		print(event, "player focus changed")
 		if not UnitExists("focus") then
 			if self:IsShown() then
 				self:Hide()
-				print(event, "hiding, focus is gone")
 			end
 
 			if
@@ -1957,7 +1948,6 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 		if self.castInformation == nil then
 			if self:IsShown() then
 				self:Hide()
-				print(event, "hiding, focus is present but not casting")
 			end
 
 			return
@@ -1965,8 +1955,6 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 
 		self:ProcessCastInformation()
 		self:Show()
-
-		print(event, "showing")
 	elseif event == "UNIT_SPELLCAST_INTERRUPTIBLE" then
 		if self:LoadConditionsProhibitExecution() then
 			return
