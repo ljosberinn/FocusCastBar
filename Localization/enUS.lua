@@ -104,6 +104,10 @@ L.Settings.ShowTargetNameTooltip = "Only in Mythic+!"
 L.Settings.ShowTargetClassColorLabel = "Show Target Class Color"
 L.Settings.ShowTargetClassColorTooltip = "Can have contrast problems depending on background and bar color."
 
+L.Settings.IgnoreFriendliesLabel = "Ignore Friendlies"
+L.Settings.IgnoreFriendliesTooltip =
+	"Prevents showing the cast bar if the focus target is friendly or unattackable. Disable for testing purposes."
+
 L.Settings.ShowTargetMarkerLabel = "Show Target Marker"
 L.Settings.ShowTargetMarkerTooltip = nil
 

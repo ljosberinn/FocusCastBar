@@ -43,6 +43,7 @@ function Private.Settings.GetDefaultSettings()
 		ShowTargetClassColor = false,
 		PlayFocusTTSReminder = true,
 		TickWidth = 2,
+		IgnoreFriendlies = true,
 	}
 end
 

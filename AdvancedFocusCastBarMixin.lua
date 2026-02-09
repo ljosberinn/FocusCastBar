@@ -744,6 +744,33 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
+			if key == Private.Enum.SettingsKey.IgnoreFriendlies then
+				---@param layoutName string
+				---@return boolean
+				local function Get(layoutName)
+					return AdvancedFocusCastBarSaved.Settings.IgnoreFriendlies
+				end
+
+				---@param layoutName string
+				---@param value boolean
+				local function Set(layoutName, value)
+					AdvancedFocusCastBarSaved.Settings.IgnoreFriendlies = value
+
+					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+				end
+
+				---@type LibEditModeCheckbox
+				return {
+					name = Private.L.Settings.IgnoreFriendliesLabel,
+					kind = Enum.EditModeSettingDisplayType.Checkbox,
+					desc = Private.L.Settings.IgnoreFriendliesTooltip,
+					default = defaults.IgnoreFriendlies,
+					get = Get,
+					set = Set,
+					disabled = not AdvancedFocusCastBarSaved.Settings.ShowTargetName,
+				}
+			end
+
 			if key == Private.Enum.SettingsKey.ShowIcon then
 				---@param layoutName string
 				---@return boolean
@@ -1076,6 +1103,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			Private.Enum.SettingsKey.ShowTargetName,
 			Private.Enum.SettingsKey.ShowTargetClassColor,
 			Private.Enum.SettingsKey.PlayFocusTTSReminder,
+			Private.Enum.SettingsKey.IgnoreFriendlies,
 			Private.Enum.SettingsKey.Point,
 			Private.Enum.SettingsKey.OffsetX,
 			Private.Enum.SettingsKey.OffsetY,
@@ -1673,7 +1701,7 @@ function AdvancedFocusCastBarMixin:UnitIsIrrelevant()
 		return true
 	end
 
-	if not UnitCanAttack("player", "focus") then
+	if AdvancedFocusCastBarSaved.Settings.IgnoreFriendlies and not UnitCanAttack("player", "focus") then
 		return true
 	end
 
