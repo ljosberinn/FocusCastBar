@@ -1,6 +1,7 @@
 # Advanced Focus Cast Bar
 
 [![](https://img.shields.io/badge/patreon-red?logo=patreon&style=for-the-badge)](https://www.patreon.com/cw/warcraftlogs)
+[![](https://shields.io/badge/discord-lightblue?logo=discord&style=for-the-badge)](https://discord.gg/C5STjYRsCD)
 
 - [Curseforge](https://curseforge.com/wow/addons/advanced-focus-cast-bar)
 - [Wago](https://addons.wago.io/addons/advanced-focus-cast-bar)
