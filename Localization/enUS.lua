@@ -99,7 +99,7 @@ L.Settings.TextureLabel = "Texture"
 L.Settings.TextureTooltip = nil
 
 L.Settings.ShowTargetNameLabel = "Show Target Name"
-L.Settings.ShowTargetNameTooltip = "Only in Mythic+!"
+L.Settings.ShowTargetNameTooltip = "Only shows in Arena / Raid / Dungeons."
 
 L.Settings.ShowTargetClassColorLabel = "Show Target Class Color"
 L.Settings.ShowTargetClassColorTooltip = "Can have contrast problems depending on background and bar color."

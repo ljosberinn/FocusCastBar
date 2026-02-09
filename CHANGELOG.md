@@ -4,6 +4,7 @@
 - added Out of Range Opacity setting (default 100%, meaning it's not active)
 - removed debug prints
 - added option to ignore friendlies / unattackable units (default active)
+- added Target Name Position setting, defaulting to bottom center
 
 ## Version 1.0.0-alpha3
 

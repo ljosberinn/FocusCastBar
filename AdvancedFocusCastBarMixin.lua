@@ -1926,7 +1926,11 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 	if self.demoInterval == nil then
 		if
 			AdvancedFocusCastBarSaved.Settings.ShowTargetName
-			and self.contentType == Private.Enum.ContentType.Dungeon
+			and (
+				self.contentType == Private.Enum.ContentType.Dungeon
+				or self.contentType == Private.Enum.ContentType.Arena
+				or self.contentType == Private.Enum.ContentType.Raid
+			)
 		then
 			self.TargetNameFrame:Show()
 
