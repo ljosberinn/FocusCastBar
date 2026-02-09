@@ -163,6 +163,8 @@ function AdvancedFocusCastBarMixin:OnLoad()
 		---@param key SettingKey
 		---@return LibEditModeSetting
 		local function CreateSetting(key)
+			local L = Private.L.Settings
+
 			if key == Private.Enum.SettingsKey.PlayFocusTTSReminder then
 				---@param layoutName string
 				---@return boolean
@@ -180,9 +182,9 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeCheckbox
 				return {
-					name = Private.L.Settings.PlayFocusTTSReminderLabel,
+					name = L.PlayFocusTTSReminderLabel,
 					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = Private.L.Settings.PlayFocusTTSReminderTooltip,
+					desc = L.PlayFocusTTSReminderTooltip,
 					default = defaults.PlayFocusTTSReminder,
 					get = Get,
 					set = Set,
@@ -210,10 +212,10 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeSlider
 				return {
-					name = Private.L.Settings.OpacityLabel,
+					name = L.OpacityLabel,
 					kind = Enum.EditModeSettingDisplayType.Slider,
 					default = defaults.Opacity,
-					desc = Private.L.Settings.OpacityTooltip,
+					desc = L.OpacityTooltip,
 					get = Get,
 					set = Set,
 					minValue = sliderSettings.min,
@@ -244,10 +246,10 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeSlider
 				return {
-					name = Private.L.Settings.OutOfRangeOpacityLabel,
+					name = L.OutOfRangeOpacityLabel,
 					kind = Enum.EditModeSettingDisplayType.Slider,
 					default = defaults.OutOfRangeOpacity,
-					desc = Private.L.Settings.OutOfRangeOpacityTooltip,
+					desc = L.OutOfRangeOpacityTooltip,
 					get = Get,
 					set = Set,
 					minValue = sliderSettings.min,
@@ -278,10 +280,10 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeSlider
 				return {
-					name = Private.L.Settings.BackgroundOpacityLabel,
+					name = L.BackgroundOpacityLabel,
 					kind = Enum.EditModeSettingDisplayType.Slider,
 					default = defaults.BackgroundOpacity,
-					desc = Private.L.Settings.BackgroundOpacityTooltip,
+					desc = L.BackgroundOpacityTooltip,
 					get = Get,
 					set = Set,
 					minValue = sliderSettings.min,
@@ -311,10 +313,10 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeSlider
 				return {
-					name = Private.L.Settings.TickWidthLabel,
+					name = L.TickWidthLabel,
 					kind = Enum.EditModeSettingDisplayType.Slider,
 					default = defaults.TickWidth,
-					desc = Private.L.Settings.TickWidthTooltip,
+					desc = L.TickWidthTooltip,
 					get = Get,
 					set = Set,
 					minValue = sliderSettings.min,
@@ -343,10 +345,10 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeSlider
 				return {
-					name = Private.L.Settings.FontSizeLabel,
+					name = L.FontSizeLabel,
 					kind = Enum.EditModeSettingDisplayType.Slider,
 					default = defaults.FontSize,
-					desc = Private.L.Settings.FontSizeTooltip,
+					desc = L.FontSizeTooltip,
 					get = Get,
 					set = Set,
 					minValue = sliderSettings.min,
@@ -372,9 +374,9 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeCheckbox
 				return {
-					name = Private.L.Settings.ShowTargetMarkerLabel,
+					name = L.ShowTargetMarkerLabel,
 					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = Private.L.Settings.ShowTargetMarkerTooltip,
+					desc = L.ShowTargetMarkerTooltip,
 					default = defaults.ShowTargetMarker,
 					get = Get,
 					set = Set,
@@ -398,9 +400,9 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeCheckbox
 				return {
-					name = Private.L.Settings.GlowImportantLabel,
+					name = L.GlowImportantLabel,
 					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = Private.L.Settings.GlowImportantTooltip,
+					desc = L.GlowImportantTooltip,
 					default = defaults.GlowImportant,
 					get = Get,
 					set = Set,
@@ -497,9 +499,9 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeDropdown
 				return {
-					name = Private.L.Settings.FontLabel,
+					name = L.FontLabel,
 					kind = Enum.EditModeSettingDisplayType.Dropdown,
-					desc = Private.L.Settings.FontTooltip,
+					desc = L.FontTooltip,
 					default = defaults.Font,
 					multiple = false,
 					generator = Generator,
@@ -532,10 +534,45 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeDropdown
 				return {
-					name = Private.L.Settings.PointLabel,
+					name = L.PointLabel,
 					kind = Enum.EditModeSettingDisplayType.Dropdown,
-					desc = Private.L.Settings.PointTooltip,
+					desc = L.PointTooltip,
 					default = defaults.Point,
+					multiple = false,
+					generator = Generator,
+					set = Set,
+				}
+			end
+
+			if key == Private.Enum.SettingsKey.TargetNamePosition then
+				---@param layoutName string
+				---@param value string
+				local function Set(layoutName, value)
+					AdvancedFocusCastBarSaved.Settings.TargetNamePosition = value
+
+					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+				end
+
+				local function Generator(owner, rootDescription, data)
+					for TargetNamePositionKey, value in pairs(Private.Enum.TargetNamePosition) do
+						local function IsEnabled()
+							return AdvancedFocusCastBarSaved.Settings.TargetNamePosition == value
+						end
+
+						local function SetProxy()
+							Set(LibEditMode:GetActiveLayoutName(), value)
+						end
+
+						rootDescription:CreateRadio(L.TargetNamePositionLabels[value], IsEnabled, SetProxy)
+					end
+				end
+
+				---@type LibEditModeDropdown
+				return {
+					name = L.TargetNamePositionLabel,
+					kind = Enum.EditModeSettingDisplayType.Dropdown,
+					desc = L.TargetNamePositionTooltip,
+					default = defaults.TargetNamePosition,
 					multiple = false,
 					generator = Generator,
 					set = Set,
@@ -580,9 +617,9 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeDropdown
 				return {
-					name = Private.L.Settings.TextureLabel,
+					name = L.TextureLabel,
 					kind = Enum.EditModeSettingDisplayType.Dropdown,
-					desc = Private.L.Settings.TextureTooltip,
+					desc = L.TextureTooltip,
 					default = defaults.Texture,
 					multiple = false,
 					generator = Generator,
@@ -609,8 +646,8 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeColorPicker
 				return {
-					name = Private.L.Settings.ColorUninterruptibleLabel,
-					desc = Private.L.Settings.ColorUninterruptibleTooltip,
+					name = L.ColorUninterruptibleLabel,
+					desc = L.ColorUninterruptibleTooltip,
 					default = CreateColorFromHexString(defaults.ColorUninterruptible),
 					set = Set,
 					get = Get,
@@ -636,8 +673,8 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeColorPicker
 				return {
-					name = Private.L.Settings.ColorInterruptibleCanInterruptLabel,
-					desc = Private.L.Settings.ColorInterruptibleCanInterruptTooltip,
+					name = L.ColorInterruptibleCanInterruptLabel,
+					desc = L.ColorInterruptibleCanInterruptTooltip,
 					default = CreateColorFromHexString(defaults.ColorInterruptibleCanInterrupt),
 					set = Set,
 					get = Get,
@@ -666,8 +703,8 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeColorPicker
 				return {
-					name = Private.L.Settings.ColorInterruptibleCannotInterruptLabel,
-					desc = Private.L.Settings.ColorInterruptibleCannotInterruptTooltip,
+					name = L.ColorInterruptibleCannotInterruptLabel,
+					desc = L.ColorInterruptibleCannotInterruptTooltip,
 					default = CreateColorFromHexString(defaults.ColorInterruptibleCannotInterrupt),
 					set = Set,
 					get = Get,
@@ -694,8 +731,8 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeColorPicker
 				return {
-					name = Private.L.Settings.ColorInterruptTickLabel,
-					desc = Private.L.Settings.ColorInterruptTickTooltip,
+					name = L.ColorInterruptTickLabel,
+					desc = L.ColorInterruptTickTooltip,
 					default = CreateColorFromHexString(defaults.ColorInterruptTick),
 					set = Set,
 					get = Get,
@@ -720,9 +757,9 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeCheckbox
 				return {
-					name = Private.L.Settings.ShowBorderLabel,
+					name = L.ShowBorderLabel,
 					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = Private.L.Settings.ShowBorderTooltip,
+					desc = L.ShowBorderTooltip,
 					default = defaults.ShowBorder,
 					get = Get,
 					set = Set,
@@ -744,17 +781,19 @@ function AdvancedFocusCastBarMixin:OnLoad()
 					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 
 					if value then
-						LibEditMode:EnableFrameSetting(self, Private.L.Settings.ShowTargetClassColorLabel)
+						LibEditMode:EnableFrameSetting(self, L.ShowTargetClassColorLabel)
+						LibEditMode:EnableFrameSetting(self, L.TargetNamePositionLabel)
 					else
-						LibEditMode:DisableFrameSetting(self, Private.L.Settings.ShowTargetClassColorLabel)
+						LibEditMode:DisableFrameSetting(self, L.ShowTargetClassColorLabel)
+						LibEditMode:DisableFrameSetting(self, L.TargetNamePositionLabel)
 					end
 				end
 
 				---@type LibEditModeCheckbox
 				return {
-					name = Private.L.Settings.ShowTargetNameLabel,
+					name = L.ShowTargetNameLabel,
 					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = Private.L.Settings.ShowTargetNameTooltip,
+					desc = L.ShowTargetNameTooltip,
 					default = defaults.ShowTargetName,
 					get = Get,
 					set = Set,
@@ -778,9 +817,9 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeCheckbox
 				return {
-					name = Private.L.Settings.ShowTargetClassColorLabel,
+					name = L.ShowTargetClassColorLabel,
 					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = Private.L.Settings.ShowTargetClassColorTooltip,
+					desc = L.ShowTargetClassColorTooltip,
 					default = defaults.ShowTargetClassColor,
 					get = Get,
 					set = Set,
@@ -805,9 +844,9 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeCheckbox
 				return {
-					name = Private.L.Settings.IgnoreFriendliesLabel,
+					name = L.IgnoreFriendliesLabel,
 					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = Private.L.Settings.IgnoreFriendliesTooltip,
+					desc = L.IgnoreFriendliesTooltip,
 					default = defaults.IgnoreFriendlies,
 					get = Get,
 					set = Set,
@@ -832,9 +871,9 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeCheckbox
 				return {
-					name = Private.L.Settings.ShowIconLabel,
+					name = L.ShowIconLabel,
 					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = Private.L.Settings.ShowIconTooltip,
+					desc = L.ShowIconTooltip,
 					default = defaults.ShowIcon,
 					get = Get,
 					set = Set,
@@ -858,9 +897,9 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeCheckbox
 				return {
-					name = Private.L.Settings.ShowCastTimeLabel,
+					name = L.ShowCastTimeLabel,
 					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = Private.L.Settings.ShowCastTimeTooltip,
+					desc = L.ShowCastTimeTooltip,
 					default = defaults.ShowCastTime,
 					get = Get,
 					set = Set,
@@ -885,7 +924,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 							)
 						end
 
-						local translated = Private.L.Settings.LoadConditionContentTypeLabels[id]
+						local translated = L.LoadConditionContentTypeLabels[id]
 						rootDescription:CreateCheckbox(translated, IsEnabled, Toggle, {
 							value = label,
 							multiple = true,
@@ -916,10 +955,10 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeDropdown
 				return {
-					name = Private.L.Settings.LoadConditionContentTypeLabelAbbreviated,
+					name = L.LoadConditionContentTypeLabelAbbreviated,
 					kind = Enum.EditModeSettingDisplayType.Dropdown,
 					default = defaults.LoadConditionContentType,
-					desc = Private.L.Settings.LoadConditionContentTypeTooltip,
+					desc = L.LoadConditionContentTypeTooltip,
 					generator = Generator,
 					-- technically is a reset only
 					set = Set,
@@ -944,7 +983,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 							)
 						end
 
-						local translated = Private.L.Settings.LoadConditionRoleLabels[id]
+						local translated = L.LoadConditionRoleLabels[id]
 
 						rootDescription:CreateCheckbox(translated, IsEnabled, Toggle, {
 							value = label,
@@ -976,10 +1015,10 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeDropdown
 				return {
-					name = Private.L.Settings.LoadConditionRoleLabelAbbreviated,
+					name = L.LoadConditionRoleLabelAbbreviated,
 					kind = Enum.EditModeSettingDisplayType.Dropdown,
 					default = defaults.LoadConditionRole,
-					desc = Private.L.Settings.LoadConditionRoleTooltip,
+					desc = L.LoadConditionRoleTooltip,
 					generator = Generator,
 					-- technically is a reset only
 					set = Set,
@@ -1006,10 +1045,10 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeSlider
 				return {
-					name = Private.L.Settings.FrameWidthLabel,
+					name = L.FrameWidthLabel,
 					kind = Enum.EditModeSettingDisplayType.Slider,
 					default = defaults.Width,
-					desc = Private.L.Settings.FrameWidthTooltip,
+					desc = L.FrameWidthTooltip,
 					get = Get,
 					set = Set,
 					minValue = sliderSettings.min,
@@ -1038,10 +1077,10 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeSlider
 				return {
-					name = Private.L.Settings.FrameHeightLabel,
+					name = L.FrameHeightLabel,
 					kind = Enum.EditModeSettingDisplayType.Slider,
 					default = defaults.Height,
-					desc = Private.L.Settings.FrameHeightTooltip,
+					desc = L.FrameHeightTooltip,
 					get = Get,
 					set = Set,
 					minValue = sliderSettings.min,
@@ -1071,10 +1110,10 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeSlider
 				return {
-					name = Private.L.Settings.OffsetXLabel,
+					name = L.OffsetXLabel,
 					kind = Enum.EditModeSettingDisplayType.Slider,
 					default = defaults.OffsetX,
-					desc = Private.L.Settings.OffsetXTooltip,
+					desc = L.OffsetXTooltip,
 					get = Get,
 					set = Set,
 					minValue = sliderSettings.min,
@@ -1104,10 +1143,10 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeSlider
 				return {
-					name = Private.L.Settings.OffsetYLabel,
+					name = L.OffsetYLabel,
 					kind = Enum.EditModeSettingDisplayType.Slider,
 					default = defaults.OffsetY,
-					desc = Private.L.Settings.OffsetYTooltip,
+					desc = L.OffsetYTooltip,
 					get = Get,
 					set = Set,
 					minValue = sliderSettings.min,
@@ -1124,43 +1163,36 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			)
 		end
 
-		local settingsOrder = {
-			Private.Enum.SettingsKey.Width,
-			Private.Enum.SettingsKey.Height,
-			Private.Enum.SettingsKey.LoadConditionContentType,
-			Private.Enum.SettingsKey.LoadConditionRole,
-			Private.Enum.SettingsKey.Texture,
-			Private.Enum.SettingsKey.ShowIcon,
-			Private.Enum.SettingsKey.ShowCastTime,
-			Private.Enum.SettingsKey.Opacity,
-			Private.Enum.SettingsKey.OutOfRangeOpacity,
-			Private.Enum.SettingsKey.BackgroundOpacity,
-			Private.Enum.SettingsKey.Font,
-			Private.Enum.SettingsKey.FontSize,
-			Private.Enum.SettingsKey.ShowBorder,
-			Private.Enum.SettingsKey.GlowImportant,
-			Private.Enum.SettingsKey.ColorUninterruptible,
-			Private.Enum.SettingsKey.ColorInterruptibleCanInterrupt,
-			Private.Enum.SettingsKey.ColorInterruptibleCannotInterrupt,
-			Private.Enum.SettingsKey.ColorInterruptTick,
-			Private.Enum.SettingsKey.TickWidth,
-			Private.Enum.SettingsKey.ShowTargetMarker,
-			Private.Enum.SettingsKey.ShowTargetName,
-			Private.Enum.SettingsKey.ShowTargetClassColor,
-			Private.Enum.SettingsKey.PlayFocusTTSReminder,
-			Private.Enum.SettingsKey.IgnoreFriendlies,
-			Private.Enum.SettingsKey.Point,
-			Private.Enum.SettingsKey.OffsetX,
-			Private.Enum.SettingsKey.OffsetY,
-		}
-
-		local settings = {}
-
-		for i, key in ipairs(settingsOrder) do
-			table.insert(settings, CreateSetting(key))
-		end
-
-		LibEditMode:AddFrameSettings(self, settings)
+		LibEditMode:AddFrameSettings(self, {
+			CreateSetting(Private.Enum.SettingsKey.Width),
+			CreateSetting(Private.Enum.SettingsKey.Height),
+			CreateSetting(Private.Enum.SettingsKey.LoadConditionContentType),
+			CreateSetting(Private.Enum.SettingsKey.LoadConditionRole),
+			CreateSetting(Private.Enum.SettingsKey.Texture),
+			CreateSetting(Private.Enum.SettingsKey.ShowIcon),
+			CreateSetting(Private.Enum.SettingsKey.ShowCastTime),
+			CreateSetting(Private.Enum.SettingsKey.Opacity),
+			CreateSetting(Private.Enum.SettingsKey.OutOfRangeOpacity),
+			CreateSetting(Private.Enum.SettingsKey.BackgroundOpacity),
+			CreateSetting(Private.Enum.SettingsKey.Font),
+			CreateSetting(Private.Enum.SettingsKey.FontSize),
+			CreateSetting(Private.Enum.SettingsKey.ShowBorder),
+			CreateSetting(Private.Enum.SettingsKey.GlowImportant),
+			CreateSetting(Private.Enum.SettingsKey.ColorUninterruptible),
+			CreateSetting(Private.Enum.SettingsKey.ColorInterruptibleCanInterrupt),
+			CreateSetting(Private.Enum.SettingsKey.ColorInterruptibleCannotInterrupt),
+			CreateSetting(Private.Enum.SettingsKey.ColorInterruptTick),
+			CreateSetting(Private.Enum.SettingsKey.TickWidth),
+			CreateSetting(Private.Enum.SettingsKey.ShowTargetMarker),
+			CreateSetting(Private.Enum.SettingsKey.ShowTargetName),
+			CreateSetting(Private.Enum.SettingsKey.TargetNamePosition),
+			CreateSetting(Private.Enum.SettingsKey.ShowTargetClassColor),
+			CreateSetting(Private.Enum.SettingsKey.PlayFocusTTSReminder),
+			CreateSetting(Private.Enum.SettingsKey.IgnoreFriendlies),
+			CreateSetting(Private.Enum.SettingsKey.Point),
+			CreateSetting(Private.Enum.SettingsKey.OffsetX),
+			CreateSetting(Private.Enum.SettingsKey.OffsetY),
+		})
 
 		local function OnImportButtonClick()
 			StaticPopupDialogs[addonName] = {
@@ -1531,6 +1563,20 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 	elseif key == Private.Enum.SettingsKey.OutOfRangeOpacity then
 		if value == 1 then
 			self:SetAlpha(1)
+		end
+	elseif key == Private.Enum.SettingsKey.TargetNamePosition then
+		for i = 1, 5 do
+			local targetMarkerFrame = self.TargetNameFrame["TargetNameText" .. i]
+
+			targetMarkerFrame:ClearAllPoints()
+
+			if value == Private.Enum.TargetNamePosition.BOTTOMCENTER then
+				targetMarkerFrame:SetPoint("BOTTOM", self, "BOTTOM", 0, -8)
+			elseif value == Private.Enum.TargetNamePosition.BOTTOMLEFT then
+				targetMarkerFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 0, -8)
+			elseif value == Private.Enum.TargetNamePosition.BOTTOMRIGHT then
+				targetMarkerFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -8)
+			end
 		end
 	end
 end

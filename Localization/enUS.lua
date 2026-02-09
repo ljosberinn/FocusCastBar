@@ -104,6 +104,14 @@ L.Settings.ShowTargetNameTooltip = "Only in Mythic+!"
 L.Settings.ShowTargetClassColorLabel = "Show Target Class Color"
 L.Settings.ShowTargetClassColorTooltip = "Can have contrast problems depending on background and bar color."
 
+L.Settings.TargetNamePositionLabel = "Target Name Position"
+L.Settings.TargetNamePositionTooltip = nil
+L.Settings.TargetNamePositionLabels = {
+	[Private.Enum.TargetNamePosition.BOTTOMCENTER] = "Bottom Center",
+	[Private.Enum.TargetNamePosition.BOTTOMLEFT] = "Bottom Left",
+	[Private.Enum.TargetNamePosition.BOTTOMRIGHT] = "Bottom Right",
+}
+
 L.Settings.IgnoreFriendliesLabel = "Ignore Friendlies"
 L.Settings.IgnoreFriendliesTooltip =
 	"Prevents showing the cast bar if the focus target is friendly or unattackable. Disable for testing purposes."
@@ -120,9 +128,6 @@ L.Settings.OutOfRangeOpacityTooltip = "100% to disable."
 L.Settings.PlayFocusTTSReminderLabel = "Play Focus TTS Reminder"
 L.Settings.PlayFocusTTSReminderTooltip =
 	"Plays 'focus' text-to-speech when your current focus target disappears as a reminder to pick a new one. Only in dungeons!"
-
-L.Settings.TargetMarkerPositionLabel = "Target Marker Position"
-L.Settings.TargetMarkerPositionTooltip = nil
 
 L.Settings.PointLabel = "Point"
 L.Settings.PointTooltip =

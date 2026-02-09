@@ -36,7 +36,7 @@
 ---@field Texture string
 ---@field GlowImportant boolean
 ---@field ShowIcon boolean
----@field Point string
+---@field Point Point
 ---@field OffsetX number
 ---@field OffsetY number
 ---@field ColorUninterruptible string
@@ -53,6 +53,7 @@
 ---@field PlayFocusTTSReminder boolean
 ---@field IgnoreFriendlies boolean
 ---@field OutOfRangeOpacity number
+---@field TargetNamePosition TargetNamePosition
 
 ---@class AdvancedFocusCastBarSettings
 ---@field GetDefaultEditModeFramePosition fun(): FramePosition

@@ -41,6 +41,7 @@ function Private.Settings.GetDefaultSettings()
 		BackgroundOpacity = 0.35,
 		ShowTargetName = true,
 		ShowTargetClassColor = false,
+		TargetNamePosition = Private.Enum.TargetNamePosition.BOTTOMCENTER,
 		PlayFocusTTSReminder = true,
 		TickWidth = 2,
 		IgnoreFriendlies = true,
