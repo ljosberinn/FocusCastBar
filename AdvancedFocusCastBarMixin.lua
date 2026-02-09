@@ -1090,11 +1090,162 @@ function AdvancedFocusCastBarMixin:OnLoad()
 		LibEditMode:AddFrameSettings(self, settings)
 
 		local function OnImportButtonClick()
-			print("Not yet implemented, coming soon.")
+			StaticPopupDialogs[addonName] = {
+				id = addonName,
+				whileDead = true,
+				text = Private.L.Settings.Import,
+				button1 = Private.L.Settings.Import,
+				button2 = CLOSE,
+				hasEditBox = true,
+				hasWideEditBox = true,
+				editBoxWidth = 350,
+				hideOnEscape = true,
+				OnAccept = function(popupSelf)
+					local editBox = popupSelf:GetEditBox()
+					local importString = editBox:GetText()
+
+					local ok, result = pcall(function()
+						-- return C_EncodingUtil.DeserializeJSON(importString)
+						return C_EncodingUtil.DeserializeCBOR(C_EncodingUtil.DecodeBase64(importString))
+					end, string)
+
+					if not ok then
+						if result ~= nil then
+							print(result)
+						end
+
+						return false
+					end
+
+					-- just a type check
+					if result == nil then
+						return false
+					end
+
+					local hasAnyChange = false
+
+					for key, defaultValue in pairs(defaults) do
+						local newValue = result[key]
+						local expectedType = type(defaultValue)
+
+						if newValue ~= nil and type(newValue) == expectedType then
+							local eventKey = Private.Enum.SettingsKey[key]
+							local event = Private.Enum.Events.SETTING_CHANGED
+							if
+								eventKey == Private.Enum.SettingsKey.Point
+								or eventKey == Private.Enum.SettingsKey.OffsetX
+								or eventKey == Private.Enum.SettingsKey.OffsetY
+							then
+								event = Private.Enum.Events.EDIT_MODE_POSITION_CHANGED
+							end
+							local hasChanges = false
+
+							if expectedType == "table" then
+								local enumToCompareAgainst = nil
+								if key == "LoadConditionContentType" then
+									enumToCompareAgainst = Private.Enum.ContentType
+								elseif key == "LoadConditionRole" then
+									enumToCompareAgainst = Private.Enum.Role
+								end
+
+								if enumToCompareAgainst then
+									local newTable = {}
+
+									for _, id in pairs(enumToCompareAgainst) do
+										if newValue[id] == nil then
+											newTable[id] = AdvancedFocusCastBarSaved.Settings[key][id]
+										else
+											newTable[id] = newValue[id]
+
+											if newValue[id] ~= AdvancedFocusCastBarSaved.Settings[key][id] then
+												hasChanges = true
+											end
+										end
+									end
+
+									if hasChanges then
+										AdvancedFocusCastBarSaved.Settings[key] = newTable
+										Private.EventRegistry:TriggerEvent(event, eventKey, newTable)
+									end
+								end
+							elseif newValue ~= AdvancedFocusCastBarSaved.Settings[key] then
+								AdvancedFocusCastBarSaved.Settings[key] = newValue
+								hasChanges = true
+
+								if eventKey and hasChanges then
+									Private.EventRegistry:TriggerEvent(event, eventKey, newValue)
+								end
+							end
+
+							if hasChanges then
+								hasAnyChange = true
+							end
+						end
+					end
+
+					if hasAnyChange and LibEditMode:IsInEditMode() then
+						LibEditMode:RefreshFrameSettings(self)
+					end
+				end,
+			}
+
+			StaticPopup_Hide(addonName)
+			StaticPopup_Show(addonName)
 		end
 
 		local function OnExportButtonClick()
-			print("Not yet implemented, coming soon.")
+			local exportString =
+				C_EncodingUtil.EncodeBase64(C_EncodingUtil.SerializeCBOR(AdvancedFocusCastBarSaved.Settings))
+			-- local exportString = C_EncodingUtil.SerializeJSON(AdvancedFocusCastBarSaved.Settings)
+
+			StaticPopupDialogs[addonName] = {
+				id = addonName,
+				whileDead = true,
+				text = Private.L.Settings.Export,
+				button1 = ACCEPT,
+				hasEditBox = true,
+				hasWideEditBox = true,
+				editBoxWidth = 350,
+				hideOnEscape = true,
+				OnShow = function(popupSelf)
+					local editBox = popupSelf:GetEditBox()
+					editBox:SetText(exportString)
+					editBox:HighlightText()
+
+					local ctrlDown = false
+
+					editBox:SetScript("OnKeyDown", function(_, key)
+						if key == "LCTRL" or key == "RCTRL" or key == "LMETA" or key == "RMETA" then
+							ctrlDown = true
+						end
+					end)
+					editBox:SetScript("OnKeyUp", function(_, key)
+						C_Timer.After(0.2, function()
+							ctrlDown = false
+						end)
+
+						if ctrlDown and (key == "C" or key == "X") then
+							StaticPopup_Hide(addonName)
+						end
+					end)
+				end,
+				EditBoxOnEscapePressed = function(popupSelf)
+					popupSelf:GetParent():Hide()
+				end,
+				EditBoxOnTextChanged = function(popupSelf)
+					-- ctrl + x sets the text to "" but this triggers hiding and shouldn't trigger resetting the text
+					local currentText = popupSelf:GetText()
+
+					if currentText == "" or currentText == exportString then
+						return
+					end
+
+					popupSelf:SetText(exportString)
+				end,
+			}
+
+			StaticPopup_Hide(addonName)
+			StaticPopup_Show(addonName)
 		end
 
 		LibEditMode:AddFrameSettingsButtons(self, {
@@ -1255,10 +1406,14 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 		self:SetWidth(value)
 		self:AdjustIconLayout(AdvancedFocusCastBarSaved.Settings.ShowIcon)
 		self:AdjustSpellNameTextWidth()
+		self:HideGlow()
+		self:ShowGlow(false)
 	elseif key == Private.Enum.SettingsKey.Height then
 		self:SetHeight(value)
 		self:AdjustIconLayout(AdvancedFocusCastBarSaved.Settings.ShowIcon)
 		self:AdjustSpellNameTextWidth()
+		self:HideGlow()
+		self:ShowGlow(false)
 	elseif key == Private.Enum.SettingsKey.ShowIcon then
 		self:AdjustIconLayout(value)
 		self:AdjustSpellNameTextWidth()
@@ -1268,7 +1423,9 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 	elseif key == Private.Enum.SettingsKey.Opacity then
 		self:SetAlpha(value)
 	elseif key == Private.Enum.SettingsKey.ShowBorder then
+		self:HideGlow()
 		self.Border:SetShown(value)
+		self:ShowGlow(false)
 	elseif key == Private.Enum.SettingsKey.Texture then
 		self.CastBar:SetStatusBarTexture(value)
 	elseif key == Private.Enum.SettingsKey.Font then
@@ -1467,9 +1624,11 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 end
 
 function AdvancedFocusCastBarMixin:ShowGlow(isImportant)
-	if self.Border._PixelGlow == nil then
+	local frame = AdvancedFocusCastBarSaved.Settings.ShowBorder and self.Border or self
+
+	if frame._PixelGlow == nil then
 		LibCustomGlow.PixelGlow_Start(
-			self.Border, -- frame
+			frame, -- frame
 			nil, -- color
 			nil, -- N
 			nil, -- frequency
@@ -1483,16 +1642,16 @@ function AdvancedFocusCastBarMixin:ShowGlow(isImportant)
 		)
 
 		-- needed to layer above the glow
-		local nextLevel = self.Border._PixelGlow:GetFrameLevel() + 1
+		local nextLevel = frame._PixelGlow:GetFrameLevel() + 1
 		self.TargetMarkerFrame:SetFrameLevel(nextLevel)
 		self.TargetNameFrame:SetFrameLevel(nextLevel)
 	end
 
-	self.Border._PixelGlow:SetAlphaFromBoolean(isImportant)
+	frame._PixelGlow:SetAlphaFromBoolean(isImportant)
 end
 
 function AdvancedFocusCastBarMixin:HideGlow()
-	LibCustomGlow.PixelGlow_Stop(self.Border)
+	LibCustomGlow.PixelGlow_Stop(AdvancedFocusCastBarSaved.Settings.ShowBorder and self.Border or self)
 end
 
 function AdvancedFocusCastBarMixin:LoadConditionsProhibitExecution()

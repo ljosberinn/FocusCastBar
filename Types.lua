@@ -98,12 +98,16 @@
 ---@field ColorInterruptibleCannotInterrupt ColorMixin
 ---@field ColorInterruptTick ColorMixin?
 
+---@class EditModeSelection : Frame
+---@field Label FontString
+
 ---@class AdvancedFocusCastBarMixin : Frame
 ---@field Icon Texture
 ---@field CastBar CustomCastBar
 ---@field Border AdvancedFocusCastBarBorder
 ---@field TargetMarkerFrame AdvancedFocusCastBarTargetMarkerFrame
 ---@field TargetNameFrame AdvancedFocusCastBarTargetNameFrame
+---@field Selection EditModeSelection
 ---@field private interruptId number?
 ---@field private contentType number?
 ---@field private role number?

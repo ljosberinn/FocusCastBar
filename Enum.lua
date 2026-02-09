@@ -12,19 +12,19 @@ Private.Enum.Events = {
 
 ---@enum ContentType
 Private.Enum.ContentType = {
-	OpenWorld = 0,
-	Delve = 1,
-	Dungeon = 2,
-	Raid = 3,
-	Arena = 4,
-	Battleground = 5,
+	OpenWorld = 1,
+	Delve = 2,
+	Dungeon = 3,
+	Raid = 4,
+	Arena = 5,
+	Battleground = 6,
 }
 
 ---@enum Role
 Private.Enum.Role = {
-	Healer = 0,
-	Tank = 1,
-	Damager = 2,
+	Healer = 1,
+	Tank = 2,
+	Damager = 3,
 }
 
 ---@enum Point
