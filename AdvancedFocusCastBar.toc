@@ -10,7 +10,7 @@
 ## Author: Xephyris-Blackrock-EU
 
 ## X-Curse-Project-ID: 1441078
-## X-Wago-ID: 
+## X-Wago-ID: 96d2DPGO
 
 Libs\LibStub\LibStub.lua
 Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
