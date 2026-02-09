@@ -44,6 +44,7 @@ function Private.Settings.GetDefaultSettings()
 		PlayFocusTTSReminder = true,
 		TickWidth = 2,
 		IgnoreFriendlies = true,
+		OutOfRangeOpacity = 1,
 	}
 end
 

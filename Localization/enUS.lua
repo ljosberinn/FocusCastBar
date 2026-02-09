@@ -114,6 +114,9 @@ L.Settings.ShowTargetMarkerTooltip = nil
 L.Settings.BackgroundOpacityLabel = "Background Opacity"
 L.Settings.BackgroundOpacityTooltip = nil
 
+L.Settings.OutOfRangeOpacityLabel = "Out of Range Opacity"
+L.Settings.OutOfRangeOpacityTooltip = "100% to disable."
+
 L.Settings.PlayFocusTTSReminderLabel = "Play Focus TTS Reminder"
 L.Settings.PlayFocusTTSReminderTooltip =
 	"Plays 'focus' text-to-speech when your current focus target disappears as a reminder to pick a new one. Only in dungeons!"

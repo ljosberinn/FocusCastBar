@@ -100,6 +100,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
+			if key == Private.Enum.SettingsKey.OutOfRangeOpacity then
+				return {
+					min = 0.2,
+					max = 1,
+					step = 0.01,
+				}
+			end
+
 			if key == Private.Enum.SettingsKey.BackgroundOpacity then
 				return {
 					min = 0,
@@ -193,6 +201,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param layoutName string
 				---@param value number
 				local function Set(layoutName, value)
+					value = math.floor(value * 100) / 100
 					if value ~= AdvancedFocusCastBarSaved.Settings.Opacity then
 						AdvancedFocusCastBarSaved.Settings.Opacity = value
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
@@ -214,6 +223,40 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
+			if key == Private.Enum.SettingsKey.OutOfRangeOpacity then
+				local sliderSettings = GetSliderSettingsForOption(key)
+
+				---@param layoutName string
+				---@return number
+				local function Get(layoutName)
+					return AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity
+				end
+
+				---@param layoutName string
+				---@param value number
+				local function Set(layoutName, value)
+					value = math.floor(value * 100) / 100
+					if value ~= AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity then
+						AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity = value
+						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+					end
+				end
+
+				---@type LibEditModeSlider
+				return {
+					name = Private.L.Settings.OutOfRangeOpacityLabel,
+					kind = Enum.EditModeSettingDisplayType.Slider,
+					default = defaults.OutOfRangeOpacity,
+					desc = Private.L.Settings.OutOfRangeOpacityTooltip,
+					get = Get,
+					set = Set,
+					minValue = sliderSettings.min,
+					maxValue = sliderSettings.max,
+					valueStep = sliderSettings.step,
+					formatter = FormatPercentage,
+				}
+			end
+
 			if key == Private.Enum.SettingsKey.BackgroundOpacity then
 				local sliderSettings = GetSliderSettingsForOption(key)
 
@@ -226,6 +269,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param layoutName string
 				---@param value number
 				local function Set(layoutName, value)
+					value = math.floor(value * 100) / 100
 					if value ~= AdvancedFocusCastBarSaved.Settings.BackgroundOpacity then
 						AdvancedFocusCastBarSaved.Settings.BackgroundOpacity = value
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
@@ -1089,10 +1133,11 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			Private.Enum.SettingsKey.ShowIcon,
 			Private.Enum.SettingsKey.ShowCastTime,
 			Private.Enum.SettingsKey.Opacity,
-			Private.Enum.SettingsKey.ShowBorder,
+			Private.Enum.SettingsKey.OutOfRangeOpacity,
 			Private.Enum.SettingsKey.BackgroundOpacity,
 			Private.Enum.SettingsKey.Font,
 			Private.Enum.SettingsKey.FontSize,
+			Private.Enum.SettingsKey.ShowBorder,
 			Private.Enum.SettingsKey.GlowImportant,
 			Private.Enum.SettingsKey.ColorUninterruptible,
 			Private.Enum.SettingsKey.ColorInterruptibleCanInterrupt,
@@ -1483,6 +1528,10 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 	elseif key == Private.Enum.SettingsKey.TickWidth then
 		self.CastBar.InterruptBar.Tick:SetShown(value > 0)
 		self.CastBar.InterruptBar.Tick:SetWidth(value)
+	elseif key == Private.Enum.SettingsKey.OutOfRangeOpacity then
+		if value == 1 then
+			self:SetAlpha(1)
+		end
 	end
 end
 
@@ -1633,6 +1682,13 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 	end
 
 	if self.interruptId ~= nil then
+		if AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity < 1 then
+			local inRange = C_Spell.IsSpellInRange(self.interruptId, "focus")
+			if inRange ~= nil then
+				self:SetAlpha(inRange == true and 1 or AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity)
+			end
+		end
+
 		local interruptDuration = C_Spell.GetSpellCooldownDuration(self.interruptId)
 
 		if interruptDuration == nil then

@@ -65,4 +65,5 @@ Private.Enum.SettingsKey = {
 	PlayFocusTTSReminder = "PLAY_FOCUS_TTS_REMINDER",
 	TickWidth = "TICK_WIDTH",
 	IgnoreFriendlies = "IGNORE_FRIENDLIES",
+	OutOfRangeOpacity = "OUT_OF_RANGE_OPACITY",
 }

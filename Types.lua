@@ -52,6 +52,7 @@
 ---@field ShowTargetClassColor boolean
 ---@field PlayFocusTTSReminder boolean
 ---@field IgnoreFriendlies boolean
+---@field OutOfRangeOpacity number
 
 ---@class AdvancedFocusCastBarSettings
 ---@field GetDefaultEditModeFramePosition fun(): FramePosition
