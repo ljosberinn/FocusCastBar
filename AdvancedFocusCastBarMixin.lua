@@ -48,6 +48,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 		self.Border:SetShown(AdvancedFocusCastBarSaved.Settings.ShowBorder)
 		self:SetFontAndFontSize()
 		self:ToggleTargetNameVisibility()
+		self:AdjustTargetNamePosition()
 	end
 
 	-- edit mode setup
@@ -1565,19 +1566,20 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 			self:SetAlpha(1)
 		end
 	elseif key == Private.Enum.SettingsKey.TargetNamePosition then
-		for i = 1, 5 do
-			local targetMarkerFrame = self.TargetNameFrame["TargetNameText" .. i]
+		self:AdjustTargetNamePosition()
+	end
+end
 
-			targetMarkerFrame:ClearAllPoints()
+function AdvancedFocusCastBarMixin:AdjustTargetNamePosition()
+	local point = AdvancedFocusCastBarSaved.Settings.TargetNamePosition == Private.Enum.TargetNamePosition.BOTTOMCENTER
+			and "BOTTOM"
+		or AdvancedFocusCastBarSaved.Settings.TargetNamePosition
 
-			if value == Private.Enum.TargetNamePosition.BOTTOMCENTER then
-				targetMarkerFrame:SetPoint("BOTTOM", self, "BOTTOM", 0, -8)
-			elseif value == Private.Enum.TargetNamePosition.BOTTOMLEFT then
-				targetMarkerFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 0, -8)
-			elseif value == Private.Enum.TargetNamePosition.BOTTOMRIGHT then
-				targetMarkerFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -8)
-			end
-		end
+	for i = 1, 5 do
+		local targetMarkerFrame = self.TargetNameFrame["TargetNameText" .. i]
+
+		targetMarkerFrame:ClearAllPoints()
+		targetMarkerFrame:SetPoint(point, self, point, 0, -8)
 	end
 end
 
@@ -1611,6 +1613,7 @@ end
 function AdvancedFocusCastBarMixin:RestoreEditModePosition()
 	self:ClearAllPoints()
 	self:SetPoint(
+		---@diagnostic disable-next-line: param-type-mismatch
 		AdvancedFocusCastBarSaved.Settings.Point,
 		AdvancedFocusCastBarSaved.Settings.OffsetX,
 		AdvancedFocusCastBarSaved.Settings.OffsetY
@@ -2158,6 +2161,7 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 	elseif event == Private.Enum.Events.EDIT_MODE_POSITION_CHANGED then
 		self:ClearAllPoints()
 		self:SetPoint(
+			---@diagnostic disable-next-line: param-type-mismatch
 			AdvancedFocusCastBarSaved.Settings.Point,
 			AdvancedFocusCastBarSaved.Settings.OffsetX,
 			AdvancedFocusCastBarSaved.Settings.OffsetY
