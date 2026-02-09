@@ -2,6 +2,9 @@
 
 ![https://www.patreon.com/cw/warcraftlogs](https://img.shields.io/badge/patreon-red?logo=patreon&style=for-the-badge)
 
+- [Curseforge](https://curseforge.com/wow/addons/advanced-focus-cast-bar)
+- [Wago](https://addons.wago.io/addons/advanced-focus-cast-bar)
+
 ## Features
 
 - deep Edit Mode integration thanks to [LibEditMode](https://github.com/p3lim-wow/LibEditMode/wiki/LibEditMode)

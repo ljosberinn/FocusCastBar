@@ -1153,6 +1153,8 @@ end
 function AdvancedFocusCastBarMixin:AdjustIconLayout(shown)
 	self.CastBar:ClearAllPoints()
 
+	PixelUtil.SetSize(self.Icon, AdvancedFocusCastBarSaved.Settings.Height, AdvancedFocusCastBarSaved.Settings.Height)
+
 	if shown then
 		self.Icon:ClearAllPoints()
 		self.Icon:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0)
@@ -1167,6 +1169,7 @@ function AdvancedFocusCastBarMixin:AdjustIconLayout(shown)
 		PixelUtil.SetSize(self.CastBar.Mask, adjustedWidth, AdvancedFocusCastBarSaved.Settings.Height)
 		PixelUtil.SetSize(self.CastBar.Positioner, adjustedWidth, AdvancedFocusCastBarSaved.Settings.Height)
 		PixelUtil.SetSize(self.CastBar.InterruptBar, adjustedWidth, AdvancedFocusCastBarSaved.Settings.Height)
+		PixelUtil.SetSite(self.CastBar.InterruptBar.Tick, 2, AdvancedFocusCastBarSaved.Settings.Height)
 	else
 		self.Icon:Hide()
 
@@ -1194,25 +1197,17 @@ function AdvancedFocusCastBarMixin:AdjustIconLayout(shown)
 			AdvancedFocusCastBarSaved.Settings.Width,
 			AdvancedFocusCastBarSaved.Settings.Height
 		)
+		PixelUtil.SetSite(self.CastBar.InterruptBar.Tick, 2, AdvancedFocusCastBarSaved.Settings.Height)
 	end
 end
 
 function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 	if key == Private.Enum.SettingsKey.Width then
 		self:SetWidth(value)
-
-		local effectiveWidth = AdvancedFocusCastBarSaved.Settings.ShowIcon
-				and value - AdvancedFocusCastBarSaved.Settings.Height
-			or value
-
-		PixelUtil.SetSize(self.CastBar.Mask, effectiveWidth, AdvancedFocusCastBarSaved.Settings.Height)
 		self:AdjustIconLayout(AdvancedFocusCastBarSaved.Settings.ShowIcon)
 		self:AdjustSpellNameTextWidth()
 	elseif key == Private.Enum.SettingsKey.Height then
 		self:SetHeight(value)
-
-		PixelUtil.SetSize(self.Icon, value, value)
-		PixelUtil.SetSize(self.CastBar.Mask, AdvancedFocusCastBarSaved.Settings.Width, value)
 		self:AdjustIconLayout(AdvancedFocusCastBarSaved.Settings.ShowIcon)
 		self:AdjustSpellNameTextWidth()
 	elseif key == Private.Enum.SettingsKey.ShowIcon then
