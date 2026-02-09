@@ -1463,13 +1463,13 @@ function AdvancedFocusCastBarMixin:LoadConditionsProhibitExecution()
 end
 
 function AdvancedFocusCastBarMixin:UnitIsIrrelevant()
-	-- if not UnitExists("focus") then
-	-- 	return true
-	-- end
+	if not UnitExists("focus") then
+		return true
+	end
 
-	-- if not UnitCanAttack("player", "focus") then
-	-- 	return true
-	-- end
+	if not UnitCanAttack("player", "focus") then
+		return true
+	end
 
 	return false
 end
