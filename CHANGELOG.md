@@ -6,6 +6,7 @@
 - added option to ignore friendlies / unattackable units (default active)
 - added Target Name Position setting, defaulting to bottom center
 - added Font Options for Outline and Shadow, defaulting to Outline
+- significantly improved performance by throttling updates to 10/second
 
 ## Version 1.0.0-alpha3
 
