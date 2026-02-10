@@ -440,6 +440,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 							overrideAlphabet = "russian"
 						end
 
+						---@type CreateFontFamilyMemberInfo[]
 						local members = {}
 						local coreFont = GameFontNormal
 						local alphabets = { "roman", "korean", "simplifiedchinese", "traditionalchinese", "russian" }
@@ -1026,6 +1027,68 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
+			if key == Private.Enum.SettingsKey.FontFlags then
+				local function Generator(owner, rootDescription, data)
+					for label, id in pairs(Private.Enum.FontFlags) do
+						local function IsEnabled()
+							return AdvancedFocusCastBarSaved.Settings.FontFlags[id] == true
+						end
+
+						local function Toggle()
+							AdvancedFocusCastBarSaved.Settings.FontFlags[id] =
+								not AdvancedFocusCastBarSaved.Settings.FontFlags[id]
+
+							Private.EventRegistry:TriggerEvent(
+								Private.Enum.Events.SETTING_CHANGED,
+								key,
+								AdvancedFocusCastBarSaved.Settings.FontFlags
+							)
+						end
+
+						local translated = L.FontFlagsLabels[id]
+
+						rootDescription:CreateCheckbox(translated, IsEnabled, Toggle, {
+							value = label,
+							multiple = true,
+						})
+					end
+				end
+
+				---@param layoutName string
+				---@param values table<string, boolean>
+				local function Set(layoutName, values)
+					local hasChanges = false
+
+					for id, bool in pairs(values) do
+						if AdvancedFocusCastBarSaved.Settings.FontFlags[id] ~= bool then
+							AdvancedFocusCastBarSaved.Settings.FontFlags[id] = bool
+							hasChanges = true
+						end
+					end
+
+					if hasChanges then
+						Private.EventRegistry:TriggerEvent(
+							Private.Enum.Events.SETTING_CHANGED,
+							key,
+							AdvancedFocusCastBarSaved.Settings.FontFlags
+						)
+
+						LibEditMode:RefreshFrameSettings(self)
+					end
+				end
+
+				---@type LibEditModeDropdown
+				return {
+					name = L.FontFlagsLabelAbbreviated,
+					kind = Enum.EditModeSettingDisplayType.Dropdown,
+					default = defaults.FontFlags,
+					desc = L.FontFlagsTooltip,
+					generator = Generator,
+					-- technically is a reset only
+					set = Set,
+				}
+			end
+
 			if key == Private.Enum.SettingsKey.Width then
 				local sliderSettings = GetSliderSettingsForOption(key)
 
@@ -1177,6 +1240,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			CreateSetting(Private.Enum.SettingsKey.BackgroundOpacity),
 			CreateSetting(Private.Enum.SettingsKey.Font),
 			CreateSetting(Private.Enum.SettingsKey.FontSize),
+			CreateSetting(Private.Enum.SettingsKey.FontFlags),
 			CreateSetting(Private.Enum.SettingsKey.ShowBorder),
 			CreateSetting(Private.Enum.SettingsKey.GlowImportant),
 			CreateSetting(Private.Enum.SettingsKey.ColorUninterruptible),
@@ -1252,6 +1316,8 @@ function AdvancedFocusCastBarMixin:OnLoad()
 									enumToCompareAgainst = Private.Enum.ContentType
 								elseif key == "LoadConditionRole" then
 									enumToCompareAgainst = Private.Enum.Role
+								elseif key == "FontFlags" then
+									enumToCompareAgainst = Private.Enum.FontFlags
 								end
 
 								if enumToCompareAgainst then
@@ -1534,9 +1600,11 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 		self:ShowGlow(false)
 	elseif key == Private.Enum.SettingsKey.Texture then
 		self.CastBar:SetStatusBarTexture(value)
-	elseif key == Private.Enum.SettingsKey.Font then
-		self:SetFontAndFontSize()
-	elseif key == Private.Enum.SettingsKey.FontSize then
+	elseif
+		key == Private.Enum.SettingsKey.Font
+		or key == Private.Enum.SettingsKey.FontSize
+		or key == Private.Enum.SettingsKey.FontFlags
+	then
 		self:SetFontAndFontSize()
 	elseif key == Private.Enum.SettingsKey.GlowImportant then
 		if value then
@@ -1593,7 +1661,7 @@ end
 function AdvancedFocusCastBarMixin:SetFontAndFontSize()
 	local smallerSize = 0.66 * AdvancedFocusCastBarSaved.Settings.FontSize
 
-	local frames = {
+	local fontStrings = {
 		[self.CastBar.CastTimeText] = AdvancedFocusCastBarSaved.Settings.FontSize,
 		[self.CastBar.SpellNameText] = AdvancedFocusCastBarSaved.Settings.FontSize,
 		[self.TargetNameFrame.TargetNameText1] = smallerSize,
@@ -1603,10 +1671,17 @@ function AdvancedFocusCastBarMixin:SetFontAndFontSize()
 		[self.TargetNameFrame.TargetNameText5] = smallerSize,
 	}
 
-	for frame, targetFontSize in pairs(frames) do
-		local font, size, flags = frame:GetFont()
+	local flags = AdvancedFocusCastBarSaved.Settings.FontFlags[Private.Enum.FontFlags.OUTLINE] and "OUTLINE" or ""
 
-		frame:SetFont(AdvancedFocusCastBarSaved.Settings.Font, targetFontSize, flags)
+	for fontString, targetFontSize in pairs(fontStrings) do
+		fontString:SetFont(AdvancedFocusCastBarSaved.Settings.Font, targetFontSize, flags)
+
+		if AdvancedFocusCastBarSaved.Settings.FontFlags[Private.Enum.FontFlags.SHADOW] then
+			fontString:SetShadowOffset(1, -1)
+			fontString:SetShadowColor(0, 0, 0, 1)
+		else
+			fontString:SetShadowOffset(0, 0)
+		end
 	end
 end
 

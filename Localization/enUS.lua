@@ -19,7 +19,6 @@ L.Settings = {}
 
 L.Settings.EditModeReminder = "Settings are exclusively available through Edit Mode."
 
-L.Settings.LoadConditionContentTypeLabel = "Load Condition: Content Type"
 L.Settings.LoadConditionContentTypeLabelAbbreviated = "Load in Content"
 L.Settings.LoadConditionContentTypeTooltip = nil
 L.Settings.LoadConditionContentTypeLabels = {
@@ -31,13 +30,19 @@ L.Settings.LoadConditionContentTypeLabels = {
 	[Private.Enum.ContentType.Battleground] = "Battleground",
 }
 
-L.Settings.LoadConditionRoleLabel = "Load Condition: Role"
 L.Settings.LoadConditionRoleLabelAbbreviated = "Load on Role"
 L.Settings.LoadConditionRoleTooltip = nil
 L.Settings.LoadConditionRoleLabels = {
 	[Private.Enum.Role.Healer] = "Healer",
 	[Private.Enum.Role.Tank] = "Tank",
 	[Private.Enum.Role.Damager] = "DPS",
+}
+
+L.Settings.FontFlagsLabelAbbreviated = "Font Options"
+L.Settings.FontFlagsTooltip = nil
+L.Settings.FontFlagsLabels = {
+	[Private.Enum.FontFlags.OUTLINE] = "Outline",
+	[Private.Enum.FontFlags.SHADOW] = "Shadow",
 }
 
 L.Settings.FrameWidthLabel = "Width"

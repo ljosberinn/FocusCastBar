@@ -37,6 +37,10 @@ function Private.Settings.GetDefaultSettings()
 		ColorInterruptTick = "FF00FF00",
 		Font = "Fonts\\FRIZQT__.TTF",
 		FontSize = 18,
+		FontFlags = {
+			[Private.Enum.FontFlags.OUTLINE] = true,
+			[Private.Enum.FontFlags.SHADOW] = false,
+		},
 		ShowTargetMarker = true,
 		BackgroundOpacity = 0.35,
 		ShowTargetName = true,

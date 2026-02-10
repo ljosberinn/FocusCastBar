@@ -54,6 +54,7 @@
 ---@field IgnoreFriendlies boolean
 ---@field OutOfRangeOpacity number
 ---@field TargetNamePosition TargetNamePosition
+---@field FontFlags table<FontFlags, boolean>
 
 ---@class AdvancedFocusCastBarSettings
 ---@field GetDefaultEditModeFramePosition fun(): FramePosition

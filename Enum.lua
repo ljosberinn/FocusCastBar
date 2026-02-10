@@ -74,4 +74,11 @@ Private.Enum.SettingsKey = {
 	TickWidth = "TICK_WIDTH",
 	IgnoreFriendlies = "IGNORE_FRIENDLIES",
 	OutOfRangeOpacity = "OUT_OF_RANGE_OPACITY",
+	FontFlags = "FONT_FLAGS",
+}
+
+---@enum FontFlags
+Private.Enum.FontFlags = {
+	OUTLINE = "OUTLINE",
+	SHADOW = "SHADOW",
 }
