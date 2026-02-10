@@ -5,10 +5,8 @@
 ---@field Events table<string, string>
 ---@field Enum AdvancedFocusCastBarEnums
 ---@field Settings AdvancedFocusCastBarSettings
----@field LoginFnQueue table<string, function>
+---@field LoginFnQueue table<number, function>
 ---@field L table<string, table<string, string|nil>>
----@field Utils AdvancedFocusCastBar
----@field Driver AdvancedFocusCastBarMixin
 
 ---@class AdvancedFocusCastBarEnums
 
@@ -63,16 +61,12 @@
 ---@class InterruptBar : StatusBar
 ---@field Tick Texture
 
----@class InterruptMarkerBar : StatusBar
----@field InterruptMarkerPoint Texture
-
 ---@class CustomCastBar : StatusBar
 ---@field Background Texture
 ---@field SpellNameText FontString
 ---@field CastTimeText FontString
 ---@field InterruptBar InterruptBar
 ---@field Positioner StatusBar
----@field InterruptMarker InterruptMarkerBar
 ---@field Mask MaskTexture
 
 ---@class CastInformation
@@ -97,10 +91,10 @@
 ---@field _PixelGlow Frame?
 
 ---@class AdvancedFocusCastBarColors
----@field ColorUninterruptible ColorMixin
----@field ColorInterruptibleCanInterrupt ColorMixin
----@field ColorInterruptibleCannotInterrupt ColorMixin
----@field ColorInterruptTick ColorMixin?
+---@field Uninterruptible colorRGBA
+---@field InterruptibleCanInterrupt colorRGBA
+---@field InterruptibleCannotInterrupt colorRGBA
+---@field InterruptTick colorRGBA
 
 ---@class EditModeSelection : Frame
 ---@field Label FontString
@@ -124,7 +118,7 @@
 ---@field IsPastLoadingScreen fun(self: AdvancedFocusCastBarMixin): boolean
 ---@field ToggleTargetMarkerIntegration fun(self: AdvancedFocusCastBarMixin)
 ---@field AdjustIconLayout fun(self: AdvancedFocusCastBarMixin, shown: boolean)
----@field OnSettingsChange fun(self: AdvancedFocusCastBarMixin, key: SettingKey, value: any)
+---@field OnSettingsChange fun(self: AdvancedFocusCastBarMixin, key: Setting, value: any)
 ---@field ToggleTargetNameVisibility fun(self: AdvancedFocusCastBarMixin)
 ---@field SetFontAndFontSize fun(self: AdvancedFocusCastBarMixin)
 ---@field RestoreEditModePosition fun(self: AdvancedFocusCastBarMixin)
@@ -145,6 +139,9 @@
 ---@field FindApporpriateTTSVoiceID fun(self: AdvancedFocusCastBarMixin): number
 ---@field OnEvent fun(self: AdvancedFocusCastBarMixin, event: string, ...)
 ---@field GetRandomIcon fun(self: AdvancedFocusCastBarMixin): number
+---@field AdjustSpellNameTextWidth fun(self: AdvancedFocusCastBarMixin)
+---@field AdjustDirection fun(self: AdvancedFocusCastBarMixin, isChannel: boolean)
+---@field AdjustTargetNamePosition fun(self: AdvancedFocusCastBarMixin)
 
 -------- library types
 
@@ -240,7 +237,7 @@ PlayerUtil = {
 }
 
 ---@class Texture
----@field SetVertexColorFromBoolean fun(self: Texture, bool: boolean, colorIfTrue: ColorMixin, colorIfFalse: ColorMixin)
+---@field SetVertexColorFromBoolean fun(self: Texture, bool: boolean, colorIfTrue: colorRGBA, colorIfFalse: colorRGBA)
 
 ---@class BackdropTemplate : Frame
 ---@field SetShown fun(self: BackdropTemplate, bool: boolean)

@@ -9,15 +9,29 @@ AdvancedFocusCastBarMixin = {}
 
 function AdvancedFocusCastBarMixin:OnLoad()
 	self:Hide()
+	self.elapsed = 0
+
+	-- color caching
+	self.colors = {
+		Uninterruptible = CreateColorFromHexString(AdvancedFocusCastBarSaved.Settings.ColorUninterruptible),
+		InterruptibleCanInterrupt = CreateColorFromHexString(
+			AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCanInterrupt
+		),
+		InterruptibleCannotInterrupt = CreateColorFromHexString(
+			AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCannotInterrupt
+		),
+		InterruptTick = CreateColorFromHexString(AdvancedFocusCastBarSaved.Settings.ColorInterruptTick),
+	}
 
 	-- initial layouting
 	do
 		self.CastBar.InterruptBar.Tick = self.CastBar.InterruptBar:CreateTexture()
 
-		do
-			local color = CreateColorFromHexString(AdvancedFocusCastBarSaved.Settings.ColorInterruptTick)
-			self.CastBar.InterruptBar.Tick:SetColorTexture(color.r, color.g, color.b)
-		end
+		self.CastBar.InterruptBar.Tick:SetColorTexture(
+			self.colors.InterruptTick.r,
+			self.colors.InterruptTick.g,
+			self.colors.InterruptTick.b
+		)
 
 		self.CastBar.InterruptBar.Tick:SetSize(2, AdvancedFocusCastBarSaved.Settings.Height)
 		self:AdjustDirection(false)
@@ -74,10 +88,10 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			y = defaults.OffsetY,
 		}, Private.L.EditMode.AddonName)
 
-		---@param key SettingKey
+		---@param key Setting
 		---@return SliderSettings
 		local function GetSliderSettingsForOption(key)
-			if key == Private.Enum.SettingsKey.TickWidth then
+			if key == Private.Enum.Setting.TickWidth then
 				return {
 					min = 0,
 					max = 16,
@@ -85,7 +99,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.FontSize then
+			if key == Private.Enum.Setting.FontSize then
 				return {
 					min = 8,
 					max = 32,
@@ -93,7 +107,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.Opacity then
+			if key == Private.Enum.Setting.Opacity then
 				return {
 					min = 0.2,
 					max = 1,
@@ -101,7 +115,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.OutOfRangeOpacity then
+			if key == Private.Enum.Setting.OutOfRangeOpacity then
 				return {
 					min = 0.2,
 					max = 1,
@@ -109,7 +123,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.BackgroundOpacity then
+			if key == Private.Enum.Setting.BackgroundOpacity then
 				return {
 					min = 0,
 					max = 1,
@@ -117,7 +131,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.Width then
+			if key == Private.Enum.Setting.Width then
 				return {
 					min = 10,
 					max = 400,
@@ -125,7 +139,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.Height then
+			if key == Private.Enum.Setting.Height then
 				return {
 					min = 10,
 					max = 200,
@@ -133,7 +147,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.OffsetX then
+			if key == Private.Enum.Setting.OffsetX then
 				local width = GetPhysicalScreenSize()
 
 				return {
@@ -143,7 +157,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.OffsetY then
+			if key == Private.Enum.Setting.OffsetY then
 				local width, height = GetPhysicalScreenSize()
 
 				return {
@@ -161,12 +175,12 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			)
 		end
 
-		---@param key SettingKey
+		---@param key Setting
 		---@return LibEditModeSetting
 		local function CreateSetting(key)
 			local L = Private.L.Settings
 
-			if key == Private.Enum.SettingsKey.PlayFocusTTSReminder then
+			if key == Private.Enum.Setting.PlayFocusTTSReminder then
 				---@param layoutName string
 				---@return boolean
 				local function Get(layoutName)
@@ -192,7 +206,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.Opacity then
+			if key == Private.Enum.Setting.Opacity then
 				local sliderSettings = GetSliderSettingsForOption(key)
 
 				---@param layoutName string
@@ -226,7 +240,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.OutOfRangeOpacity then
+			if key == Private.Enum.Setting.OutOfRangeOpacity then
 				local sliderSettings = GetSliderSettingsForOption(key)
 
 				---@param layoutName string
@@ -260,7 +274,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.BackgroundOpacity then
+			if key == Private.Enum.Setting.BackgroundOpacity then
 				local sliderSettings = GetSliderSettingsForOption(key)
 
 				---@param layoutName string
@@ -294,7 +308,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.TickWidth then
+			if key == Private.Enum.Setting.TickWidth then
 				local sliderSettings = GetSliderSettingsForOption(key)
 
 				---@param layoutName string
@@ -326,7 +340,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.FontSize then
+			if key == Private.Enum.Setting.FontSize then
 				local sliderSettings = GetSliderSettingsForOption(key)
 
 				---@param layoutName string
@@ -358,7 +372,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.ShowTargetMarker then
+			if key == Private.Enum.Setting.ShowTargetMarker then
 				---@param layoutName string
 				---@return boolean
 				local function Get(layoutName)
@@ -384,7 +398,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.GlowImportant then
+			if key == Private.Enum.Setting.GlowImportant then
 				---@param layoutName string
 				---@return boolean
 				local function Get(layoutName)
@@ -410,7 +424,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.Font then
+			if key == Private.Enum.Setting.Font then
 				---@param layoutName string
 				---@param value string
 				local function Set(layoutName, value)
@@ -511,7 +525,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.Point then
+			if key == Private.Enum.Setting.Point then
 				---@param layoutName string
 				---@param value string
 				local function Set(layoutName, value)
@@ -546,7 +560,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.TargetNamePosition then
+			if key == Private.Enum.Setting.TargetNamePosition then
 				---@param layoutName string
 				---@param value string
 				local function Set(layoutName, value)
@@ -581,7 +595,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.Texture then
+			if key == Private.Enum.Setting.Texture then
 				---@param layoutName string
 				---@param value string
 				local function Set(layoutName, value)
@@ -629,7 +643,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.ColorUninterruptible then
+			if key == Private.Enum.Setting.ColorUninterruptible then
 				---@param layoutName string
 				---@param value ColorMixin
 				local function Set(layoutName, value)
@@ -657,7 +671,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.ColorInterruptibleCanInterrupt then
+			if key == Private.Enum.Setting.ColorInterruptibleCanInterrupt then
 				---@param layoutName string
 				---@param value ColorMixin
 				local function Set(layoutName, value)
@@ -684,7 +698,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.ColorInterruptibleCannotInterrupt then
+			if key == Private.Enum.Setting.ColorInterruptibleCannotInterrupt then
 				---@param layoutName string
 				---@param value ColorMixin
 				local function Set(layoutName, value)
@@ -714,7 +728,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.ColorInterruptTick then
+			if key == Private.Enum.Setting.ColorInterruptTick then
 				---@param layoutName string
 				---@param value ColorMixin
 				local function Set(layoutName, value)
@@ -742,7 +756,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.ShowBorder then
+			if key == Private.Enum.Setting.ShowBorder then
 				---@param layoutName string
 				---@return boolean
 				local function Get(layoutName)
@@ -768,7 +782,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.ShowTargetName then
+			if key == Private.Enum.Setting.ShowTargetName then
 				---@param layoutName string
 				---@return boolean
 				local function Get(layoutName)
@@ -802,7 +816,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.ShowTargetClassColor then
+			if key == Private.Enum.Setting.ShowTargetClassColor then
 				---@param layoutName string
 				---@return boolean
 				local function Get(layoutName)
@@ -829,7 +843,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.IgnoreFriendlies then
+			if key == Private.Enum.Setting.IgnoreFriendlies then
 				---@param layoutName string
 				---@return boolean
 				local function Get(layoutName)
@@ -856,7 +870,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.ShowIcon then
+			if key == Private.Enum.Setting.ShowIcon then
 				---@param layoutName string
 				---@return boolean
 				local function Get(layoutName)
@@ -882,7 +896,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.ShowCastTime then
+			if key == Private.Enum.Setting.ShowCastTime then
 				---@param layoutName string
 				---@return boolean
 				local function Get(layoutName)
@@ -908,7 +922,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.LoadConditionContentType then
+			if key == Private.Enum.Setting.LoadConditionContentType then
 				local function Generator(owner, rootDescription, data)
 					for label, id in pairs(Private.Enum.ContentType) do
 						local function IsEnabled()
@@ -967,7 +981,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.LoadConditionRole then
+			if key == Private.Enum.Setting.LoadConditionRole then
 				local function Generator(owner, rootDescription, data)
 					for label, id in pairs(Private.Enum.Role) do
 						local function IsEnabled()
@@ -1027,7 +1041,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.FontFlags then
+			if key == Private.Enum.Setting.FontFlags then
 				local function Generator(owner, rootDescription, data)
 					for label, id in pairs(Private.Enum.FontFlags) do
 						local function IsEnabled()
@@ -1089,7 +1103,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.Width then
+			if key == Private.Enum.Setting.Width then
 				local sliderSettings = GetSliderSettingsForOption(key)
 
 				---@param layoutName string
@@ -1121,7 +1135,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.Height then
+			if key == Private.Enum.Setting.Height then
 				local sliderSettings = GetSliderSettingsForOption(key)
 
 				---@param layoutName string
@@ -1153,7 +1167,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.OffsetX then
+			if key == Private.Enum.Setting.OffsetX then
 				local sliderSettings = GetSliderSettingsForOption(key)
 
 				---@param layoutName string
@@ -1186,7 +1200,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.SettingsKey.OffsetY then
+			if key == Private.Enum.Setting.OffsetY then
 				local sliderSettings = GetSliderSettingsForOption(key)
 
 				---@param layoutName string
@@ -1228,35 +1242,35 @@ function AdvancedFocusCastBarMixin:OnLoad()
 		end
 
 		LibEditMode:AddFrameSettings(self, {
-			CreateSetting(Private.Enum.SettingsKey.Width),
-			CreateSetting(Private.Enum.SettingsKey.Height),
-			CreateSetting(Private.Enum.SettingsKey.LoadConditionContentType),
-			CreateSetting(Private.Enum.SettingsKey.LoadConditionRole),
-			CreateSetting(Private.Enum.SettingsKey.Texture),
-			CreateSetting(Private.Enum.SettingsKey.ShowIcon),
-			CreateSetting(Private.Enum.SettingsKey.ShowCastTime),
-			CreateSetting(Private.Enum.SettingsKey.Opacity),
-			CreateSetting(Private.Enum.SettingsKey.OutOfRangeOpacity),
-			CreateSetting(Private.Enum.SettingsKey.BackgroundOpacity),
-			CreateSetting(Private.Enum.SettingsKey.Font),
-			CreateSetting(Private.Enum.SettingsKey.FontSize),
-			CreateSetting(Private.Enum.SettingsKey.FontFlags),
-			CreateSetting(Private.Enum.SettingsKey.ShowBorder),
-			CreateSetting(Private.Enum.SettingsKey.GlowImportant),
-			CreateSetting(Private.Enum.SettingsKey.ColorUninterruptible),
-			CreateSetting(Private.Enum.SettingsKey.ColorInterruptibleCanInterrupt),
-			CreateSetting(Private.Enum.SettingsKey.ColorInterruptibleCannotInterrupt),
-			CreateSetting(Private.Enum.SettingsKey.ColorInterruptTick),
-			CreateSetting(Private.Enum.SettingsKey.TickWidth),
-			CreateSetting(Private.Enum.SettingsKey.ShowTargetMarker),
-			CreateSetting(Private.Enum.SettingsKey.ShowTargetName),
-			CreateSetting(Private.Enum.SettingsKey.TargetNamePosition),
-			CreateSetting(Private.Enum.SettingsKey.ShowTargetClassColor),
-			CreateSetting(Private.Enum.SettingsKey.PlayFocusTTSReminder),
-			CreateSetting(Private.Enum.SettingsKey.IgnoreFriendlies),
-			CreateSetting(Private.Enum.SettingsKey.Point),
-			CreateSetting(Private.Enum.SettingsKey.OffsetX),
-			CreateSetting(Private.Enum.SettingsKey.OffsetY),
+			CreateSetting(Private.Enum.Setting.Width),
+			CreateSetting(Private.Enum.Setting.Height),
+			CreateSetting(Private.Enum.Setting.LoadConditionContentType),
+			CreateSetting(Private.Enum.Setting.LoadConditionRole),
+			CreateSetting(Private.Enum.Setting.Texture),
+			CreateSetting(Private.Enum.Setting.ShowIcon),
+			CreateSetting(Private.Enum.Setting.ShowCastTime),
+			CreateSetting(Private.Enum.Setting.Opacity),
+			CreateSetting(Private.Enum.Setting.OutOfRangeOpacity),
+			CreateSetting(Private.Enum.Setting.BackgroundOpacity),
+			CreateSetting(Private.Enum.Setting.Font),
+			CreateSetting(Private.Enum.Setting.FontSize),
+			CreateSetting(Private.Enum.Setting.FontFlags),
+			CreateSetting(Private.Enum.Setting.ShowBorder),
+			CreateSetting(Private.Enum.Setting.GlowImportant),
+			CreateSetting(Private.Enum.Setting.ColorUninterruptible),
+			CreateSetting(Private.Enum.Setting.ColorInterruptibleCanInterrupt),
+			CreateSetting(Private.Enum.Setting.ColorInterruptibleCannotInterrupt),
+			CreateSetting(Private.Enum.Setting.ColorInterruptTick),
+			CreateSetting(Private.Enum.Setting.TickWidth),
+			CreateSetting(Private.Enum.Setting.ShowTargetMarker),
+			CreateSetting(Private.Enum.Setting.ShowTargetName),
+			CreateSetting(Private.Enum.Setting.TargetNamePosition),
+			CreateSetting(Private.Enum.Setting.ShowTargetClassColor),
+			CreateSetting(Private.Enum.Setting.PlayFocusTTSReminder),
+			CreateSetting(Private.Enum.Setting.IgnoreFriendlies),
+			CreateSetting(Private.Enum.Setting.Point),
+			CreateSetting(Private.Enum.Setting.OffsetX),
+			CreateSetting(Private.Enum.Setting.OffsetY),
 		})
 
 		local function OnImportButtonClick()
@@ -1299,12 +1313,12 @@ function AdvancedFocusCastBarMixin:OnLoad()
 						local expectedType = type(defaultValue)
 
 						if newValue ~= nil and type(newValue) == expectedType then
-							local eventKey = Private.Enum.SettingsKey[key]
+							local eventKey = Private.Enum.Setting[key]
 							local event = Private.Enum.Events.SETTING_CHANGED
 							if
-								eventKey == Private.Enum.SettingsKey.Point
-								or eventKey == Private.Enum.SettingsKey.OffsetX
-								or eventKey == Private.Enum.SettingsKey.OffsetY
+								eventKey == Private.Enum.Setting.Point
+								or eventKey == Private.Enum.Setting.OffsetX
+								or eventKey == Private.Enum.Setting.OffsetY
 							then
 								event = Private.Enum.Events.EDIT_MODE_POSITION_CHANGED
 							end
@@ -1440,16 +1454,6 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 	Private.EventRegistry:RegisterCallback(Private.Enum.Events.SETTING_CHANGED, self.OnSettingsChange, self)
 
-	self.colors = {
-		ColorUninterruptible = CreateColorFromHexString(AdvancedFocusCastBarSaved.Settings.ColorUninterruptible),
-		ColorInterruptibleCanInterrupt = CreateColorFromHexString(
-			AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCanInterrupt
-		),
-		ColorInterruptibleCannotInterrupt = CreateColorFromHexString(
-			AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCannotInterrupt
-		),
-	}
-
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	self:RegisterEvent("LOADING_SCREEN_DISABLED")
 	self:RegisterEvent("UPDATE_INSTANCE_INFO")
@@ -1574,66 +1578,66 @@ function AdvancedFocusCastBarMixin:AdjustIconLayout(shown)
 end
 
 function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
-	if key == Private.Enum.SettingsKey.Width then
+	if key == Private.Enum.Setting.Width then
 		self:SetWidth(value)
 		self:AdjustIconLayout(AdvancedFocusCastBarSaved.Settings.ShowIcon)
 		self:AdjustSpellNameTextWidth()
 		self:HideGlow()
 		self:ShowGlow(false)
-	elseif key == Private.Enum.SettingsKey.Height then
+	elseif key == Private.Enum.Setting.Height then
 		self:SetHeight(value)
 		self:AdjustIconLayout(AdvancedFocusCastBarSaved.Settings.ShowIcon)
 		self:AdjustSpellNameTextWidth()
 		self:HideGlow()
 		self:ShowGlow(false)
-	elseif key == Private.Enum.SettingsKey.ShowIcon then
+	elseif key == Private.Enum.Setting.ShowIcon then
 		self:AdjustIconLayout(value)
 		self:AdjustSpellNameTextWidth()
-	elseif key == Private.Enum.SettingsKey.ShowCastTime then
+	elseif key == Private.Enum.Setting.ShowCastTime then
 		self.CastBar.CastTimeText:SetShown(value)
 		self:AdjustSpellNameTextWidth()
-	elseif key == Private.Enum.SettingsKey.Opacity then
+	elseif key == Private.Enum.Setting.Opacity then
 		self:SetAlpha(value)
-	elseif key == Private.Enum.SettingsKey.ShowBorder then
+	elseif key == Private.Enum.Setting.ShowBorder then
 		self:HideGlow()
 		self.Border:SetShown(value)
 		self:ShowGlow(false)
-	elseif key == Private.Enum.SettingsKey.Texture then
+	elseif key == Private.Enum.Setting.Texture then
 		self.CastBar:SetStatusBarTexture(value)
 	elseif
-		key == Private.Enum.SettingsKey.Font
-		or key == Private.Enum.SettingsKey.FontSize
-		or key == Private.Enum.SettingsKey.FontFlags
+		key == Private.Enum.Setting.Font
+		or key == Private.Enum.Setting.FontSize
+		or key == Private.Enum.Setting.FontFlags
 	then
 		self:SetFontAndFontSize()
-	elseif key == Private.Enum.SettingsKey.GlowImportant then
+	elseif key == Private.Enum.Setting.GlowImportant then
 		if value then
 		else
 			self:HideGlow()
 		end
-	elseif key == Private.Enum.SettingsKey.ColorUninterruptible then
-		self.colors.ColorUninterruptible = CreateColorFromHexString(value)
-	elseif key == Private.Enum.SettingsKey.ColorInterruptibleCanInterrupt then
-		self.colors.ColorInterruptibleCanInterrupt = CreateColorFromHexString(value)
-	elseif key == Private.Enum.SettingsKey.ColorInterruptibleCannotInterrupt then
-		self.colors.ColorInterruptibleCannotInterrupt = CreateColorFromHexString(value)
-	elseif key == Private.Enum.SettingsKey.ColorInterruptTick then
-		self.colors.ColorInterruptTick = CreateColorFromHexString(value)
-	elseif key == Private.Enum.SettingsKey.ShowTargetMarker then
+	elseif key == Private.Enum.Setting.ColorUninterruptible then
+		self.colors.Uninterruptible = CreateColorFromHexString(value)
+	elseif key == Private.Enum.Setting.ColorInterruptibleCanInterrupt then
+		self.colors.InterruptibleCanInterrupt = CreateColorFromHexString(value)
+	elseif key == Private.Enum.Setting.ColorInterruptibleCannotInterrupt then
+		self.colors.InterruptibleCannotInterrupt = CreateColorFromHexString(value)
+	elseif key == Private.Enum.Setting.ColorInterruptTick then
+		self.colors.InterruptTick = CreateColorFromHexString(value)
+	elseif key == Private.Enum.Setting.ShowTargetMarker then
 		self:ToggleTargetMarkerIntegration()
 		self.TargetMarkerFrame:SetShown(value)
-	elseif key == Private.Enum.SettingsKey.BackgroundOpacity then
+	elseif key == Private.Enum.Setting.BackgroundOpacity then
 		self.CastBar.Background:SetAlpha(value)
-	elseif key == Private.Enum.SettingsKey.ShowTargetName then
+	elseif key == Private.Enum.Setting.ShowTargetName then
 		self:ToggleTargetNameVisibility()
-	elseif key == Private.Enum.SettingsKey.TickWidth then
+	elseif key == Private.Enum.Setting.TickWidth then
 		self.CastBar.InterruptBar.Tick:SetShown(value > 0)
 		self.CastBar.InterruptBar.Tick:SetWidth(value)
-	elseif key == Private.Enum.SettingsKey.OutOfRangeOpacity then
+	elseif key == Private.Enum.Setting.OutOfRangeOpacity then
 		if value == 1 then
 			self:SetAlpha(1)
 		end
-	elseif key == Private.Enum.SettingsKey.TargetNamePosition then
+	elseif key == Private.Enum.Setting.TargetNamePosition then
 		self:AdjustTargetNamePosition()
 	end
 end
@@ -1801,6 +1805,14 @@ function AdvancedFocusCastBarMixin:OnEditModeExit()
 end
 
 function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
+	self.elapsed = self.elapsed + elapsed
+
+	if self.elapsed < 0.1 then
+		return
+	end
+
+	self.elapsed = self.elapsed - 0.1
+
 	if AdvancedFocusCastBarSaved.Settings.ShowCastTime then
 		self.CastBar.CastTimeText:SetFormattedText("%.1f", self.castInformation.duration:GetRemainingDuration())
 	end
@@ -1928,18 +1940,13 @@ function AdvancedFocusCastBarMixin:DeriveAndSetNextColor(interruptDuration)
 
 	local bool = (interruptDuration or C_Spell.GetSpellCooldownDuration(self.interruptId)):IsZero()
 
-	-- todo: cache this
-	local canInterruptR, canInterruptG, canInterruptB = self.colors.ColorInterruptibleCanInterrupt:GetRGB()
-	local cannotInterruptR, cannotInterruptG, cannotInterruptB = self.colors.ColorInterruptibleCannotInterrupt:GetRGB()
-
 	self.CastBar:GetStatusBarTexture():SetVertexColorFromBoolean(
 		self.castInformation.notInterruptible,
-		self.colors.ColorUninterruptible,
-		-- C_CurveUtil.EvaluateColorFromBoolean exists and works but has perf problems
-		CreateColor(
-			C_CurveUtil.EvaluateColorValueFromBoolean(bool, canInterruptR, cannotInterruptR),
-			C_CurveUtil.EvaluateColorValueFromBoolean(bool, canInterruptG, cannotInterruptG),
-			C_CurveUtil.EvaluateColorValueFromBoolean(bool, canInterruptB, cannotInterruptB)
+		self.colors.Uninterruptible,
+		C_CurveUtil.EvaluateColorFromBoolean(
+			bool,
+			self.colors.InterruptibleCanInterrupt,
+			self.colors.InterruptibleCannotInterrupt
 		)
 	)
 end
@@ -1995,8 +2002,8 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 	if self.interruptId == nil then
 		self.CastBar:GetStatusBarTexture():SetVertexColorFromBoolean(
 			self.castInformation.notInterruptible,
-			self.colors.ColorUninterruptible,
-			self.colors.ColorInterruptibleCannotInterrupt
+			self.colors.Uninterruptible,
+			self.colors.InterruptibleCannotInterrupt
 		)
 	end
 

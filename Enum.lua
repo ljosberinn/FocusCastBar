@@ -43,8 +43,8 @@ Private.Enum.TargetNamePosition = {
 	BOTTOMRIGHT = "BOTTOMRIGHT",
 }
 
----@enum SettingKey
-Private.Enum.SettingsKey = {
+---@enum Setting
+Private.Enum.Setting = {
 	Width = "WIDTH",
 	Height = "HEIGHT",
 	LoadConditionContentType = "LOAD_CONDITION_CONTENT_TYPE",
@@ -58,18 +58,17 @@ Private.Enum.SettingsKey = {
 	Point = "POINT",
 	OffsetX = "OFFSET_X",
 	OffsetY = "OFFSET_Y",
-	ShowInterruptTick = "SHOW_INTERRUPT_TICK",
 	ColorUninterruptible = "COLOR_UNINTERRUPTIBLE",
 	ColorInterruptibleCanInterrupt = "COLOR_INTERRUPTIBLE_CAN_INTERRUPT",
 	ColorInterruptibleCannotInterrupt = "COLOR_INTERRUPTIBLE_CANNOT_INTERRUPT",
 	ColorInterruptTick = "COLOR_INTERRUPT_TICK",
 	Font = "FONT",
-	FontSize = "FontSize",
+	FontSize = "FONT_SIZE",
 	ShowTargetMarker = "SHOW_TARGET_MARKER",
 	BackgroundOpacity = "BACKGROUND_OPACITY",
 	ShowTargetName = "SHOW_TARGET_NAME",
 	ShowTargetClassColor = "SHOW_TARGET_CLASS_COLOR",
-	TargetNamePosition = "TARGET_MARKER_POSITION",
+	TargetNamePosition = "TARGET_NAME_POSITION",
 	PlayFocusTTSReminder = "PLAY_FOCUS_TTS_REMINDER",
 	TickWidth = "TICK_WIDTH",
 	IgnoreFriendlies = "IGNORE_FRIENDLIES",
