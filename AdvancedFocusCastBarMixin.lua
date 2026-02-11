@@ -2011,11 +2011,8 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 	if self.demoInterval == nil then
 		if
 			AdvancedFocusCastBarSaved.Settings.ShowTargetName
-			and (
-				self.contentType == Private.Enum.ContentType.Dungeon
-				or self.contentType == Private.Enum.ContentType.Arena
-				or self.contentType == Private.Enum.ContentType.Raid
-			)
+			and (self.contentType == Private.Enum.ContentType.Dungeon or self.contentType == Private.Enum.ContentType.Arena)
+			and IsInGroup()
 		then
 			self.TargetNameFrame:Show()
 
