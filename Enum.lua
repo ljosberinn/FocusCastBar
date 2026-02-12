@@ -74,6 +74,8 @@ Private.Enum.Setting = {
 	IgnoreFriendlies = "IGNORE_FRIENDLIES",
 	OutOfRangeOpacity = "OUT_OF_RANGE_OPACITY",
 	FontFlags = "FONT_FLAGS",
+	ShowInterruptSource = "SHOW_INTERRUPT_SOURCE",
+	UseInterruptSourceColor = "USE_INTERRUPT_SOURCE_COLOR",
 }
 
 ---@enum FontFlags

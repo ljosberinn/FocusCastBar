@@ -50,6 +50,8 @@ function Private.Settings.GetDefaultSettings()
 		TickWidth = 2,
 		IgnoreFriendlies = true,
 		OutOfRangeOpacity = 1,
+		ShowInterruptSource = false,
+		UseInterruptSourceColor = true,
 	}
 end
 

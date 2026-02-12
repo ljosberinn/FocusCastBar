@@ -68,6 +68,17 @@
                     </Layer>
                 </Layers>
             </Frame>
+            <Frame parentKey="InterruptSourceFrame" setAllPoints="true">
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString parentKey="InterruptSourceText" inherits="GameFontHighlightSmall" justifyH="CENTER" text="" hidden="true">
+                            <Anchors>
+                                <Anchor point="BOTTOMRIGHT" x="0" y="-8" />
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
             <Frame parentKey="TargetNameFrame" setAllPoints="true">
                 <Layers>
                     <Layer level="OVERLAY">

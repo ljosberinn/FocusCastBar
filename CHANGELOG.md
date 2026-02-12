@@ -1,3 +1,10 @@
+## Version 1.0.0-alpha5
+
+- added Interrupt Source setting (default inactive)
+- added Use Interrupt Source Color setting (default active)
+- fixed cast end events to also ignore friendlies if Ignore Friendlies is active
+- cast target now also shows in open world if the player is the target
+
 ## Version 1.0.0-alpha4
 
 - implemented Import/Export

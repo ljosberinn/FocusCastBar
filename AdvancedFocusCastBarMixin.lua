@@ -870,6 +870,59 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
+			if key == Private.Enum.Setting.ShowInterruptSource then
+				---@param layoutName string
+				---@return boolean
+				local function Get(layoutName)
+					return AdvancedFocusCastBarSaved.Settings.ShowInterruptSource
+				end
+
+				---@param layoutName string
+				---@param value boolean
+				local function Set(layoutName, value)
+					AdvancedFocusCastBarSaved.Settings.ShowInterruptSource = value
+
+					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+				end
+
+				---@type LibEditModeCheckbox
+				return {
+					name = L.ShowInterruptSourceLabel,
+					kind = Enum.EditModeSettingDisplayType.Checkbox,
+					desc = L.ShowInterruptSourceTooltip,
+					default = defaults.ShowInterruptSource,
+					get = Get,
+					set = Set,
+				}
+			end
+
+			if key == Private.Enum.Setting.UseInterruptSourceColor then
+				---@param layoutName string
+				---@return boolean
+				local function Get(layoutName)
+					return AdvancedFocusCastBarSaved.Settings.UseInterruptSourceColor
+				end
+
+				---@param layoutName string
+				---@param value boolean
+				local function Set(layoutName, value)
+					AdvancedFocusCastBarSaved.Settings.UseInterruptSourceColor = value
+
+					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+				end
+
+				---@type LibEditModeCheckbox
+				return {
+					name = L.UseInterruptSourceColorLabel,
+					kind = Enum.EditModeSettingDisplayType.Checkbox,
+					desc = L.UseInterruptSourceColorTooltip,
+					default = defaults.UseInterruptSourceColor,
+					get = Get,
+					set = Set,
+					disabled = not AdvancedFocusCastBarSaved.Settings.ShowInterruptSource,
+				}
+			end
+
 			if key == Private.Enum.Setting.ShowIcon then
 				---@param layoutName string
 				---@return boolean
@@ -1266,6 +1319,8 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			CreateSetting(Private.Enum.Setting.ShowTargetName),
 			CreateSetting(Private.Enum.Setting.TargetNamePosition),
 			CreateSetting(Private.Enum.Setting.ShowTargetClassColor),
+			CreateSetting(Private.Enum.Setting.ShowInterruptSource),
+			CreateSetting(Private.Enum.Setting.UseInterruptSourceColor),
 			CreateSetting(Private.Enum.Setting.PlayFocusTTSReminder),
 			CreateSetting(Private.Enum.Setting.IgnoreFriendlies),
 			CreateSetting(Private.Enum.Setting.Point),
@@ -1673,6 +1728,7 @@ function AdvancedFocusCastBarMixin:SetFontAndFontSize()
 		[self.TargetNameFrame.TargetNameText3] = smallerSize,
 		[self.TargetNameFrame.TargetNameText4] = smallerSize,
 		[self.TargetNameFrame.TargetNameText5] = smallerSize,
+		[self.InterruptSourceFrame.InterruptSourceText] = smallerSize,
 	}
 
 	local flags = AdvancedFocusCastBarSaved.Settings.FontFlags[Private.Enum.FontFlags.OUTLINE] and "OUTLINE" or ""
@@ -1805,6 +1861,12 @@ function AdvancedFocusCastBarMixin:OnEditModeExit()
 end
 
 function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
+	if self.interruptHidingDelayTimer ~= nil then
+		return
+	end
+
+	self.CastBar:SetValue(self.castInformation.duration:GetElapsedDuration())
+
 	self.elapsed = self.elapsed + elapsed
 
 	if self.elapsed < 0.1 then
@@ -1983,8 +2045,9 @@ function AdvancedFocusCastBarMixin:QueryCastInformation()
 end
 
 function AdvancedFocusCastBarMixin:ProcessCastInformation()
-	self.CastBar:SetTimerDuration(self.castInformation.duration)
+	self.CastBar:SetValue(self.castInformation.duration:GetElapsedDuration())
 	local totalDuration = self.castInformation.duration:GetTotalDuration()
+	self.CastBar:SetMinMaxValues(0, totalDuration)
 	self.CastBar.Positioner:SetMinMaxValues(0, totalDuration)
 	self.CastBar.InterruptBar:SetMinMaxValues(0, totalDuration)
 	self.Icon:SetTexture(self.castInformation.texture)
@@ -2009,29 +2072,31 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 
 	-- prevents colliding with preview in Edit Mode
 	if self.demoInterval == nil then
-		if
-			AdvancedFocusCastBarSaved.Settings.ShowTargetName
-			and (self.contentType == Private.Enum.ContentType.Dungeon or self.contentType == Private.Enum.ContentType.Arena)
-			and IsInGroup()
-		then
+		if AdvancedFocusCastBarSaved.Settings.ShowTargetName then
 			self.TargetNameFrame:Show()
 
-			local partyMembers = GetNumGroupMembers()
+			if IsInGroup() then
+				local partyMembers = GetNumGroupMembers()
 
-			for i = 1, partyMembers do
-				local unit = i == partyMembers and "player" or "party" .. i
-				local name = UnitName(unit)
+				for i = 1, partyMembers do
+					local unit = i == partyMembers and "player" or "party" .. i
+					local name = UnitName(unit)
 
-				if AdvancedFocusCastBarSaved.Settings.ShowTargetClassColor then
-					local class = select(2, UnitClass(unit))
-					local color = C_ClassColor.GetClassColor(class)
+					if AdvancedFocusCastBarSaved.Settings.ShowTargetClassColor then
+						local class = select(2, UnitClass(unit))
+						local color = C_ClassColor.GetClassColor(class)
 
-					name = color:WrapTextInColorCode(name)
+						name = color:WrapTextInColorCode(name)
+					end
+
+					---@type FontString
+					local frame = self.TargetNameFrame["TargetNameText" .. i]
+					frame:SetText(name)
+					frame:SetAlphaFromBoolean(UnitIsSpellTarget("focus", unit), 1, 0)
 				end
-
-				local frame = self.TargetNameFrame["TargetNameText" .. i]
-				frame:SetText(name)
-				frame:SetAlphaFromBoolean(UnitIsSpellTarget("focus", unit), 1, 0)
+			else
+				self.TargetNameFrame.TargetNameText1:SetText(UnitName("player"))
+				self.TargetNameFrame.TargetNameText1:SetAlphaFromBoolean(UnitIsSpellTarget("focus", "player"), 1, 0)
 			end
 		else
 			self.TargetNameFrame:Hide()
@@ -2041,7 +2106,7 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 	end
 end
 
-function AdvancedFocusCastBarMixin:FindApporpriateTTSVoiceID()
+function AdvancedFocusCastBarMixin:FindAppropriateTTSVoiceID()
 	if self.ttsVoiceId then
 		return self.ttsVoiceId
 	end
@@ -2058,6 +2123,45 @@ function AdvancedFocusCastBarMixin:FindApporpriateTTSVoiceID()
 
 	self.ttsVoiceId = ttsVoiceId
 	return ttsVoiceId
+end
+
+function AdvancedFocusCastBarMixin:QueueDelayedHide()
+	-- for channel interrupts, the state has been cleared so we just use dummy values instead
+	self.CastBar:SetMinMaxValues(0, 1)
+	self.CastBar:SetValue(1)
+	self.CastBar:SetStatusBarColor(
+		self.colors.InterruptibleCannotInterrupt.r,
+		self.colors.InterruptibleCannotInterrupt.g,
+		self.colors.InterruptibleCannotInterrupt.b
+	)
+
+	if AdvancedFocusCastBarSaved.Settings.ShowCastTime then
+		self.CastBar.CastTimeText:Hide()
+	end
+
+	if AdvancedFocusCastBarSaved.Settings.ShowTargetName then
+		for i = 1, 5 do
+			local targetNameFrame = self.TargetNameFrame["TargetNameText" .. i]
+			targetNameFrame:Hide()
+		end
+	end
+
+	self.interruptHidingDelayTimer = C_Timer.NewTimer(1, function()
+		if AdvancedFocusCastBarSaved.Settings.ShowCastTime then
+			self.CastBar.CastTimeText:Show()
+		end
+
+		if AdvancedFocusCastBarSaved.Settings.ShowTargetName then
+			for i = 1, 5 do
+				local targetNameFrame = self.TargetNameFrame["TargetNameText" .. i]
+				targetNameFrame:Show()
+			end
+		end
+
+		self.InterruptSourceFrame.InterruptSourceText:Hide()
+		self.interruptHidingDelayTimer = nil
+		self:Hide()
+	end)
 end
 
 function AdvancedFocusCastBarMixin:OnEvent(event, ...)
@@ -2079,6 +2183,11 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 			return
 		end
 
+		if self.interruptHidingDelayTimer ~= nil then
+			self.interruptHidingDelayTimer:Invoke()
+			self.interruptHidingDelayTimer = nil
+		end
+
 		self:ProcessCastInformation()
 		self:Show()
 	elseif
@@ -2088,19 +2197,66 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 		or event == "UNIT_SPELLCAST_CHANNEL_STOP"
 		or event == "UNIT_SPELLCAST_EMPOWER_STOP"
 	then
-		if self:LoadConditionsProhibitExecution() then
+		if
+			self:LoadConditionsProhibitExecution()
+			or self:UnitIsIrrelevant()
+			or not self:IsShown()
+			or self.interruptHidingDelayTimer ~= nil
+		then
 			return
+		end
+
+		local interruptedBy = nil
+
+		if AdvancedFocusCastBarSaved.Settings.ShowInterruptSource then
+			if event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_INTERRUPTED" then
+				interruptedBy = select(4, ...)
+			elseif event == "UNIT_SPELLCAST_EMPOWER_STOP" then
+				interruptedBy = select(5, ...)
+			end
 		end
 
 		self.castInformation = self:QueryCastInformation()
 
-		if self.castInformation == nil then
+		if self.castInformation == nil and interruptedBy == nil then
 			self:Hide()
+
 			return
 		end
 
-		self:ProcessCastInformation()
-		self:Show()
+		local delayHiding = false
+
+		if AdvancedFocusCastBarSaved.Settings.ShowInterruptSource and interruptedBy ~= nil then
+			if interruptedBy ~= nil then
+				delayHiding = true
+
+				local interruptName = UnitNameFromGUID(interruptedBy)
+				local interruptColor = nil
+
+				if AdvancedFocusCastBarSaved.Settings.UseInterruptSourceColor then
+					local className = select(2, UnitClassFromGUID(interruptedBy))
+					-- unsure if className yields something for pets, so nilcheck it until confirmed
+					interruptColor = className == nil and nil or C_ClassColor.GetClassColor(className)
+				end
+
+				if interruptColor == nil then
+					interruptColor = CreateColor(1, 1, 1)
+				end
+
+				self.InterruptSourceFrame.InterruptSourceText:SetFormattedText(
+					Private.L.Settings.InterruptSourceText,
+					interruptColor == nil and interruptName or interruptColor:WrapTextInColorCode(interruptName)
+				)
+
+				self.InterruptSourceFrame.InterruptSourceText:Show()
+			end
+		end
+
+		if delayHiding then
+			self:QueueDelayedHide()
+		else
+			self:Hide()
+		end
 	elseif event == "PLAYER_FOCUS_CHANGED" then
 		if self:LoadConditionsProhibitExecution() then
 			return
@@ -2119,7 +2275,7 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 				C_Timer.After(1, function()
 					if InCombatLockdown() then
 						C_VoiceChat.SpeakText(
-							self:FindApporpriateTTSVoiceID(),
+							self:FindAppropriateTTSVoiceID(),
 							"focus",
 							3,
 							C_TTSSettings.GetSpeechVolume()

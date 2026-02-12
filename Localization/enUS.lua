@@ -104,7 +104,7 @@ L.Settings.TextureLabel = "Texture"
 L.Settings.TextureTooltip = nil
 
 L.Settings.ShowTargetNameLabel = "Show Target Name"
-L.Settings.ShowTargetNameTooltip = "Only shows in Dungeons and Arena."
+L.Settings.ShowTargetNameTooltip = nil
 
 L.Settings.ShowTargetClassColorLabel = "Show Target Class Color"
 L.Settings.ShowTargetClassColorTooltip = "Can have contrast problems depending on background and bar color."
@@ -137,3 +137,10 @@ L.Settings.PlayFocusTTSReminderTooltip =
 L.Settings.PointLabel = "Point"
 L.Settings.PointTooltip =
 	"Together with Offset X / Offset Y, allows more granular positioning control in contrast to drag & drop."
+
+L.Settings.ShowInterruptSourceLabel = "Show Interrupt Source"
+L.Settings.ShowInterruptSourceTooltip = nil
+L.Settings.InterruptSourceText = "Interrupted [%s]"
+
+L.Settings.UseInterruptSourceColorLabel = "Use Interrupt Source Color"
+L.Settings.UseInterruptSourceColorTooltip = "Colors the interrupt with the class color of the interrupt source"

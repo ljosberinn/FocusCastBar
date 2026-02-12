@@ -53,6 +53,8 @@
 ---@field OutOfRangeOpacity number
 ---@field TargetNamePosition TargetNamePosition
 ---@field FontFlags table<FontFlags, boolean>
+---@field ShowInterruptSource boolean
+---@field UseInterruptSourceColor boolean
 
 ---@class AdvancedFocusCastBarSettings
 ---@field GetDefaultEditModeFramePosition fun(): FramePosition
@@ -87,6 +89,9 @@
 ---@field TargetNameText4 FontString
 ---@field TargetNameText5 FontString
 
+---@class AdvancedFocusCastBarInterruptSourceFrame : Frame
+---@field InterruptSourceText FontString
+
 ---@class AdvancedFocusCastBarBorder : BackdropTemplate
 ---@field _PixelGlow Frame?
 
@@ -105,6 +110,7 @@
 ---@field Border AdvancedFocusCastBarBorder
 ---@field TargetMarkerFrame AdvancedFocusCastBarTargetMarkerFrame
 ---@field TargetNameFrame AdvancedFocusCastBarTargetNameFrame
+---@field InterruptSourceFrame AdvancedFocusCastBarInterruptSourceFrame
 ---@field Selection EditModeSelection
 ---@field private interruptId number?
 ---@field private contentType number?
@@ -114,6 +120,7 @@
 ---@field private demoInterval table?
 ---@field private ttsVoiceId number?
 ---@field private firstFrameTimestamp number
+---@field private interruptHidingDelayTimer FunctionContainer?
 ---@field OnLoad fun(self: AdvancedFocusCastBarMixin)
 ---@field IsPastLoadingScreen fun(self: AdvancedFocusCastBarMixin): boolean
 ---@field ToggleTargetMarkerIntegration fun(self: AdvancedFocusCastBarMixin)
@@ -142,6 +149,7 @@
 ---@field AdjustSpellNameTextWidth fun(self: AdvancedFocusCastBarMixin)
 ---@field AdjustDirection fun(self: AdvancedFocusCastBarMixin, isChannel: boolean)
 ---@field AdjustTargetNamePosition fun(self: AdvancedFocusCastBarMixin)
+---@field QueueDelayedHide fun(self: AdvancedFocusCastBarMixin)
 
 -------- library types
 
@@ -210,6 +218,9 @@
 ---@class Frame
 ---@field SetAlphaFromBoolean fun(self: Frame, bool: boolean, alphaIfTrue: number?, alphaIfFalse: number?)
 ---@field SetShown fun(self: Frame, bool: boolean)
+
+---@class FontString
+---@field SetAlphaFromBoolean fun(self: FontString, bool: boolean, alphaIfTrue: number?, alphaIfFalse: number?)
 
 ---@class StatusBar
 ---@field SetTimerDuration fun(self: StatusBar, duration: LuaDurationObject)
