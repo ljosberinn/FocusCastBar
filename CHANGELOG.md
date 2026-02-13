@@ -1,3 +1,7 @@
+## Version 1.0.0-alpha7
+
+- fix player color not appearing on target casts when alone in a dungeon
+
 ## Version 1.0.0-alpha6
 
 - added Unit setting (defaults to Focus, obviously, but also allows Target)

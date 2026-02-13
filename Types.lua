@@ -147,6 +147,7 @@
 ---@field QueueDelayedHide fun(self: AdvancedFocusCastBarMixin)
 ---@field ToggleUnitIntegration fun(self: AdvancedFocusCastBarMixin)
 ---@field SetTargetNameVisibility fun(self: AdvancedFocusCastBarMixin, bool: boolean)
+---@field GetMaybeColoredUnitName fun(self: AdvancedFocusCastBarMixin, unit: string): string
 
 -------- library types
 

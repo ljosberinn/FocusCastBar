@@ -2104,6 +2104,19 @@ function AdvancedFocusCastBarMixin:QueryCastInformation()
 	}
 end
 
+function AdvancedFocusCastBarMixin:GetMaybeColoredUnitName(unit)
+	local name = UnitName(unit)
+
+	if AdvancedFocusCastBarSaved.Settings.ShowTargetClassColor then
+		local class = select(2, UnitClass(unit))
+		local color = C_ClassColor.GetClassColor(class)
+
+		return color:WrapTextInColorCode(name)
+	end
+
+	return name
+end
+
 function AdvancedFocusCastBarMixin:ProcessCastInformation()
 	self.CastBar:SetValue(self.castInformation.duration:GetElapsedDuration())
 	local totalDuration = self.castInformation.duration:GetTotalDuration()
@@ -2140,22 +2153,14 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 
 				for i = 1, partyMembers do
 					local unit = i == partyMembers and "player" or "party" .. i
-					local name = UnitName(unit)
-
-					if AdvancedFocusCastBarSaved.Settings.ShowTargetClassColor then
-						local class = select(2, UnitClass(unit))
-						local color = C_ClassColor.GetClassColor(class)
-
-						name = color:WrapTextInColorCode(name)
-					end
 
 					---@type FontString
 					local frame = self.CustomElementsFrame["TargetNameText" .. i]
-					frame:SetText(name)
+					frame:SetText(self:GetMaybeColoredUnitName(unit))
 					frame:SetAlphaFromBoolean(UnitIsSpellTarget(AdvancedFocusCastBarSaved.Settings.Unit, unit), 1, 0)
 				end
 			else
-				self.CustomElementsFrame.TargetNameText1:SetText(UnitName("player"))
+				self.CustomElementsFrame.TargetNameText1:SetText(self:GetMaybeColoredUnitName("player"))
 				self.CustomElementsFrame.TargetNameText1:SetAlphaFromBoolean(
 					UnitIsSpellTarget(AdvancedFocusCastBarSaved.Settings.Unit, "player"),
 					1,
@@ -2168,25 +2173,17 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 	else
 		if AdvancedFocusCastBarSaved.Settings.ShowTargetMarker then
 			local index = math.random(0, 8)
+
+			self.CustomElementsFrame.TargetMarker:SetShown(index > 0)
+
 			if index > 0 then
 				SetRaidTargetIconTexture(self.CustomElementsFrame.TargetMarker, index)
-				self.CustomElementsFrame.TargetMarker:Show()
-			else
-				self.CustomElementsFrame.TargetMarker:Hide()
 			end
 		else
 			self.CustomElementsFrame.TargetMarker:Hide()
 		end
 
-		local name = UnitName("player")
-		if AdvancedFocusCastBarSaved.Settings.ShowTargetClassColor then
-			local class = select(2, UnitClass("player"))
-			local color = C_ClassColor.GetClassColor(class)
-
-			name = color:WrapTextInColorCode(name)
-		end
-
-		self.CustomElementsFrame.TargetNameText1:SetText(name)
+		self.CustomElementsFrame.TargetNameText1:SetText(self:GetMaybeColoredUnitName("player"))
 		self:SetTargetNameVisibility(true)
 	end
 end
