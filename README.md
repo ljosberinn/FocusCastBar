@@ -26,9 +26,10 @@
 - import/export
 - not vibecoded, won't crash out, won't steal code
 
-## Known Limitations
+## Known Limitations/Issues
 
 - with 12.0, Blizzard removed the option to define which channel to play Text-to-Speech on so the focus reminder functionality can only use whatever they decided to use
+- no support for empower stages. unless its heavily requested, no plans to support them
 
 ## Honorary Mentions
 

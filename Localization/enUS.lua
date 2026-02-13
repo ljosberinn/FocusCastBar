@@ -109,12 +109,14 @@ L.Settings.ShowTargetNameTooltip = nil
 L.Settings.ShowTargetClassColorLabel = "Show Target Class Color"
 L.Settings.ShowTargetClassColorTooltip = "Can have contrast problems depending on background and bar color."
 
-L.Settings.TargetNamePositionLabel = "Target Name Position"
-L.Settings.TargetNamePositionTooltip = nil
-L.Settings.TargetNamePositionLabels = {
-	[Private.Enum.TargetNamePosition.BOTTOMCENTER] = "Bottom Center",
-	[Private.Enum.TargetNamePosition.BOTTOMLEFT] = "Bottom Left",
-	[Private.Enum.TargetNamePosition.BOTTOMRIGHT] = "Bottom Right",
+L.Settings.CustomTextPositionLabel = "Custom Texts Position"
+L.Settings.CustomTextPositionTooltip = "Controls position of Target Name text as well as Interrupt Source text."
+L.Settings.CustomTextPositionLabels = {
+	[Private.Enum.CustomTextsPosition.BOTTOMCENTER] = "Bottom Center",
+	[Private.Enum.CustomTextsPosition.BOTTOMLEFT] = "Bottom Left",
+	[Private.Enum.CustomTextsPosition.BOTTOMRIGHT] = "Bottom Right",
+	[Private.Enum.CustomTextsPosition.TOPLEFT] = "Top Left",
+	[Private.Enum.CustomTextsPosition.TOPRIGHT] = "Top Right",
 }
 
 L.Settings.IgnoreFriendliesLabel = "Ignore Friendlies"

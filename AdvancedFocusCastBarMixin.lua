@@ -62,7 +62,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 		self.Border:SetShown(AdvancedFocusCastBarSaved.Settings.ShowBorder)
 		self:SetFontAndFontSize()
 		self:ToggleTargetNameVisibility()
-		self:AdjustTargetNamePosition()
+		self:AdjustCustomTextsPosition()
 	end
 
 	-- edit mode setup
@@ -560,38 +560,40 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.Setting.TargetNamePosition then
+			if key == Private.Enum.Setting.CustomTextsPosition then
 				---@param layoutName string
 				---@param value string
 				local function Set(layoutName, value)
-					AdvancedFocusCastBarSaved.Settings.TargetNamePosition = value
+					AdvancedFocusCastBarSaved.Settings.CustomTextsPosition = value
 
 					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 				end
 
 				local function Generator(owner, rootDescription, data)
-					for TargetNamePositionKey, value in pairs(Private.Enum.TargetNamePosition) do
+					for customTextsPositionKey, value in pairs(Private.Enum.CustomTextsPosition) do
 						local function IsEnabled()
-							return AdvancedFocusCastBarSaved.Settings.TargetNamePosition == value
+							return AdvancedFocusCastBarSaved.Settings.CustomTextsPosition == value
 						end
 
 						local function SetProxy()
 							Set(LibEditMode:GetActiveLayoutName(), value)
 						end
 
-						rootDescription:CreateRadio(L.TargetNamePositionLabels[value], IsEnabled, SetProxy)
+						rootDescription:CreateRadio(L.CustomTextPositionLabels[value], IsEnabled, SetProxy)
 					end
 				end
 
 				---@type LibEditModeDropdown
 				return {
-					name = L.TargetNamePositionLabel,
+					name = L.CustomTextPositionLabel,
 					kind = Enum.EditModeSettingDisplayType.Dropdown,
-					desc = L.TargetNamePositionTooltip,
-					default = defaults.TargetNamePosition,
+					desc = L.CustomTextPositionTooltip,
+					default = defaults.CustomTextsPosition,
 					multiple = false,
 					generator = Generator,
 					set = Set,
+					disabled = not AdvancedFocusCastBarSaved.Settings.ShowTargetName
+						and not AdvancedFocusCastBarSaved.Settings.ShowInterruptSource,
 				}
 			end
 
@@ -833,10 +835,13 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 					if value then
 						LibEditMode:EnableFrameSetting(self, L.ShowTargetClassColorLabel)
-						LibEditMode:EnableFrameSetting(self, L.TargetNamePositionLabel)
+						LibEditMode:EnableFrameSetting(self, L.CustomTextPositionLabel)
 					else
 						LibEditMode:DisableFrameSetting(self, L.ShowTargetClassColorLabel)
-						LibEditMode:DisableFrameSetting(self, L.TargetNamePositionLabel)
+
+						if not AdvancedFocusCastBarSaved.Settings.ShowInterruptSource then
+							LibEditMode:DisableFrameSetting(self, L.CustomTextPositionLabel)
+						end
 					end
 				end
 
@@ -918,6 +923,17 @@ function AdvancedFocusCastBarMixin:OnLoad()
 					AdvancedFocusCastBarSaved.Settings.ShowInterruptSource = value
 
 					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+
+					if value then
+						LibEditMode:EnableFrameSetting(self, L.CustomTextPositionLabel)
+						LibEditMode:EnableFrameSetting(self, L.UseInterruptSourceColorLabel)
+					else
+						LibEditMode:DisableFrameSetting(self, L.UseInterruptSourceColorLabel)
+
+						if not AdvancedFocusCastBarSaved.Settings.ShowTargetName then
+							LibEditMode:DisableFrameSetting(self, L.CustomTextPositionLabel)
+						end
+					end
 				end
 
 				---@type LibEditModeCheckbox
@@ -1352,10 +1368,10 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			CreateSetting(Private.Enum.Setting.TickWidth),
 			CreateSetting(Private.Enum.Setting.ShowTargetMarker),
 			CreateSetting(Private.Enum.Setting.ShowTargetName),
-			CreateSetting(Private.Enum.Setting.TargetNamePosition),
 			CreateSetting(Private.Enum.Setting.ShowTargetClassColor),
 			CreateSetting(Private.Enum.Setting.ShowInterruptSource),
 			CreateSetting(Private.Enum.Setting.UseInterruptSourceColor),
+			CreateSetting(Private.Enum.Setting.CustomTextsPosition),
 			CreateSetting(Private.Enum.Setting.PlayFocusTTSReminder),
 			CreateSetting(Private.Enum.Setting.IgnoreFriendlies),
 			CreateSetting(Private.Enum.Setting.Point),
@@ -1735,7 +1751,7 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 		self.colors.InterruptTick = CreateColorFromHexString(value)
 	elseif key == Private.Enum.Setting.ShowTargetMarker then
 		self:ToggleTargetMarkerIntegration()
-		self.TargetMarkerFrame:SetShown(value)
+		self.CustomElementsFrame.TargetMarker:SetShown(value)
 	elseif key == Private.Enum.Setting.BackgroundOpacity then
 		self.CastBar.Background:SetAlpha(value)
 	elseif key == Private.Enum.Setting.ShowTargetName then
@@ -1747,30 +1763,41 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 		if value == 1 then
 			self:SetAlpha(1)
 		end
-	elseif key == Private.Enum.Setting.TargetNamePosition then
-		self:AdjustTargetNamePosition()
+	elseif key == Private.Enum.Setting.CustomTextsPosition then
+		self:AdjustCustomTextsPosition()
 	elseif key == Private.Enum.Setting.Unit then
 		self:ToggleUnitIntegration()
 	end
 end
 
-function AdvancedFocusCastBarMixin:AdjustTargetNamePosition()
-	local point = AdvancedFocusCastBarSaved.Settings.TargetNamePosition == Private.Enum.TargetNamePosition.BOTTOMCENTER
+function AdvancedFocusCastBarMixin:AdjustCustomTextsPosition()
+	local point = AdvancedFocusCastBarSaved.Settings.CustomTextsPosition
+				== Private.Enum.CustomTextsPosition.BOTTOMCENTER
 			and "BOTTOM"
-		or AdvancedFocusCastBarSaved.Settings.TargetNamePosition
+		or AdvancedFocusCastBarSaved.Settings.CustomTextsPosition
+
+	local factor = (
+		point == Private.Enum.CustomTextsPosition.TOPLEFT or point == Private.Enum.CustomTextsPosition.TOPRIGHT
+	)
+			and 1
+		or -1
 
 	for i = 1, 5 do
-		local targetMarkerFrame = self.TargetNameFrame["TargetNameText" .. i]
+		local CustomElementsFrame = self.CustomElementsFrame["TargetNameText" .. i]
 
-		targetMarkerFrame:ClearAllPoints()
-		targetMarkerFrame:SetPoint(point, self, point, 0, -8)
+		CustomElementsFrame:ClearAllPoints()
+		CustomElementsFrame:SetPoint(point, self, point, 0, 8 * factor)
 	end
 end
 
 function AdvancedFocusCastBarMixin:ToggleTargetNameVisibility()
+	self:SetTargetNameVisibility(AdvancedFocusCastBarSaved.Settings.ShowTargetName)
+end
+
+function AdvancedFocusCastBarMixin:SetTargetNameVisibility(bool)
 	for i = 1, 5 do
-		local targetNameFrame = self.TargetNameFrame["TargetNameText" .. i]
-		targetNameFrame:SetShown(AdvancedFocusCastBarSaved.Settings.ShowTargetName)
+		local targetNameFrame = self.CustomElementsFrame["TargetNameText" .. i]
+		targetNameFrame:SetShown(bool)
 	end
 end
 
@@ -1780,12 +1807,12 @@ function AdvancedFocusCastBarMixin:SetFontAndFontSize()
 	local fontStrings = {
 		[self.CastBar.CastTimeText] = AdvancedFocusCastBarSaved.Settings.FontSize,
 		[self.CastBar.SpellNameText] = AdvancedFocusCastBarSaved.Settings.FontSize,
-		[self.TargetNameFrame.TargetNameText1] = smallerSize,
-		[self.TargetNameFrame.TargetNameText2] = smallerSize,
-		[self.TargetNameFrame.TargetNameText3] = smallerSize,
-		[self.TargetNameFrame.TargetNameText4] = smallerSize,
-		[self.TargetNameFrame.TargetNameText5] = smallerSize,
-		[self.InterruptSourceFrame.InterruptSourceText] = smallerSize,
+		[self.CustomElementsFrame.TargetNameText1] = smallerSize,
+		[self.CustomElementsFrame.TargetNameText2] = smallerSize,
+		[self.CustomElementsFrame.TargetNameText3] = smallerSize,
+		[self.CustomElementsFrame.TargetNameText4] = smallerSize,
+		[self.CustomElementsFrame.TargetNameText5] = smallerSize,
+		[self.CustomElementsFrame.InterruptSourceText] = smallerSize,
 	}
 
 	local flags = AdvancedFocusCastBarSaved.Settings.FontFlags[Private.Enum.FontFlags.OUTLINE] and "OUTLINE" or ""
@@ -1852,32 +1879,6 @@ function AdvancedFocusCastBarMixin:LoopPreview()
 		texture = self:GetRandomIcon(),
 		isImportant = math.random(0, 1) == 1,
 	}
-
-	if AdvancedFocusCastBarSaved.Settings.ShowTargetMarker then
-		local index = math.random(0, 8)
-		if index > 0 then
-			SetRaidTargetIconTexture(self.TargetMarkerFrame.TargetMarker, index)
-			self.TargetMarkerFrame.TargetMarker:Show()
-		else
-			self.TargetMarkerFrame.TargetMarker:Hide()
-		end
-	else
-		self.TargetMarkerFrame.TargetMarker:Hide()
-	end
-
-	-- this will collide with regular processing of the setting when edited in a dungeon
-	if AdvancedFocusCastBarSaved.Settings.ShowTargetName then
-		local name = UnitName("player")
-
-		if AdvancedFocusCastBarSaved.Settings.ShowTargetClassColor then
-			local class = select(2, UnitClass("player"))
-			local color = C_ClassColor.GetClassColor(class)
-
-			name = color:WrapTextInColorCode(name)
-		end
-
-		self.TargetNameFrame.TargetNameText1:SetText(name)
-	end
 
 	self:ProcessCastInformation()
 	self:Show()
@@ -1981,9 +1982,7 @@ function AdvancedFocusCastBarMixin:ShowGlow(isImportant)
 		)
 
 		-- needed to layer above the glow
-		local nextLevel = frame._PixelGlow:GetFrameLevel() + 1
-		self.TargetMarkerFrame:SetFrameLevel(nextLevel)
-		self.TargetNameFrame:SetFrameLevel(nextLevel)
+		self.CustomElementsFrame:SetFrameLevel(frame._PixelGlow:GetFrameLevel() + 1)
 	end
 
 	frame._PixelGlow:SetAlphaFromBoolean(isImportant)
@@ -2131,10 +2130,10 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 		)
 	end
 
-	-- prevents colliding with preview in Edit Mode
+	-- presence means we're in edit mode
 	if self.demoInterval == nil then
 		if AdvancedFocusCastBarSaved.Settings.ShowTargetName then
-			self.TargetNameFrame:Show()
+			self:SetTargetNameVisibility(true)
 
 			if IsInGroup() then
 				local partyMembers = GetNumGroupMembers()
@@ -2151,23 +2150,44 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 					end
 
 					---@type FontString
-					local frame = self.TargetNameFrame["TargetNameText" .. i]
+					local frame = self.CustomElementsFrame["TargetNameText" .. i]
 					frame:SetText(name)
 					frame:SetAlphaFromBoolean(UnitIsSpellTarget(AdvancedFocusCastBarSaved.Settings.Unit, unit), 1, 0)
 				end
 			else
-				self.TargetNameFrame.TargetNameText1:SetText(UnitName("player"))
-				self.TargetNameFrame.TargetNameText1:SetAlphaFromBoolean(
+				self.CustomElementsFrame.TargetNameText1:SetText(UnitName("player"))
+				self.CustomElementsFrame.TargetNameText1:SetAlphaFromBoolean(
 					UnitIsSpellTarget(AdvancedFocusCastBarSaved.Settings.Unit, "player"),
 					1,
 					0
 				)
 			end
 		else
-			self.TargetNameFrame:Hide()
+			self:SetTargetNameVisibility(false)
 		end
 	else
-		self.TargetNameFrame:Show()
+		if AdvancedFocusCastBarSaved.Settings.ShowTargetMarker then
+			local index = math.random(0, 8)
+			if index > 0 then
+				SetRaidTargetIconTexture(self.CustomElementsFrame.TargetMarker, index)
+				self.CustomElementsFrame.TargetMarker:Show()
+			else
+				self.CustomElementsFrame.TargetMarker:Hide()
+			end
+		else
+			self.CustomElementsFrame.TargetMarker:Hide()
+		end
+
+		local name = UnitName("player")
+		if AdvancedFocusCastBarSaved.Settings.ShowTargetClassColor then
+			local class = select(2, UnitClass("player"))
+			local color = C_ClassColor.GetClassColor(class)
+
+			name = color:WrapTextInColorCode(name)
+		end
+
+		self.CustomElementsFrame.TargetNameText1:SetText(name)
+		self:SetTargetNameVisibility(true)
 	end
 end
 
@@ -2201,15 +2221,16 @@ function AdvancedFocusCastBarMixin:QueueDelayedHide()
 		self.colors.InterruptibleCannotInterrupt.b
 	)
 
+	if AdvancedFocusCastBarSaved.Settings.GlowImportant then
+		self:ShowGlow(false)
+	end
+
 	if AdvancedFocusCastBarSaved.Settings.ShowCastTime then
 		self.CastBar.CastTimeText:Hide()
 	end
 
 	if AdvancedFocusCastBarSaved.Settings.ShowTargetName then
-		for i = 1, 5 do
-			local targetNameFrame = self.TargetNameFrame["TargetNameText" .. i]
-			targetNameFrame:Hide()
-		end
+		self:SetTargetNameVisibility(false)
 	end
 
 	self.interruptHidingDelayTimer = C_Timer.NewTimer(1, function()
@@ -2218,13 +2239,10 @@ function AdvancedFocusCastBarMixin:QueueDelayedHide()
 		end
 
 		if AdvancedFocusCastBarSaved.Settings.ShowTargetName then
-			for i = 1, 5 do
-				local targetNameFrame = self.TargetNameFrame["TargetNameText" .. i]
-				targetNameFrame:Show()
-			end
+			self:SetTargetNameVisibility(true)
 		end
 
-		self.InterruptSourceFrame.InterruptSourceText:Hide()
+		self.CustomElementsFrame.InterruptSourceText:Hide()
 		self.interruptHidingDelayTimer = nil
 		self:Hide()
 	end)
@@ -2309,12 +2327,12 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 					interruptColor = CreateColor(1, 1, 1)
 				end
 
-				self.InterruptSourceFrame.InterruptSourceText:SetFormattedText(
+				self.CustomElementsFrame.InterruptSourceText:SetFormattedText(
 					Private.L.Settings.InterruptSourceText,
 					interruptColor == nil and interruptName or interruptColor:WrapTextInColorCode(interruptName)
 				)
 
-				self.InterruptSourceFrame.InterruptSourceText:Show()
+				self.CustomElementsFrame.InterruptSourceText:Show()
 			end
 		end
 
@@ -2393,10 +2411,10 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 		local index = GetRaidTargetIndex(AdvancedFocusCastBarSaved.Settings.Unit)
 
 		if index == nil then
-			self.TargetMarkerFrame.TargetMarker:Hide()
+			self.CustomElementsFrame.TargetMarker:Hide()
 		else
-			SetRaidTargetIconTexture(self.TargetMarkerFrame.TargetMarker, index)
-			self.TargetMarkerFrame.TargetMarker:Show()
+			SetRaidTargetIconTexture(self.CustomElementsFrame.TargetMarker, index)
+			self.CustomElementsFrame.TargetMarker:Show()
 		end
 	elseif
 		event == "ZONE_CHANGED_NEW_AREA"

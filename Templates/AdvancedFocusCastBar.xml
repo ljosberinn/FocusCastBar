@@ -56,7 +56,7 @@
                     <Anchor point="BOTTOMRIGHT" x="1" y="-1" />
                 </Anchors>
             </Frame>
-            <Frame parentKey="TargetMarkerFrame" setAllPoints="true">
+            <Frame parentKey="CustomElementsFrame" setAllPoints="true">
                 <Layers>
                     <Layer level="OVERLAY">
                         <Texture parentKey="TargetMarker" hidden="true" file="Interface/TargetingFrame/UI-RaidTargetingIcons">
@@ -65,23 +65,11 @@
                                 <Anchor point="CENTER" relativePoint="TOP" x="0" y="0" />
                             </Anchors>
                         </Texture>
-                    </Layer>
-                </Layers>
-            </Frame>
-            <Frame parentKey="InterruptSourceFrame" setAllPoints="true">
-                <Layers>
-                    <Layer level="OVERLAY">
                         <FontString parentKey="InterruptSourceText" inherits="GameFontHighlightSmall" justifyH="CENTER" text="" hidden="true">
                             <Anchors>
                                 <Anchor point="BOTTOMRIGHT" x="0" y="-8" />
                             </Anchors>
                         </FontString>
-                    </Layer>
-                </Layers>
-            </Frame>
-            <Frame parentKey="TargetNameFrame" setAllPoints="true">
-                <Layers>
-                    <Layer level="OVERLAY">
                         <FontString parentKey="TargetNameText1" inherits="GameFontHighlightSmall" justifyH="CENTER" text="">
                             <Anchors>
                                 <Anchor point="BOTTOM" x="0" y="-8" />

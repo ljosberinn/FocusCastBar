@@ -51,7 +51,7 @@
 ---@field PlayFocusTTSReminder boolean
 ---@field IgnoreFriendlies boolean
 ---@field OutOfRangeOpacity number
----@field TargetNamePosition TargetNamePosition
+---@field CustomTextsPosition CustomTextsPosition
 ---@field FontFlags table<FontFlags, boolean>
 ---@field ShowInterruptSource boolean
 ---@field UseInterruptSourceColor boolean
@@ -79,17 +79,13 @@
 ---@field notInterruptible boolean -- secret
 ---@field isImportant boolean -- secret
 
----@class AdvancedFocusCastBarTargetMarkerFrame : Frame
+---@class AdvancedFocusCastBarCustomElementsFrame : Frame
 ---@field TargetMarker Texture
-
----@class AdvancedFocusCastBarTargetNameFrame : Frame
 ---@field TargetNameText1 FontString
 ---@field TargetNameText2 FontString
 ---@field TargetNameText3 FontString
 ---@field TargetNameText4 FontString
 ---@field TargetNameText5 FontString
-
----@class AdvancedFocusCastBarInterruptSourceFrame : Frame
 ---@field InterruptSourceText FontString
 
 ---@class AdvancedFocusCastBarBorder : BackdropTemplate
@@ -108,9 +104,7 @@
 ---@field Icon Texture
 ---@field CastBar CustomCastBar
 ---@field Border AdvancedFocusCastBarBorder
----@field TargetMarkerFrame AdvancedFocusCastBarTargetMarkerFrame
----@field TargetNameFrame AdvancedFocusCastBarTargetNameFrame
----@field InterruptSourceFrame AdvancedFocusCastBarInterruptSourceFrame
+---@field CustomElementsFrame AdvancedFocusCastBarCustomElementsFrame
 ---@field Selection EditModeSelection
 ---@field private interruptId number?
 ---@field private contentType number?
@@ -149,9 +143,10 @@
 ---@field GetRandomIcon fun(self: AdvancedFocusCastBarMixin): number
 ---@field AdjustSpellNameTextWidth fun(self: AdvancedFocusCastBarMixin)
 ---@field AdjustDirection fun(self: AdvancedFocusCastBarMixin, isChannel: boolean)
----@field AdjustTargetNamePosition fun(self: AdvancedFocusCastBarMixin)
+---@field AdjustCustomTextsPosition fun(self: AdvancedFocusCastBarMixin)
 ---@field QueueDelayedHide fun(self: AdvancedFocusCastBarMixin)
 ---@field ToggleUnitIntegration fun(self: AdvancedFocusCastBarMixin)
+---@field SetTargetNameVisibility fun(self: AdvancedFocusCastBarMixin, bool: boolean)
 
 -------- library types
 

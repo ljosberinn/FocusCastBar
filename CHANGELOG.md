@@ -1,6 +1,11 @@
 ## Version 1.0.0-alpha6
 
 - added Unit setting (defaults to Focus, obviously, but also allows Target)
+- refactored Target Name Position setting into a Custom Texts Position setting which now also controls Interrupt Source Position
+- added Top Left and Top Right Custom Texts Positions
+- new default out of range opacity is now 75%
+- new default Custom Texts Position is now Bottom Right
+- fixed important glow lingering on interrupted casts
 
 ## Version 1.0.0-alpha5
 

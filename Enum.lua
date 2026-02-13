@@ -36,11 +36,13 @@ Private.Enum.Point = {
 	RIGHT = "RIGHT",
 }
 
----@enum TargetNamePosition
-Private.Enum.TargetNamePosition = {
+---@enum CustomTextsPosition
+Private.Enum.CustomTextsPosition = {
 	BOTTOMCENTER = "BOTTOMCENTER",
 	BOTTOMLEFT = "BOTTOMLEFT",
 	BOTTOMRIGHT = "BOTTOMRIGHT",
+	TOPLEFT = "TOPLEFT",
+	TOPRIGHT = "TOPRIGHT",
 }
 
 ---@enum Setting
@@ -68,7 +70,7 @@ Private.Enum.Setting = {
 	BackgroundOpacity = "BACKGROUND_OPACITY",
 	ShowTargetName = "SHOW_TARGET_NAME",
 	ShowTargetClassColor = "SHOW_TARGET_CLASS_COLOR",
-	TargetNamePosition = "TARGET_NAME_POSITION",
+	CustomTextsPosition = "CUSTOM_TEXTS_POSITION",
 	PlayFocusTTSReminder = "PLAY_FOCUS_TTS_REMINDER",
 	TickWidth = "TICK_WIDTH",
 	IgnoreFriendlies = "IGNORE_FRIENDLIES",
