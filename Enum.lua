@@ -76,10 +76,17 @@ Private.Enum.Setting = {
 	FontFlags = "FONT_FLAGS",
 	ShowInterruptSource = "SHOW_INTERRUPT_SOURCE",
 	UseInterruptSourceColor = "USE_INTERRUPT_SOURCE_COLOR",
+	Unit = "UNIT",
 }
 
 ---@enum FontFlags
 Private.Enum.FontFlags = {
 	OUTLINE = "OUTLINE",
 	SHADOW = "SHADOW",
+}
+
+---@enum Unit
+Private.Enum.Unit = {
+	Focus = "focus",
+	Target = "target",
 }

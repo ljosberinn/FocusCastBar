@@ -144,3 +144,10 @@ L.Settings.InterruptSourceText = "Interrupted [%s]"
 
 L.Settings.UseInterruptSourceColorLabel = "Use Interrupt Source Color"
 L.Settings.UseInterruptSourceColorTooltip = "Colors the interrupt with the class color of the interrupt source"
+
+L.Settings.UnitLabel = "Unit"
+L.Settings.UnitTooltip = "Which unit to use. Yes, this is a focus cast bar addon, yet here we are."
+L.Settings.UnitLabels = {
+	[Private.Enum.Unit.Focus] = "Focus",
+	[Private.Enum.Unit.Target] = "Target",
+}

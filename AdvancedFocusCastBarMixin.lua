@@ -595,6 +595,41 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
+			if key == Private.Enum.Setting.Unit then
+				---@param layoutName string
+				---@param value string
+				local function Set(layoutName, value)
+					AdvancedFocusCastBarSaved.Settings.Unit = value
+
+					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+				end
+
+				local function Generator(owner, rootDescription, data)
+					for unitKey, value in pairs(Private.Enum.Unit) do
+						local function IsEnabled()
+							return AdvancedFocusCastBarSaved.Settings.Unit == value
+						end
+
+						local function SetProxy()
+							Set(LibEditMode:GetActiveLayoutName(), value)
+						end
+
+						rootDescription:CreateRadio(L.UnitLabels[value], IsEnabled, SetProxy)
+					end
+				end
+
+				---@type LibEditModeDropdown
+				return {
+					name = L.UnitLabel,
+					kind = Enum.EditModeSettingDisplayType.Dropdown,
+					desc = L.UnitTooltip,
+					default = defaults.Unit,
+					multiple = false,
+					generator = Generator,
+					set = Set,
+				}
+			end
+
 			if key == Private.Enum.Setting.Texture then
 				---@param layoutName string
 				---@param value string
@@ -1326,6 +1361,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			CreateSetting(Private.Enum.Setting.Point),
 			CreateSetting(Private.Enum.Setting.OffsetX),
 			CreateSetting(Private.Enum.Setting.OffsetY),
+			CreateSetting(Private.Enum.Setting.Unit),
 		})
 
 		local function OnImportButtonClick()
@@ -1512,26 +1548,45 @@ function AdvancedFocusCastBarMixin:OnLoad()
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	self:RegisterEvent("LOADING_SCREEN_DISABLED")
 	self:RegisterEvent("UPDATE_INSTANCE_INFO")
-	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 	self:RegisterEvent("FIRST_FRAME_RENDERED")
 	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player")
-	-- start or update events
-	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "focus")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_DELAYED", "focus")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", "focus")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "focus")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_START", "focus")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_UPDATE", "focus")
-	-- end or failed events
-	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "focus")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "focus")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "focus")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", "focus")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_STOP", "focus")
-	-- meta events
-	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTIBLE", "focus")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", "focus")
+
 	self:ToggleTargetMarkerIntegration()
+	self:ToggleUnitIntegration()
+end
+
+function AdvancedFocusCastBarMixin:ToggleUnitIntegration()
+	local events = {
+		-- start or update events
+		"UNIT_SPELLCAST_START",
+		"UNIT_SPELLCAST_DELAYED",
+		"UNIT_SPELLCAST_CHANNEL_START",
+		"UNIT_SPELLCAST_CHANNEL_UPDATE",
+		"UNIT_SPELLCAST_EMPOWER_START",
+		"UNIT_SPELLCAST_EMPOWER_UPDATE",
+		-- end or failed events
+		"UNIT_SPELLCAST_STOP",
+		"UNIT_SPELLCAST_FAILED",
+		"UNIT_SPELLCAST_INTERRUPTED",
+		"UNIT_SPELLCAST_CHANNEL_STOP",
+		"UNIT_SPELLCAST_EMPOWER_STOP",
+		-- meta events
+		"UNIT_SPELLCAST_INTERRUPTIBLE",
+		"UNIT_SPELLCAST_NOT_INTERRUPTIBLE",
+	}
+
+	for _, event in next, events do
+		self:UnregisterEvent(event)
+		self:RegisterUnitEvent(event, AdvancedFocusCastBarSaved.Settings.Unit)
+	end
+
+	if AdvancedFocusCastBarSaved.Settings.Unit == Private.Enum.Unit.Focus then
+		self:UnregisterEvent("PLAYER_TARGET_CHANGED")
+		self:RegisterEvent("PLAYER_FOCUS_CHANGED")
+	else
+		self:UnregisterEvent("PLAYER_FOCUS_CHANGED")
+		self:RegisterEvent("PLAYER_TARGET_CHANGED")
+	end
 end
 
 function AdvancedFocusCastBarMixin:AdjustSpellNameTextWidth()
@@ -1694,6 +1749,8 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 		end
 	elseif key == Private.Enum.Setting.TargetNamePosition then
 		self:AdjustTargetNamePosition()
+	elseif key == Private.Enum.Setting.Unit then
+		self:ToggleUnitIntegration()
 	end
 end
 
@@ -1881,7 +1938,7 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 
 	if self.interruptId ~= nil then
 		if AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity < 1 then
-			local inRange = C_Spell.IsSpellInRange(self.interruptId, "focus")
+			local inRange = C_Spell.IsSpellInRange(self.interruptId, AdvancedFocusCastBarSaved.Settings.Unit)
 			if inRange ~= nil then
 				self:SetAlpha(inRange == true and 1 or AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity)
 			end
@@ -1949,11 +2006,14 @@ function AdvancedFocusCastBarMixin:LoadConditionsProhibitExecution()
 end
 
 function AdvancedFocusCastBarMixin:UnitIsIrrelevant()
-	if not UnitExists("focus") then
+	if not UnitExists(AdvancedFocusCastBarSaved.Settings.Unit) then
 		return true
 	end
 
-	if AdvancedFocusCastBarSaved.Settings.IgnoreFriendlies and not UnitCanAttack("player", "focus") then
+	if
+		AdvancedFocusCastBarSaved.Settings.IgnoreFriendlies
+		and not UnitCanAttack("player", AdvancedFocusCastBarSaved.Settings.Unit)
+	then
 		return true
 	end
 
@@ -2014,11 +2074,11 @@ function AdvancedFocusCastBarMixin:DeriveAndSetNextColor(interruptDuration)
 end
 
 function AdvancedFocusCastBarMixin:QueryCastInformation()
-	local duration = UnitCastingDuration("focus")
+	local duration = UnitCastingDuration(AdvancedFocusCastBarSaved.Settings.Unit)
 	local isChannel = false
 
 	if duration == nil then
-		duration = UnitChannelDuration("focus")
+		duration = UnitChannelDuration(AdvancedFocusCastBarSaved.Settings.Unit)
 		isChannel = true
 	end
 
@@ -2029,9 +2089,10 @@ function AdvancedFocusCastBarMixin:QueryCastInformation()
 	local name, texture, notInterruptible, spellId
 
 	if isChannel then
-		_, name, texture, _, _, _, notInterruptible, spellId = UnitChannelInfo("focus")
+		_, name, texture, _, _, _, notInterruptible, spellId = UnitChannelInfo(AdvancedFocusCastBarSaved.Settings.Unit)
 	else
-		_, name, texture, _, _, _, _, notInterruptible, spellId = UnitCastingInfo("focus")
+		_, name, texture, _, _, _, _, notInterruptible, spellId =
+			UnitCastingInfo(AdvancedFocusCastBarSaved.Settings.Unit)
 	end
 
 	return {
@@ -2092,11 +2153,15 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 					---@type FontString
 					local frame = self.TargetNameFrame["TargetNameText" .. i]
 					frame:SetText(name)
-					frame:SetAlphaFromBoolean(UnitIsSpellTarget("focus", unit), 1, 0)
+					frame:SetAlphaFromBoolean(UnitIsSpellTarget(AdvancedFocusCastBarSaved.Settings.Unit, unit), 1, 0)
 				end
 			else
 				self.TargetNameFrame.TargetNameText1:SetText(UnitName("player"))
-				self.TargetNameFrame.TargetNameText1:SetAlphaFromBoolean(UnitIsSpellTarget("focus", "player"), 1, 0)
+				self.TargetNameFrame.TargetNameText1:SetAlphaFromBoolean(
+					UnitIsSpellTarget(AdvancedFocusCastBarSaved.Settings.Unit, "player"),
+					1,
+					0
+				)
 			end
 		else
 			self.TargetNameFrame:Hide()
@@ -2122,6 +2187,7 @@ function AdvancedFocusCastBarMixin:FindAppropriateTTSVoiceID()
 	end
 
 	self.ttsVoiceId = ttsVoiceId
+
 	return ttsVoiceId
 end
 
@@ -2257,12 +2323,12 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 		else
 			self:Hide()
 		end
-	elseif event == "PLAYER_FOCUS_CHANGED" then
+	elseif event == "PLAYER_FOCUS_CHANGED" or event == "PLAYER_TARGET_CHANGED" then
 		if self:LoadConditionsProhibitExecution() then
 			return
 		end
 
-		if not UnitExists("focus") then
+		if not UnitExists(AdvancedFocusCastBarSaved.Settings.Unit) then
 			if self:IsShown() then
 				self:Hide()
 			end
@@ -2276,7 +2342,7 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 					if InCombatLockdown() then
 						C_VoiceChat.SpeakText(
 							self:FindAppropriateTTSVoiceID(),
-							"focus",
+							AdvancedFocusCastBarSaved.Settings.Unit,
 							3,
 							C_TTSSettings.GetSpeechVolume()
 						)
@@ -2324,7 +2390,7 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 
 		self:DeriveAndSetNextColor()
 	elseif event == "RAID_TARGET_UPDATE" then
-		local index = GetRaidTargetIndex("focus")
+		local index = GetRaidTargetIndex(AdvancedFocusCastBarSaved.Settings.Unit)
 
 		if index == nil then
 			self.TargetMarkerFrame.TargetMarker:Hide()

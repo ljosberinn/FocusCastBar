@@ -1,3 +1,7 @@
+## Version 1.0.0-alpha6
+
+- added Unit setting (defaults to Focus, obviously, but also allows Target)
+
 ## Version 1.0.0-alpha5
 
 - added Interrupt Source setting (default inactive)

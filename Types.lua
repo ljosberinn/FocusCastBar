@@ -55,9 +55,9 @@
 ---@field FontFlags table<FontFlags, boolean>
 ---@field ShowInterruptSource boolean
 ---@field UseInterruptSourceColor boolean
+---@field Unit Unit
 
 ---@class AdvancedFocusCastBarSettings
----@field GetDefaultEditModeFramePosition fun(): FramePosition
 ---@field GetDefaultSettings fun(): AdvancedFocusCastBarSettings
 
 ---@class InterruptBar : StatusBar
@@ -121,6 +121,7 @@
 ---@field private ttsVoiceId number?
 ---@field private firstFrameTimestamp number
 ---@field private interruptHidingDelayTimer FunctionContainer?
+---@field private elapsed number
 ---@field OnLoad fun(self: AdvancedFocusCastBarMixin)
 ---@field IsPastLoadingScreen fun(self: AdvancedFocusCastBarMixin): boolean
 ---@field ToggleTargetMarkerIntegration fun(self: AdvancedFocusCastBarMixin)
@@ -143,13 +144,14 @@
 ---@field DeriveAndSetNextColor fun(self: AdvancedFocusCastBarMixin, interruptDuration: LuaDurationObject?)
 ---@field QueryCastInformation fun(self: AdvancedFocusCastBarMixin): CastInformation?
 ---@field ProcessCastInformation fun(self: AdvancedFocusCastBarMixin)
----@field FindApporpriateTTSVoiceID fun(self: AdvancedFocusCastBarMixin): number
+---@field FindAppropriateTTSVoiceID fun(self: AdvancedFocusCastBarMixin): number
 ---@field OnEvent fun(self: AdvancedFocusCastBarMixin, event: string, ...)
 ---@field GetRandomIcon fun(self: AdvancedFocusCastBarMixin): number
 ---@field AdjustSpellNameTextWidth fun(self: AdvancedFocusCastBarMixin)
 ---@field AdjustDirection fun(self: AdvancedFocusCastBarMixin, isChannel: boolean)
 ---@field AdjustTargetNamePosition fun(self: AdvancedFocusCastBarMixin)
 ---@field QueueDelayedHide fun(self: AdvancedFocusCastBarMixin)
+---@field ToggleUnitIntegration fun(self: AdvancedFocusCastBarMixin)
 
 -------- library types
 

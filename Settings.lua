@@ -52,6 +52,7 @@ function Private.Settings.GetDefaultSettings()
 		OutOfRangeOpacity = 1,
 		ShowInterruptSource = false,
 		UseInterruptSourceColor = true,
+		Unit = Private.Enum.Unit.Focus,
 	}
 end
 
