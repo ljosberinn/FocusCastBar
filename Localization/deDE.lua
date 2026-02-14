@@ -126,6 +126,13 @@ L.Settings.FeatureFlagLabels = {
 	[Private.Enum.FeatureFlag.UseInterruptSourceClassColor] = "Färbe Namen in Klassenfarbe ein",
 	[Private.Enum.FeatureFlag.PlayFocusTTSReminder] = "Text-zu-Sprache Erinnerung abspielen",
 	[Private.Enum.FeatureFlag.IgnoreFriendlies] = "Freundliche Ziele ignorieren",
+	[Private.Enum.FeatureFlag.UnfillChannels] = "Kanalisierungszauberanimation leert statt füllt",
+}
+L.Settings.FeatureFlagSettingTitles = {
+	[Private.Enum.FeatureFlag.ShowIcon] = "'Features' links hat weitere Infos im Tooltip",
+	[Private.Enum.FeatureFlag.ShowTargetName] = "Anvisiertes Ziel",
+	[Private.Enum.FeatureFlag.ShowInterruptSource] = "Unterbrechungsquelle",
+	[Private.Enum.FeatureFlag.UnfillChannels] = "Diverses",
 }
 
 do
@@ -142,6 +149,10 @@ do
 		CreateFeatureFlagTooltip(
 			Private.Enum.FeatureFlag.PlayFocusTTSReminder,
 			"Spielt 'Fokus' (oder 'Ziel') Text-zu-Sprache ab wenn die derzeitg beobachtete Einheit verschwindet, bspw. weil sie getötet wurde, zur Erinnerung ein neues Ziel zu wählen. Nur in Instanzen aktiv!"
+		),
+		CreateFeatureFlagTooltip(
+			Private.Enum.FeatureFlag.UnfillChannels,
+			"Leert die Leiste bei Kanalisierungszaubern wenn aktiv; füllt wenn inaktiv."
 		),
 	}, "\n")
 end

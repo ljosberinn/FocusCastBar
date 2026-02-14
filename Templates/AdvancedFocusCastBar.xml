@@ -16,7 +16,7 @@
                 <Layers>
                     <Layer level="BACKGROUND">
                         <Texture parentKey="Background" setAllPoints="true">
-                            <Color r="0.1" g="0.1" b="0.1" a="0.75" />
+                            <Color r="0.1" g="0.1" b="0.1" a="1" />
                         </Texture>
                     </Layer>
                     <Layer level="OVERLAY">

@@ -1,3 +1,10 @@
+## Version 1.0.0
+
+- fixed Background Opacity to actually work as intended
+- added labels to feature groups
+- added (Un)Fill Channels setting (default active)
+- changed defaults
+
 ## Version 1.0.0-alpha7
 
 - fix player color not appearing on target casts when alone in a dungeon

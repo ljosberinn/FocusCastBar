@@ -63,6 +63,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 		self:SetFontAndFontSize()
 		self:ToggleTargetNameVisibility()
 		self:AdjustCustomTextsPosition()
+		self:AdjustBackgroundOpacity()
 	end
 
 	-- edit mode setup
@@ -786,17 +787,20 @@ function AdvancedFocusCastBarMixin:OnLoad()
 						Private.Enum.FeatureFlag.UseTargetClassColor,
 						Private.Enum.FeatureFlag.ShowInterruptSource,
 						Private.Enum.FeatureFlag.UseInterruptSourceClassColor,
+						Private.Enum.FeatureFlag.UnfillChannels,
 						Private.Enum.FeatureFlag.PlayFocusTTSReminder,
 						Private.Enum.FeatureFlag.IgnoreFriendlies,
 					}
 
 					for index, id in ipairs(order) do
-						if
-							id == Private.Enum.FeatureFlag.ShowTargetName
-							or id == Private.Enum.FeatureFlag.ShowInterruptSource
-							or id == Private.Enum.FeatureFlag.PlayFocusTTSReminder
-						then
-							rootDescription:CreateDivider()
+						local title = L.FeatureFlagSettingTitles[id]
+
+						if title then
+							if index > 0 then
+								rootDescription:CreateDivider()
+							end
+
+							rootDescription:CreateTitle(title)
 						end
 
 						local function IsEnabled()
@@ -1449,7 +1453,7 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 	elseif key == Private.Enum.Setting.ColorInterruptTick then
 		self.colors.InterruptTick = CreateColorFromHexString(value)
 	elseif key == Private.Enum.Setting.BackgroundOpacity then
-		self.CastBar.Background:SetAlpha(value)
+		self:AdjustBackgroundOpacity()
 	elseif key == Private.Enum.Setting.TickWidth then
 		self.CastBar.InterruptBar.Tick:SetShown(value > 0)
 		self.CastBar.InterruptBar.Tick:SetWidth(value)
@@ -1511,6 +1515,10 @@ function AdvancedFocusCastBarMixin:ToggleTargetNameVisibility()
 	self:SetTargetNameVisibility(
 		AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowTargetName]
 	)
+end
+
+function AdvancedFocusCastBarMixin:AdjustBackgroundOpacity()
+	self.CastBar.Background:SetAlpha(AdvancedFocusCastBarSaved.Settings.BackgroundOpacity)
 end
 
 function AdvancedFocusCastBarMixin:SetTargetNameVisibility(bool)
@@ -1642,7 +1650,14 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 		return
 	end
 
-	self.CastBar:SetValue(self.castInformation.duration:GetElapsedDuration())
+	if
+		self.castInformation.isChannel
+		and AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.UnfillChannels]
+	then
+		self.CastBar:SetValue(self.castInformation.duration:GetRemainingDuration())
+	else
+		self.CastBar:SetValue(self.castInformation.duration:GetElapsedDuration())
+	end
 
 	self.elapsed = self.elapsed + elapsed
 
@@ -1659,6 +1674,7 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 	if self.interruptId ~= nil then
 		if AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity < 1 then
 			local inRange = C_Spell.IsSpellInRange(self.interruptId, AdvancedFocusCastBarSaved.Settings.Unit)
+
 			if inRange ~= nil then
 				self:SetAlpha(inRange == true and 1 or AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity)
 			end
@@ -1672,8 +1688,14 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 
 		self:DeriveAndSetNextColor(interruptDuration)
 
-		self.CastBar.Positioner:SetValue(self.castInformation.duration:GetElapsedDuration())
-		self.CastBar.InterruptBar:SetValue(interruptDuration:GetRemainingDuration())
+		if self.castInformation.isChannel then
+			self.CastBar.Positioner:SetValue(self.castInformation.duration:GetRemainingDuration())
+			self.CastBar.InterruptBar:SetValue(interruptDuration:GetRemainingDuration()) -- ?
+		else
+			self.CastBar.Positioner:SetValue(self.castInformation.duration:GetElapsedDuration())
+			self.CastBar.InterruptBar:SetValue(interruptDuration:GetRemainingDuration())
+		end
+
 		self.CastBar.InterruptBar:SetAlphaFromBoolean(
 			interruptDuration:IsZero(),
 			0,
@@ -1693,7 +1715,7 @@ function AdvancedFocusCastBarMixin:ShowGlow(isImportant)
 			nil, -- N
 			nil, -- frequency
 			nil, -- length
-			nil, -- th
+			nil, -- thickness
 			nil, -- xOffset
 			nil, -- yOffset
 			nil, -- border
@@ -1840,19 +1862,31 @@ function AdvancedFocusCastBarMixin:GetMaybeColoredUnitName(unit)
 end
 
 function AdvancedFocusCastBarMixin:ProcessCastInformation()
-	self.CastBar:SetValue(self.castInformation.duration:GetElapsedDuration())
 	local totalDuration = self.castInformation.duration:GetTotalDuration()
 	self.CastBar:SetMinMaxValues(0, totalDuration)
 	self.CastBar.Positioner:SetMinMaxValues(0, totalDuration)
 	self.CastBar.InterruptBar:SetMinMaxValues(0, totalDuration)
+
+	if
+		self.castInformation.isChannel
+		and AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.UnfillChannels]
+	then
+		self.CastBar:SetValue(totalDuration)
+	else
+		self.CastBar:SetValue(self.castInformation.duration:GetElapsedDuration())
+		self:AdjustDirection(self.castInformation.isChannel)
+	end
+
 	self.Icon:SetTexture(self.castInformation.texture)
 	self.CastBar.SpellNameText:SetText(self.castInformation.name)
 	self:DeriveAndSetNextColor()
-	self:AdjustDirection(self.castInformation.isChannel)
 
 	if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowImportantSpellsGlow] then
 		self:ShowGlow(self.castInformation.isImportant)
 	else
+		-- looks anti intuitive - because it is.
+		-- once the glow was enabled once, we just never stop it but only hide it to avoid going through the whole
+		-- LibCustomGlow lifecycle again.
 		self:ShowGlow(false)
 	end
 

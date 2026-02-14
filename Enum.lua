@@ -96,4 +96,5 @@ Private.Enum.FeatureFlag = {
 	UseInterruptSourceClassColor = 9,
 	PlayFocusTTSReminder = 10,
 	IgnoreFriendlies = 11,
+	UnfillChannels = 12,
 }

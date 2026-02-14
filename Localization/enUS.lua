@@ -124,6 +124,13 @@ L.Settings.FeatureFlagLabels = {
 	[Private.Enum.FeatureFlag.UseInterruptSourceClassColor] = "Use Interrupt Source Color",
 	[Private.Enum.FeatureFlag.PlayFocusTTSReminder] = "Play Focus TTS Reminder",
 	[Private.Enum.FeatureFlag.IgnoreFriendlies] = "Ignore Friendlies",
+	[Private.Enum.FeatureFlag.UnfillChannels] = "(Un)Fill Channels",
+}
+L.Settings.FeatureFlagSettingTitles = {
+	[Private.Enum.FeatureFlag.ShowIcon] = "For more info, hover 'Features' on the left",
+	[Private.Enum.FeatureFlag.ShowTargetName] = "Cast Target Settings",
+	[Private.Enum.FeatureFlag.ShowInterruptSource] = "Interrupt Source Settings",
+	[Private.Enum.FeatureFlag.UnfillChannels] = "Various",
 }
 
 do
@@ -143,6 +150,10 @@ do
 		CreateFeatureFlagTooltip(
 			Private.Enum.FeatureFlag.PlayFocusTTSReminder,
 			"Plays 'focus' (or 'target') text-to-speech when your current observed unit disappears as a reminder to pick a new one. Only in dungeons!"
+		),
+		CreateFeatureFlagTooltip(
+			Private.Enum.FeatureFlag.UnfillChannels,
+			"Unfill the cast bar when active; fills it when inactive."
 		),
 	}, "\n")
 end
