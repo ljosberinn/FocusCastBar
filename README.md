@@ -6,6 +6,8 @@
 - [Curseforge](https://curseforge.com/wow/addons/advanced-focus-cast-bar)
 - [Wago](https://addons.wago.io/addons/advanced-focus-cast-bar)
 
+- [1 min video demonstration](https://youtu.be/1FZiX-rw5PM)
+
 ## Features
 
 - deep Edit Mode integration thanks to [LibEditMode](https://github.com/p3lim-wow/LibEditMode/wiki/LibEditMode)
