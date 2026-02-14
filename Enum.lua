@@ -51,12 +51,8 @@ Private.Enum.Setting = {
 	Height = "HEIGHT",
 	LoadConditionContentType = "LOAD_CONDITION_CONTENT_TYPE",
 	LoadConditionRole = "LOAD_CONDITION_ROLE",
-	ShowIcon = "SHOW_ICON",
-	ShowCastTime = "SHOW_CAST_TIME",
 	Opacity = "OPACITY",
-	ShowBorder = "SHOW_BORDER",
 	Texture = "TEXTURE",
-	GlowImportant = "GLOW_IMPORTANT",
 	Point = "POINT",
 	OffsetX = "OFFSET_X",
 	OffsetY = "OFFSET_Y",
@@ -66,19 +62,13 @@ Private.Enum.Setting = {
 	ColorInterruptTick = "COLOR_INTERRUPT_TICK",
 	Font = "FONT",
 	FontSize = "FONT_SIZE",
-	ShowTargetMarker = "SHOW_TARGET_MARKER",
 	BackgroundOpacity = "BACKGROUND_OPACITY",
-	ShowTargetName = "SHOW_TARGET_NAME",
-	ShowTargetClassColor = "SHOW_TARGET_CLASS_COLOR",
 	CustomTextsPosition = "CUSTOM_TEXTS_POSITION",
-	PlayFocusTTSReminder = "PLAY_FOCUS_TTS_REMINDER",
 	TickWidth = "TICK_WIDTH",
-	IgnoreFriendlies = "IGNORE_FRIENDLIES",
 	OutOfRangeOpacity = "OUT_OF_RANGE_OPACITY",
 	FontFlags = "FONT_FLAGS",
-	ShowInterruptSource = "SHOW_INTERRUPT_SOURCE",
-	UseInterruptSourceColor = "USE_INTERRUPT_SOURCE_COLOR",
 	Unit = "UNIT",
+	FeatureFlag = "FEATURE_VISIBILITY_SETTING",
 }
 
 ---@enum FontFlags
@@ -91,4 +81,19 @@ Private.Enum.FontFlags = {
 Private.Enum.Unit = {
 	Focus = "focus",
 	Target = "target",
+}
+
+---@enum FeatureFlag
+Private.Enum.FeatureFlag = {
+	ShowIcon = 1,
+	ShowCastTime = 2,
+	ShowBorder = 3,
+	ShowImportantSpellsGlow = 4,
+	ShowTargetMarker = 5,
+	ShowTargetName = 6,
+	UseTargetClassColor = 7,
+	ShowInterruptSource = 8,
+	UseInterruptSourceClassColor = 9,
+	PlayFocusTTSReminder = 10,
+	IgnoreFriendlies = 11,
 }

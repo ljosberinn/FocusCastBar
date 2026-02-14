@@ -44,7 +44,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			AdvancedFocusCastBarSaved.Settings.Height,
 			AdvancedFocusCastBarSaved.Settings.Height
 		)
-		self:AdjustIconLayout(AdvancedFocusCastBarSaved.Settings.ShowIcon)
+		self:AdjustIconLayout(AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowIcon])
 		self:AdjustSpellNameTextWidth()
 
 		do
@@ -59,7 +59,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			edgeSize = 1,
 		})
 		self.Border:SetBackdropBorderColor(0.1, 0.1, 0.1, 1)
-		self.Border:SetShown(AdvancedFocusCastBarSaved.Settings.ShowBorder)
+		self.Border:SetShown(AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowBorder])
 		self:SetFontAndFontSize()
 		self:ToggleTargetNameVisibility()
 		self:AdjustCustomTextsPosition()
@@ -179,32 +179,6 @@ function AdvancedFocusCastBarMixin:OnLoad()
 		---@return LibEditModeSetting
 		local function CreateSetting(key)
 			local L = Private.L.Settings
-
-			if key == Private.Enum.Setting.PlayFocusTTSReminder then
-				---@param layoutName string
-				---@return boolean
-				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.PlayFocusTTSReminder
-				end
-
-				---@param layoutName string
-				---@param value boolean
-				local function Set(layoutName, value)
-					AdvancedFocusCastBarSaved.Settings.PlayFocusTTSReminder = value
-
-					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
-				end
-
-				---@type LibEditModeCheckbox
-				return {
-					name = L.PlayFocusTTSReminderLabel,
-					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = L.PlayFocusTTSReminderTooltip,
-					default = defaults.PlayFocusTTSReminder,
-					get = Get,
-					set = Set,
-				}
-			end
 
 			if key == Private.Enum.Setting.Opacity then
 				local sliderSettings = GetSliderSettingsForOption(key)
@@ -369,58 +343,6 @@ function AdvancedFocusCastBarMixin:OnLoad()
 					minValue = sliderSettings.min,
 					maxValue = sliderSettings.max,
 					valueStep = sliderSettings.step,
-				}
-			end
-
-			if key == Private.Enum.Setting.ShowTargetMarker then
-				---@param layoutName string
-				---@return boolean
-				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.ShowTargetMarker
-				end
-
-				---@param layoutName string
-				---@param value boolean
-				local function Set(layoutName, value)
-					AdvancedFocusCastBarSaved.Settings.ShowTargetMarker = value
-
-					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
-				end
-
-				---@type LibEditModeCheckbox
-				return {
-					name = L.ShowTargetMarkerLabel,
-					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = L.ShowTargetMarkerTooltip,
-					default = defaults.ShowTargetMarker,
-					get = Get,
-					set = Set,
-				}
-			end
-
-			if key == Private.Enum.Setting.GlowImportant then
-				---@param layoutName string
-				---@return boolean
-				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.GlowImportant
-				end
-
-				---@param layoutName string
-				---@param value boolean
-				local function Set(layoutName, value)
-					AdvancedFocusCastBarSaved.Settings.GlowImportant = value
-
-					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
-				end
-
-				---@type LibEditModeCheckbox
-				return {
-					name = L.GlowImportantLabel,
-					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = L.GlowImportantTooltip,
-					default = defaults.GlowImportant,
-					get = Get,
-					set = Set,
 				}
 			end
 
@@ -592,8 +514,8 @@ function AdvancedFocusCastBarMixin:OnLoad()
 					multiple = false,
 					generator = Generator,
 					set = Set,
-					disabled = not AdvancedFocusCastBarSaved.Settings.ShowTargetName
-						and not AdvancedFocusCastBarSaved.Settings.ShowInterruptSource,
+					disabled = not AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowTargetName]
+						and not AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowInterruptSource],
 				}
 			end
 
@@ -793,239 +715,6 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				}
 			end
 
-			if key == Private.Enum.Setting.ShowBorder then
-				---@param layoutName string
-				---@return boolean
-				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.ShowBorder
-				end
-
-				---@param layoutName string
-				---@param value boolean
-				local function Set(layoutName, value)
-					AdvancedFocusCastBarSaved.Settings.ShowBorder = value
-
-					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
-				end
-
-				---@type LibEditModeCheckbox
-				return {
-					name = L.ShowBorderLabel,
-					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = L.ShowBorderTooltip,
-					default = defaults.ShowBorder,
-					get = Get,
-					set = Set,
-				}
-			end
-
-			if key == Private.Enum.Setting.ShowTargetName then
-				---@param layoutName string
-				---@return boolean
-				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.ShowTargetName
-				end
-
-				---@param layoutName string
-				---@param value boolean
-				local function Set(layoutName, value)
-					AdvancedFocusCastBarSaved.Settings.ShowTargetName = value
-
-					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
-
-					if value then
-						LibEditMode:EnableFrameSetting(self, L.ShowTargetClassColorLabel)
-						LibEditMode:EnableFrameSetting(self, L.CustomTextPositionLabel)
-					else
-						LibEditMode:DisableFrameSetting(self, L.ShowTargetClassColorLabel)
-
-						if not AdvancedFocusCastBarSaved.Settings.ShowInterruptSource then
-							LibEditMode:DisableFrameSetting(self, L.CustomTextPositionLabel)
-						end
-					end
-				end
-
-				---@type LibEditModeCheckbox
-				return {
-					name = L.ShowTargetNameLabel,
-					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = L.ShowTargetNameTooltip,
-					default = defaults.ShowTargetName,
-					get = Get,
-					set = Set,
-				}
-			end
-
-			if key == Private.Enum.Setting.ShowTargetClassColor then
-				---@param layoutName string
-				---@return boolean
-				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.ShowTargetClassColor
-				end
-
-				---@param layoutName string
-				---@param value boolean
-				local function Set(layoutName, value)
-					AdvancedFocusCastBarSaved.Settings.ShowTargetClassColor = value
-
-					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
-				end
-
-				---@type LibEditModeCheckbox
-				return {
-					name = L.ShowTargetClassColorLabel,
-					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = L.ShowTargetClassColorTooltip,
-					default = defaults.ShowTargetClassColor,
-					get = Get,
-					set = Set,
-					disabled = not AdvancedFocusCastBarSaved.Settings.ShowTargetName,
-				}
-			end
-
-			if key == Private.Enum.Setting.IgnoreFriendlies then
-				---@param layoutName string
-				---@return boolean
-				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.IgnoreFriendlies
-				end
-
-				---@param layoutName string
-				---@param value boolean
-				local function Set(layoutName, value)
-					AdvancedFocusCastBarSaved.Settings.IgnoreFriendlies = value
-
-					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
-				end
-
-				---@type LibEditModeCheckbox
-				return {
-					name = L.IgnoreFriendliesLabel,
-					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = L.IgnoreFriendliesTooltip,
-					default = defaults.IgnoreFriendlies,
-					get = Get,
-					set = Set,
-					disabled = not AdvancedFocusCastBarSaved.Settings.ShowTargetName,
-				}
-			end
-
-			if key == Private.Enum.Setting.ShowInterruptSource then
-				---@param layoutName string
-				---@return boolean
-				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.ShowInterruptSource
-				end
-
-				---@param layoutName string
-				---@param value boolean
-				local function Set(layoutName, value)
-					AdvancedFocusCastBarSaved.Settings.ShowInterruptSource = value
-
-					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
-
-					if value then
-						LibEditMode:EnableFrameSetting(self, L.CustomTextPositionLabel)
-						LibEditMode:EnableFrameSetting(self, L.UseInterruptSourceColorLabel)
-					else
-						LibEditMode:DisableFrameSetting(self, L.UseInterruptSourceColorLabel)
-
-						if not AdvancedFocusCastBarSaved.Settings.ShowTargetName then
-							LibEditMode:DisableFrameSetting(self, L.CustomTextPositionLabel)
-						end
-					end
-				end
-
-				---@type LibEditModeCheckbox
-				return {
-					name = L.ShowInterruptSourceLabel,
-					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = L.ShowInterruptSourceTooltip,
-					default = defaults.ShowInterruptSource,
-					get = Get,
-					set = Set,
-				}
-			end
-
-			if key == Private.Enum.Setting.UseInterruptSourceColor then
-				---@param layoutName string
-				---@return boolean
-				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.UseInterruptSourceColor
-				end
-
-				---@param layoutName string
-				---@param value boolean
-				local function Set(layoutName, value)
-					AdvancedFocusCastBarSaved.Settings.UseInterruptSourceColor = value
-
-					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
-				end
-
-				---@type LibEditModeCheckbox
-				return {
-					name = L.UseInterruptSourceColorLabel,
-					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = L.UseInterruptSourceColorTooltip,
-					default = defaults.UseInterruptSourceColor,
-					get = Get,
-					set = Set,
-					disabled = not AdvancedFocusCastBarSaved.Settings.ShowInterruptSource,
-				}
-			end
-
-			if key == Private.Enum.Setting.ShowIcon then
-				---@param layoutName string
-				---@return boolean
-				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.ShowIcon
-				end
-
-				---@param layoutName string
-				---@param value boolean
-				local function Set(layoutName, value)
-					AdvancedFocusCastBarSaved.Settings.ShowIcon = value
-
-					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
-				end
-
-				---@type LibEditModeCheckbox
-				return {
-					name = L.ShowIconLabel,
-					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = L.ShowIconTooltip,
-					default = defaults.ShowIcon,
-					get = Get,
-					set = Set,
-				}
-			end
-
-			if key == Private.Enum.Setting.ShowCastTime then
-				---@param layoutName string
-				---@return boolean
-				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.ShowCastTime
-				end
-
-				---@param layoutName string
-				---@param value boolean
-				local function Set(layoutName, value)
-					AdvancedFocusCastBarSaved.Settings.ShowCastTime = value
-
-					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
-				end
-
-				---@type LibEditModeCheckbox
-				return {
-					name = L.ShowCastTimeLabel,
-					kind = Enum.EditModeSettingDisplayType.Checkbox,
-					desc = L.ShowCastTimeTooltip,
-					default = defaults.ShowCastTime,
-					get = Get,
-					set = Set,
-				}
-			end
-
 			if key == Private.Enum.Setting.LoadConditionContentType then
 				local function Generator(owner, rootDescription, data)
 					for label, id in pairs(Private.Enum.ContentType) do
@@ -1053,7 +742,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				end
 
 				---@param layoutName string
-				---@param values table<string, boolean>
+				---@param values table<FeatureFlag, boolean>
 				local function Set(layoutName, values)
 					local hasChanges = false
 
@@ -1075,10 +764,103 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeDropdown
 				return {
-					name = L.LoadConditionContentTypeLabelAbbreviated,
+					name = L.LoadConditionContentTypeLabel,
 					kind = Enum.EditModeSettingDisplayType.Dropdown,
 					default = defaults.LoadConditionContentType,
 					desc = L.LoadConditionContentTypeTooltip,
+					generator = Generator,
+					-- technically is a reset only
+					set = Set,
+				}
+			end
+
+			if key == Private.Enum.Setting.FeatureFlag then
+				local function Generator(owner, rootDescription, data)
+					local order = {
+						Private.Enum.FeatureFlag.ShowIcon,
+						Private.Enum.FeatureFlag.ShowCastTime,
+						Private.Enum.FeatureFlag.ShowBorder,
+						Private.Enum.FeatureFlag.ShowImportantSpellsGlow,
+						Private.Enum.FeatureFlag.ShowTargetMarker,
+						Private.Enum.FeatureFlag.ShowTargetName,
+						Private.Enum.FeatureFlag.UseTargetClassColor,
+						Private.Enum.FeatureFlag.ShowInterruptSource,
+						Private.Enum.FeatureFlag.UseInterruptSourceClassColor,
+						Private.Enum.FeatureFlag.PlayFocusTTSReminder,
+						Private.Enum.FeatureFlag.IgnoreFriendlies,
+					}
+
+					for index, id in ipairs(order) do
+						if
+							id == Private.Enum.FeatureFlag.ShowTargetName
+							or id == Private.Enum.FeatureFlag.ShowInterruptSource
+							or id == Private.Enum.FeatureFlag.PlayFocusTTSReminder
+						then
+							rootDescription:CreateDivider()
+						end
+
+						local function IsEnabled()
+							return AdvancedFocusCastBarSaved.Settings.FeatureFlags[id]
+						end
+
+						local function Toggle()
+							AdvancedFocusCastBarSaved.Settings.FeatureFlags[id] =
+								not AdvancedFocusCastBarSaved.Settings.FeatureFlags[id]
+
+							Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, { id })
+
+							if
+								id == Private.Enum.FeatureFlag.ShowInterruptSource
+								or id == Private.Enum.FeatureFlag.ShowTargetName
+							then
+								local thisState = AdvancedFocusCastBarSaved.Settings.FeatureFlags[id]
+
+								local otherId = id == Private.Enum.FeatureFlag.ShowInterruptSource
+										and Private.Enum.FeatureFlag.ShowTargetName
+									or Private.Enum.FeatureFlag.ShowInterruptSource
+								local otherState = AdvancedFocusCastBarSaved.Settings.FeatureFlags[otherId]
+
+								if not thisState and not otherState then
+									LibEditMode:DisableFrameSetting(self, L.CustomTextPositionLabel)
+								else
+									LibEditMode:EnableFrameSetting(self, L.CustomTextPositionLabel)
+								end
+							end
+						end
+
+						local translated = L.FeatureFlagLabels[id]
+						rootDescription:CreateCheckbox(translated, IsEnabled, Toggle, {
+							value = id,
+							multiple = true,
+						})
+					end
+				end
+
+				---@param layoutName string
+				---@param values table<string, boolean>
+				local function Set(layoutName, values)
+					local hasChanges = false
+					local changedIds = {}
+
+					for id, bool in pairs(values) do
+						if AdvancedFocusCastBarSaved.Settings.FeatureFlags[id] ~= bool then
+							AdvancedFocusCastBarSaved.Settings.FeatureFlags[id] = bool
+							hasChanges = true
+							table.insert(changedIds, id)
+						end
+					end
+
+					if hasChanges then
+						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, changedIds)
+					end
+				end
+
+				---@type LibEditModeDropdown
+				return {
+					name = L.FeatureFlagLabel,
+					kind = Enum.EditModeSettingDisplayType.Dropdown,
+					default = defaults.FeatureFlags,
+					desc = L.FeatureFlagTooltip,
 					generator = Generator,
 					-- technically is a reset only
 					set = Set,
@@ -1135,7 +917,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeDropdown
 				return {
-					name = L.LoadConditionRoleLabelAbbreviated,
+					name = L.LoadConditionRoleLabel,
 					kind = Enum.EditModeSettingDisplayType.Dropdown,
 					default = defaults.LoadConditionRole,
 					desc = L.LoadConditionRoleTooltip,
@@ -1197,7 +979,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 				---@type LibEditModeDropdown
 				return {
-					name = L.FontFlagsLabelAbbreviated,
+					name = L.FontFlagsLabel,
 					kind = Enum.EditModeSettingDisplayType.Dropdown,
 					default = defaults.FontFlags,
 					desc = L.FontFlagsTooltip,
@@ -1351,158 +1133,41 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			CreateSetting(Private.Enum.Setting.LoadConditionContentType),
 			CreateSetting(Private.Enum.Setting.LoadConditionRole),
 			CreateSetting(Private.Enum.Setting.Texture),
-			CreateSetting(Private.Enum.Setting.ShowIcon),
-			CreateSetting(Private.Enum.Setting.ShowCastTime),
+			CreateSetting(Private.Enum.Setting.FeatureFlag),
 			CreateSetting(Private.Enum.Setting.Opacity),
 			CreateSetting(Private.Enum.Setting.OutOfRangeOpacity),
 			CreateSetting(Private.Enum.Setting.BackgroundOpacity),
 			CreateSetting(Private.Enum.Setting.Font),
 			CreateSetting(Private.Enum.Setting.FontSize),
 			CreateSetting(Private.Enum.Setting.FontFlags),
-			CreateSetting(Private.Enum.Setting.ShowBorder),
-			CreateSetting(Private.Enum.Setting.GlowImportant),
 			CreateSetting(Private.Enum.Setting.ColorUninterruptible),
 			CreateSetting(Private.Enum.Setting.ColorInterruptibleCanInterrupt),
 			CreateSetting(Private.Enum.Setting.ColorInterruptibleCannotInterrupt),
 			CreateSetting(Private.Enum.Setting.ColorInterruptTick),
 			CreateSetting(Private.Enum.Setting.TickWidth),
-			CreateSetting(Private.Enum.Setting.ShowTargetMarker),
-			CreateSetting(Private.Enum.Setting.ShowTargetName),
-			CreateSetting(Private.Enum.Setting.ShowTargetClassColor),
-			CreateSetting(Private.Enum.Setting.ShowInterruptSource),
-			CreateSetting(Private.Enum.Setting.UseInterruptSourceColor),
 			CreateSetting(Private.Enum.Setting.CustomTextsPosition),
-			CreateSetting(Private.Enum.Setting.PlayFocusTTSReminder),
-			CreateSetting(Private.Enum.Setting.IgnoreFriendlies),
 			CreateSetting(Private.Enum.Setting.Point),
 			CreateSetting(Private.Enum.Setting.OffsetX),
 			CreateSetting(Private.Enum.Setting.OffsetY),
 			CreateSetting(Private.Enum.Setting.Unit),
 		})
 
-		local function OnImportButtonClick()
-			StaticPopupDialogs[addonName] = {
+		---@param title string
+		---@param text string
+		---@param button1 string
+		local function CreateEditablePopup(title, text, button1)
+			return {
 				id = addonName,
 				whileDead = true,
-				text = Private.L.Settings.Import,
-				button1 = Private.L.Settings.Import,
-				button2 = CLOSE,
-				hasEditBox = true,
-				hasWideEditBox = true,
-				editBoxWidth = 350,
-				hideOnEscape = true,
-				OnAccept = function(popupSelf)
-					local editBox = popupSelf:GetEditBox()
-					local importString = editBox:GetText()
-
-					local ok, result = pcall(function()
-						-- return C_EncodingUtil.DeserializeJSON(importString)
-						return C_EncodingUtil.DeserializeCBOR(C_EncodingUtil.DecodeBase64(importString))
-					end, string)
-
-					if not ok then
-						if result ~= nil then
-							print(result)
-						end
-
-						return false
-					end
-
-					-- just a type check
-					if result == nil then
-						return false
-					end
-
-					local hasAnyChange = false
-
-					for key, defaultValue in pairs(defaults) do
-						local newValue = result[key]
-						local expectedType = type(defaultValue)
-
-						if newValue ~= nil and type(newValue) == expectedType then
-							local eventKey = Private.Enum.Setting[key]
-							local event = Private.Enum.Events.SETTING_CHANGED
-							if
-								eventKey == Private.Enum.Setting.Point
-								or eventKey == Private.Enum.Setting.OffsetX
-								or eventKey == Private.Enum.Setting.OffsetY
-							then
-								event = Private.Enum.Events.EDIT_MODE_POSITION_CHANGED
-							end
-							local hasChanges = false
-
-							if expectedType == "table" then
-								local enumToCompareAgainst = nil
-								if key == "LoadConditionContentType" then
-									enumToCompareAgainst = Private.Enum.ContentType
-								elseif key == "LoadConditionRole" then
-									enumToCompareAgainst = Private.Enum.Role
-								elseif key == "FontFlags" then
-									enumToCompareAgainst = Private.Enum.FontFlags
-								end
-
-								if enumToCompareAgainst then
-									local newTable = {}
-
-									for _, id in pairs(enumToCompareAgainst) do
-										if newValue[id] == nil then
-											newTable[id] = AdvancedFocusCastBarSaved.Settings[key][id]
-										else
-											newTable[id] = newValue[id]
-
-											if newValue[id] ~= AdvancedFocusCastBarSaved.Settings[key][id] then
-												hasChanges = true
-											end
-										end
-									end
-
-									if hasChanges then
-										AdvancedFocusCastBarSaved.Settings[key] = newTable
-										Private.EventRegistry:TriggerEvent(event, eventKey, newTable)
-									end
-								end
-							elseif newValue ~= AdvancedFocusCastBarSaved.Settings[key] then
-								AdvancedFocusCastBarSaved.Settings[key] = newValue
-								hasChanges = true
-
-								if eventKey and hasChanges then
-									Private.EventRegistry:TriggerEvent(event, eventKey, newValue)
-								end
-							end
-
-							if hasChanges then
-								hasAnyChange = true
-							end
-						end
-					end
-
-					if hasAnyChange and LibEditMode:IsInEditMode() then
-						LibEditMode:RefreshFrameSettings(self)
-					end
-				end,
-			}
-
-			StaticPopup_Hide(addonName)
-			StaticPopup_Show(addonName)
-		end
-
-		local function OnExportButtonClick()
-			local exportString =
-				C_EncodingUtil.EncodeBase64(C_EncodingUtil.SerializeCBOR(AdvancedFocusCastBarSaved.Settings))
-			-- local exportString = C_EncodingUtil.SerializeJSON(AdvancedFocusCastBarSaved.Settings)
-
-			StaticPopupDialogs[addonName] = {
-				id = addonName,
-				whileDead = true,
-				text = Private.L.Settings.Export,
-				button1 = ACCEPT,
+				text = title,
+				button1 = button1,
 				hasEditBox = true,
 				hasWideEditBox = true,
 				editBoxWidth = 350,
 				hideOnEscape = true,
 				OnShow = function(popupSelf)
 					local editBox = popupSelf:GetEditBox()
-					editBox:SetText(exportString)
+					editBox:SetText(text)
 					editBox:HighlightText()
 
 					local ctrlDown = false
@@ -1529,13 +1194,56 @@ function AdvancedFocusCastBarMixin:OnLoad()
 					-- ctrl + x sets the text to "" but this triggers hiding and shouldn't trigger resetting the text
 					local currentText = popupSelf:GetText()
 
-					if currentText == "" or currentText == exportString then
+					if currentText == "" or currentText == text then
 						return
 					end
 
-					popupSelf:SetText(exportString)
+					popupSelf:SetText(text)
 				end,
 			}
+		end
+
+		local function OnImportButtonClick()
+			StaticPopupDialogs[addonName] = {
+				id = addonName,
+				whileDead = true,
+				text = Private.L.Settings.Import,
+				button1 = Private.L.Settings.Import,
+				button2 = CLOSE,
+				hasEditBox = true,
+				hasWideEditBox = true,
+				editBoxWidth = 350,
+				hideOnEscape = true,
+				OnAccept = function(popupSelf)
+					local editBox = popupSelf:GetEditBox()
+					local importString = editBox:GetText()
+
+					local success, hasAnyChange = Private.Settings.Import(importString)
+
+					if hasAnyChange and LibEditMode:IsInEditMode() then
+						LibEditMode:RefreshFrameSettings(self)
+					end
+				end,
+			}
+
+			StaticPopup_Hide(addonName)
+			StaticPopup_Show(addonName)
+		end
+
+		local function OnExportButtonClick()
+			StaticPopupDialogs[addonName] =
+				CreateEditablePopup(Private.L.Settings.Export, Private.Settings.Export(), ACCEPT)
+
+			StaticPopup_Hide(addonName)
+			StaticPopup_Show(addonName)
+		end
+
+		local function OnDiscordLinkClick()
+			local link = C_EncodingUtil.DeserializeCBOR(
+				C_EncodingUtil.DecodeBase64("oURsaW5rWB1odHRwczovL2Rpc2NvcmQuZ2cvQzVTVGpZUnNDRA==")
+			).link
+
+			StaticPopupDialogs[addonName] = CreateEditablePopup("Discord", link, ACCEPT)
 
 			StaticPopup_Hide(addonName)
 			StaticPopup_Show(addonName)
@@ -1549,6 +1257,10 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			{
 				click = OnExportButtonClick,
 				text = Private.L.Settings.Export,
+			},
+			{
+				click = OnDiscordLinkClick,
+				text = "Discord",
 			},
 		})
 
@@ -1606,8 +1318,10 @@ function AdvancedFocusCastBarMixin:ToggleUnitIntegration()
 end
 
 function AdvancedFocusCastBarMixin:AdjustSpellNameTextWidth()
-	local iconSize = AdvancedFocusCastBarSaved.Settings.ShowIcon and AdvancedFocusCastBarSaved.Settings.Height or 0
-	local castTimeSize = AdvancedFocusCastBarSaved.Settings.ShowCastTime
+	local iconSize = AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowIcon]
+			and AdvancedFocusCastBarSaved.Settings.Height
+		or 0
+	local castTimeSize = AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowCastTime]
 			and 2 * AdvancedFocusCastBarSaved.Settings.Height
 		or 0
 	local maxWidth = AdvancedFocusCastBarSaved.Settings.Width - 4 - iconSize - castTimeSize
@@ -1637,7 +1351,7 @@ function AdvancedFocusCastBarMixin:IsPastLoadingScreen()
 end
 
 function AdvancedFocusCastBarMixin:ToggleTargetMarkerIntegration()
-	if AdvancedFocusCastBarSaved.Settings.ShowTargetMarker then
+	if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowTargetMarker] then
 		self:RegisterEvent("RAID_TARGET_UPDATE")
 	else
 		self:UnregisterEvent("RAID_TARGET_UPDATE")
@@ -1706,28 +1420,18 @@ end
 function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 	if key == Private.Enum.Setting.Width then
 		self:SetWidth(value)
-		self:AdjustIconLayout(AdvancedFocusCastBarSaved.Settings.ShowIcon)
+		self:AdjustIconLayout(AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowIcon])
 		self:AdjustSpellNameTextWidth()
 		self:HideGlow()
 		self:ShowGlow(false)
 	elseif key == Private.Enum.Setting.Height then
 		self:SetHeight(value)
-		self:AdjustIconLayout(AdvancedFocusCastBarSaved.Settings.ShowIcon)
+		self:AdjustIconLayout(AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowIcon])
 		self:AdjustSpellNameTextWidth()
 		self:HideGlow()
 		self:ShowGlow(false)
-	elseif key == Private.Enum.Setting.ShowIcon then
-		self:AdjustIconLayout(value)
-		self:AdjustSpellNameTextWidth()
-	elseif key == Private.Enum.Setting.ShowCastTime then
-		self.CastBar.CastTimeText:SetShown(value)
-		self:AdjustSpellNameTextWidth()
 	elseif key == Private.Enum.Setting.Opacity then
 		self:SetAlpha(value)
-	elseif key == Private.Enum.Setting.ShowBorder then
-		self:HideGlow()
-		self.Border:SetShown(value)
-		self:ShowGlow(false)
 	elseif key == Private.Enum.Setting.Texture then
 		self.CastBar:SetStatusBarTexture(value)
 	elseif
@@ -1736,11 +1440,6 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 		or key == Private.Enum.Setting.FontFlags
 	then
 		self:SetFontAndFontSize()
-	elseif key == Private.Enum.Setting.GlowImportant then
-		if value then
-		else
-			self:HideGlow()
-		end
 	elseif key == Private.Enum.Setting.ColorUninterruptible then
 		self.colors.Uninterruptible = CreateColorFromHexString(value)
 	elseif key == Private.Enum.Setting.ColorInterruptibleCanInterrupt then
@@ -1749,13 +1448,8 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 		self.colors.InterruptibleCannotInterrupt = CreateColorFromHexString(value)
 	elseif key == Private.Enum.Setting.ColorInterruptTick then
 		self.colors.InterruptTick = CreateColorFromHexString(value)
-	elseif key == Private.Enum.Setting.ShowTargetMarker then
-		self:ToggleTargetMarkerIntegration()
-		self.CustomElementsFrame.TargetMarker:SetShown(value)
 	elseif key == Private.Enum.Setting.BackgroundOpacity then
 		self.CastBar.Background:SetAlpha(value)
-	elseif key == Private.Enum.Setting.ShowTargetName then
-		self:ToggleTargetNameVisibility()
 	elseif key == Private.Enum.Setting.TickWidth then
 		self.CastBar.InterruptBar.Tick:SetShown(value > 0)
 		self.CastBar.InterruptBar.Tick:SetWidth(value)
@@ -1767,6 +1461,29 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 		self:AdjustCustomTextsPosition()
 	elseif key == Private.Enum.Setting.Unit then
 		self:ToggleUnitIntegration()
+	elseif key == Private.Enum.Setting.FeatureFlag then
+		for index, id in ipairs(value) do
+			if id == Private.Enum.FeatureFlag.ShowIcon then
+				self:AdjustIconLayout(AdvancedFocusCastBarSaved.Settings.FeatureFlags[id])
+				self:AdjustSpellNameTextWidth()
+			elseif id == Private.Enum.FeatureFlag.ShowCastTime then
+				self.CastBar.CastTimeText:SetShown(AdvancedFocusCastBarSaved.Settings.FeatureFlags[id])
+				self:AdjustSpellNameTextWidth()
+			elseif id == Private.Enum.FeatureFlag.ShowBorder then
+				self:HideGlow()
+				self.Border:SetShown(AdvancedFocusCastBarSaved.Settings.FeatureFlags[id])
+				self:ShowGlow(false)
+			elseif id == Private.Enum.FeatureFlag.ShowImportantSpellsGlow then
+				if not AdvancedFocusCastBarSaved.Settings.FeatureFlags[id] then
+					self:HideGlow()
+				end
+			elseif id == Private.Enum.FeatureFlag.ShowTargetMarker then
+				self.CustomElementsFrame.TargetMarker:SetShown(AdvancedFocusCastBarSaved.Settings.FeatureFlags[id])
+				self:ToggleTargetMarkerIntegration()
+			elseif id == Private.Enum.FeatureFlag.ShowTargetName then
+				self:ToggleTargetNameVisibility()
+			end
+		end
 	end
 end
 
@@ -1791,7 +1508,9 @@ function AdvancedFocusCastBarMixin:AdjustCustomTextsPosition()
 end
 
 function AdvancedFocusCastBarMixin:ToggleTargetNameVisibility()
-	self:SetTargetNameVisibility(AdvancedFocusCastBarSaved.Settings.ShowTargetName)
+	self:SetTargetNameVisibility(
+		AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowTargetName]
+	)
 end
 
 function AdvancedFocusCastBarMixin:SetTargetNameVisibility(bool)
@@ -1933,7 +1652,7 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 
 	self.elapsed = self.elapsed - 0.1
 
-	if AdvancedFocusCastBarSaved.Settings.ShowCastTime then
+	if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowCastTime] then
 		self.CastBar.CastTimeText:SetFormattedText("%.1f", self.castInformation.duration:GetRemainingDuration())
 	end
 
@@ -1964,7 +1683,8 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 end
 
 function AdvancedFocusCastBarMixin:ShowGlow(isImportant)
-	local frame = AdvancedFocusCastBarSaved.Settings.ShowBorder and self.Border or self
+	local frame = AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowBorder] and self.Border
+		or self
 
 	if frame._PixelGlow == nil then
 		LibCustomGlow.PixelGlow_Start(
@@ -1989,7 +1709,9 @@ function AdvancedFocusCastBarMixin:ShowGlow(isImportant)
 end
 
 function AdvancedFocusCastBarMixin:HideGlow()
-	LibCustomGlow.PixelGlow_Stop(AdvancedFocusCastBarSaved.Settings.ShowBorder and self.Border or self)
+	LibCustomGlow.PixelGlow_Stop(
+		AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowBorder] and self.Border or self
+	)
 end
 
 function AdvancedFocusCastBarMixin:LoadConditionsProhibitExecution()
@@ -2010,7 +1732,7 @@ function AdvancedFocusCastBarMixin:UnitIsIrrelevant()
 	end
 
 	if
-		AdvancedFocusCastBarSaved.Settings.IgnoreFriendlies
+		AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.IgnoreFriendlies]
 		and not UnitCanAttack("player", AdvancedFocusCastBarSaved.Settings.Unit)
 	then
 		return true
@@ -2107,7 +1829,7 @@ end
 function AdvancedFocusCastBarMixin:GetMaybeColoredUnitName(unit)
 	local name = UnitName(unit)
 
-	if AdvancedFocusCastBarSaved.Settings.ShowTargetClassColor then
+	if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.UseTargetClassColor] then
 		local class = select(2, UnitClass(unit))
 		local color = C_ClassColor.GetClassColor(class)
 
@@ -2128,7 +1850,7 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 	self:DeriveAndSetNextColor()
 	self:AdjustDirection(self.castInformation.isChannel)
 
-	if AdvancedFocusCastBarSaved.Settings.GlowImportant then
+	if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowImportantSpellsGlow] then
 		self:ShowGlow(self.castInformation.isImportant)
 	else
 		self:ShowGlow(false)
@@ -2145,7 +1867,7 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 
 	-- presence means we're in edit mode
 	if self.demoInterval == nil then
-		if AdvancedFocusCastBarSaved.Settings.ShowTargetName then
+		if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowTargetName] then
 			self:SetTargetNameVisibility(true)
 
 			if IsInGroup() then
@@ -2171,7 +1893,7 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 			self:SetTargetNameVisibility(false)
 		end
 	else
-		if AdvancedFocusCastBarSaved.Settings.ShowTargetMarker then
+		if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowTargetMarker] then
 			local index = math.random(0, 8)
 
 			self.CustomElementsFrame.TargetMarker:SetShown(index > 0)
@@ -2218,24 +1940,28 @@ function AdvancedFocusCastBarMixin:QueueDelayedHide()
 		self.colors.InterruptibleCannotInterrupt.b
 	)
 
-	if AdvancedFocusCastBarSaved.Settings.GlowImportant then
+	if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowImportantSpellsGlow] then
 		self:ShowGlow(false)
 	end
 
-	if AdvancedFocusCastBarSaved.Settings.ShowCastTime then
+	local showCastTime = AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowCastTime]
+
+	if showCastTime then
 		self.CastBar.CastTimeText:Hide()
 	end
 
-	if AdvancedFocusCastBarSaved.Settings.ShowTargetName then
+	local showTargetName = AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowTargetName]
+
+	if showTargetName then
 		self:SetTargetNameVisibility(false)
 	end
 
 	self.interruptHidingDelayTimer = C_Timer.NewTimer(1, function()
-		if AdvancedFocusCastBarSaved.Settings.ShowCastTime then
+		if showCastTime then
 			self.CastBar.CastTimeText:Show()
 		end
 
-		if AdvancedFocusCastBarSaved.Settings.ShowTargetName then
+		if showTargetName then
 			self:SetTargetNameVisibility(true)
 		end
 
@@ -2289,7 +2015,7 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 
 		local interruptedBy = nil
 
-		if AdvancedFocusCastBarSaved.Settings.ShowInterruptSource then
+		if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowInterruptSource] then
 			if event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_INTERRUPTED" then
 				interruptedBy = select(4, ...)
 			elseif event == "UNIT_SPELLCAST_EMPOWER_STOP" then
@@ -2307,14 +2033,19 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 
 		local delayHiding = false
 
-		if AdvancedFocusCastBarSaved.Settings.ShowInterruptSource and interruptedBy ~= nil then
+		if
+			AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowInterruptSource]
+			and interruptedBy ~= nil
+		then
 			if interruptedBy ~= nil then
 				delayHiding = true
 
 				local interruptName = UnitNameFromGUID(interruptedBy)
 				local interruptColor = nil
 
-				if AdvancedFocusCastBarSaved.Settings.UseInterruptSourceColor then
+				if
+					AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.UseInterruptSourceClassColor]
+				then
 					local className = select(2, UnitClassFromGUID(interruptedBy))
 					-- unsure if className yields something for pets, so nilcheck it until confirmed
 					interruptColor = className == nil and nil or C_ClassColor.GetClassColor(className)
@@ -2349,7 +2080,7 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 			end
 
 			if
-				AdvancedFocusCastBarSaved.Settings.PlayFocusTTSReminder
+				AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.PlayFocusTTSReminder]
 				and self.contentType == Private.Enum.ContentType.Dungeon
 			then
 				-- delay this as focus target dying may imply leaving combat

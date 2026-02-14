@@ -1,14 +1,6 @@
 ---@type string, AdvancedFocusCastBar
 local addonName, Private = ...
 
-local addonNameWithIcon = ""
-
-do
-	local icon = C_AddOns.GetAddOnMetadata(addonName, "IconTexture")
-	-- width, height, offsetX, offsetY
-	addonNameWithIcon = string.format("|T%s:%d:%d:%d:%d|t %s", icon, 20, 20, 0, -4, addonName)
-end
-
 local L = Private.L
 
 L.EditMode = {}
@@ -17,9 +9,9 @@ L.EditMode.AddonName = "Advanced Focus Cast Bar"
 
 L.Settings = {}
 
-L.Settings.EditModeReminder = "Settings are exclusively available through Edit Mode."
+L.Settings.EditModeReminder = string.format("Settings are exclusively available via Escape > %s.", HUD_EDIT_MODE_MENU)
 
-L.Settings.LoadConditionContentTypeLabelAbbreviated = "Load in Content"
+L.Settings.LoadConditionContentTypeLabel = "Load in Content"
 L.Settings.LoadConditionContentTypeTooltip = nil
 L.Settings.LoadConditionContentTypeLabels = {
 	[Private.Enum.ContentType.OpenWorld] = "Open World",
@@ -30,7 +22,7 @@ L.Settings.LoadConditionContentTypeLabels = {
 	[Private.Enum.ContentType.Battleground] = "Battleground",
 }
 
-L.Settings.LoadConditionRoleLabelAbbreviated = "Load on Role"
+L.Settings.LoadConditionRoleLabel = "Load on Role"
 L.Settings.LoadConditionRoleTooltip = nil
 L.Settings.LoadConditionRoleLabels = {
 	[Private.Enum.Role.Healer] = "Healer",
@@ -38,7 +30,7 @@ L.Settings.LoadConditionRoleLabels = {
 	[Private.Enum.Role.Damager] = "DPS",
 }
 
-L.Settings.FontFlagsLabelAbbreviated = "Font Options"
+L.Settings.FontFlagsLabel = "Font Options"
 L.Settings.FontFlagsTooltip = nil
 L.Settings.FontFlagsLabels = {
 	[Private.Enum.FontFlags.OUTLINE] = "Outline",
@@ -51,15 +43,6 @@ L.Settings.FrameWidthTooltip = nil
 L.Settings.FrameHeightLabel = "Height"
 L.Settings.FrameHeightTooltip = nil
 
-L.Settings.GlowImportantLabel = "Glow Important Spells"
-L.Settings.GlowImportantTooltip = "What's important and what isn't is declared by the game."
-
-L.Settings.ShowCastTimeLabel = "Show Cast Time"
-L.Settings.ShowCastTimeTooltip = nil
-
-L.Settings.ShowBorderLabel = "Show Border"
-L.Settings.ShowBorderTooltip = nil
-
 L.Settings.OpacityLabel = "Opacity"
 L.Settings.OpacityTooltip = nil
 
@@ -69,13 +52,8 @@ L.Settings.OffsetXTooltip = nil
 L.Settings.OffsetYLabel = "Offset Y"
 L.Settings.OffsetYTooltip = nil
 
-L.Settings.ClickToOpenSettingsLabel = "Click to open settings"
-
 L.Settings.Import = "Import"
 L.Settings.Export = "Export"
-
-L.Settings.ShowIconLabel = "Show Icon"
-L.Settings.ShowIconTooltip = nil
 
 L.Settings.ColorUninterruptibleLabel = "Uninterruptible"
 
@@ -86,10 +64,6 @@ L.Settings.ColorInterruptibleCannotInterruptTooltip =
 	"When you cannot interrupt because your spec has no interrupt, you haven't talented or it you're too low level."
 
 L.Settings.ColorInterruptTickLabel = "Tick Color"
-
-L.Settings.SettingsCheckboxInfo1 = "The checkboxes below DO NOT do anything."
-L.Settings.SettingsCheckboxInfo2 = "It's all about the color pickers, click those!"
-L.Settings.SettingsCheckboxInfo3 = "There's just no better way to do this via settings at this time."
 
 L.Settings.FontSizeLabel = "Font Size"
 L.Settings.FontSizeTooltip = nil
@@ -103,13 +77,9 @@ L.Settings.FontTooltip = nil
 L.Settings.TextureLabel = "Texture"
 L.Settings.TextureTooltip = nil
 
-L.Settings.ShowTargetNameLabel = "Show Target Name"
 L.Settings.ShowTargetNameTooltip = nil
 
-L.Settings.ShowTargetClassColorLabel = "Show Target Class Color"
-L.Settings.ShowTargetClassColorTooltip = "Can have contrast problems depending on background and bar color."
-
-L.Settings.CustomTextPositionLabel = "Custom Texts Position"
+L.Settings.CustomTextPositionLabel = "Text Position"
 L.Settings.CustomTextPositionTooltip = "Controls position of Target Name text as well as Interrupt Source text."
 L.Settings.CustomTextPositionLabels = {
 	[Private.Enum.CustomTextsPosition.BOTTOMCENTER] = "Bottom Center",
@@ -119,12 +89,8 @@ L.Settings.CustomTextPositionLabels = {
 	[Private.Enum.CustomTextsPosition.TOPRIGHT] = "Top Right",
 }
 
-L.Settings.IgnoreFriendliesLabel = "Ignore Friendlies"
 L.Settings.IgnoreFriendliesTooltip =
 	"Prevents showing the cast bar if the focus target is friendly or unattackable. Disable for testing purposes."
-
-L.Settings.ShowTargetMarkerLabel = "Show Target Marker"
-L.Settings.ShowTargetMarkerTooltip = nil
 
 L.Settings.BackgroundOpacityLabel = "Background Opacity"
 L.Settings.BackgroundOpacityTooltip = nil
@@ -132,20 +98,11 @@ L.Settings.BackgroundOpacityTooltip = nil
 L.Settings.OutOfRangeOpacityLabel = "Out of Range Opacity"
 L.Settings.OutOfRangeOpacityTooltip = "100% to disable."
 
-L.Settings.PlayFocusTTSReminderLabel = "Play Focus TTS Reminder"
-L.Settings.PlayFocusTTSReminderTooltip =
-	"Plays 'focus' text-to-speech when your current focus target disappears as a reminder to pick a new one. Only in dungeons!"
-
 L.Settings.PointLabel = "Point"
 L.Settings.PointTooltip =
 	"Together with Offset X / Offset Y, allows more granular positioning control in contrast to drag & drop."
 
-L.Settings.ShowInterruptSourceLabel = "Show Interrupt Source"
-L.Settings.ShowInterruptSourceTooltip = nil
 L.Settings.InterruptSourceText = "Interrupted [%s]"
-
-L.Settings.UseInterruptSourceColorLabel = "Use Interrupt Source Color"
-L.Settings.UseInterruptSourceColorTooltip = "Colors the interrupt with the class color of the interrupt source"
 
 L.Settings.UnitLabel = "Unit"
 L.Settings.UnitTooltip = "Which unit to use. Yes, this is a focus cast bar addon, yet here we are."
@@ -153,3 +110,39 @@ L.Settings.UnitLabels = {
 	[Private.Enum.Unit.Focus] = "Focus",
 	[Private.Enum.Unit.Target] = "Target",
 }
+
+L.Settings.FeatureFlagLabel = "Features"
+L.Settings.FeatureFlagLabels = {
+	[Private.Enum.FeatureFlag.ShowIcon] = "Show Icon",
+	[Private.Enum.FeatureFlag.ShowCastTime] = "Show Cast Time",
+	[Private.Enum.FeatureFlag.ShowBorder] = "Show Border",
+	[Private.Enum.FeatureFlag.ShowImportantSpellsGlow] = "Glow Important Spells",
+	[Private.Enum.FeatureFlag.ShowTargetMarker] = "Show Target Marker",
+	[Private.Enum.FeatureFlag.ShowTargetName] = "Show Targeted Player Name",
+	[Private.Enum.FeatureFlag.UseTargetClassColor] = "Show Target Class Color",
+	[Private.Enum.FeatureFlag.ShowInterruptSource] = "Show Interrupt Source",
+	[Private.Enum.FeatureFlag.UseInterruptSourceClassColor] = "Use Interrupt Source Color",
+	[Private.Enum.FeatureFlag.PlayFocusTTSReminder] = "Play Focus TTS Reminder",
+	[Private.Enum.FeatureFlag.IgnoreFriendlies] = "Ignore Friendlies",
+}
+
+do
+	local function CreateFeatureFlagTooltip(id, tooltip)
+		return string.format("%s - %s", L.Settings.FeatureFlagLabels[id], tooltip)
+	end
+
+	L.Settings.FeatureFlagTooltip = table.concat({
+		CreateFeatureFlagTooltip(
+			Private.Enum.FeatureFlag.ShowImportantSpellsGlow,
+			"What's important and what isn't is declared by the game."
+		),
+		CreateFeatureFlagTooltip(
+			Private.Enum.FeatureFlag.UseTargetClassColor,
+			"Can have contrast problems depending on background and bar color."
+		),
+		CreateFeatureFlagTooltip(
+			Private.Enum.FeatureFlag.PlayFocusTTSReminder,
+			"Plays 'focus' (or 'target') text-to-speech when your current observed unit disappears as a reminder to pick a new one. Only in dungeons!"
+		),
+	}, "\n")
+end

@@ -1,6 +1,10 @@
 ## Version 1.0.0-alpha7
 
 - fix player color not appearing on target casts when alone in a dungeon
+- refactored and condensed settings so the Edit Mode window isn't as large
+- added German localization
+- added Discord link button
+- opened up import / export API
 
 ## Version 1.0.0-alpha6
 

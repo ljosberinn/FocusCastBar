@@ -28,12 +28,8 @@
 ---@field Height number
 ---@field LoadConditionContentType table<ContentType, boolean>
 ---@field LoadConditionRole table<Role, boolean>
----@field ShowCastTime boolean
 ---@field Opacity number
----@field ShowBorder boolean
 ---@field Texture string
----@field GlowImportant boolean
----@field ShowIcon boolean
 ---@field Point Point
 ---@field OffsetX number
 ---@field OffsetY number
@@ -44,18 +40,12 @@
 ---@field Font string
 ---@field FontSize number
 ---@field TickWidth number
----@field ShowTargetMarker boolean
 ---@field BackgroundOpacity number
----@field ShowTargetName boolean
----@field ShowTargetClassColor boolean
----@field PlayFocusTTSReminder boolean
----@field IgnoreFriendlies boolean
 ---@field OutOfRangeOpacity number
 ---@field CustomTextsPosition CustomTextsPosition
 ---@field FontFlags table<FontFlags, boolean>
----@field ShowInterruptSource boolean
----@field UseInterruptSourceColor boolean
 ---@field Unit Unit
+---@field FeatureFlags table<FeatureFlag, boolean>
 
 ---@class AdvancedFocusCastBarSettings
 ---@field GetDefaultSettings fun(): AdvancedFocusCastBarSettings
