@@ -125,6 +125,7 @@ L.Settings.FeatureFlagLabels = {
 	[Private.Enum.FeatureFlag.PlayFocusTTSReminder] = "Play Focus TTS Reminder",
 	[Private.Enum.FeatureFlag.IgnoreFriendlies] = "Ignore Friendlies",
 	[Private.Enum.FeatureFlag.UnfillChannels] = "(Un)Fill Channels",
+	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Only show if cast is interruptible & can interrupt",
 }
 L.Settings.FeatureFlagSettingTitles = {
 	[Private.Enum.FeatureFlag.ShowIcon] = "For more info, hover 'Features' on the left",
@@ -155,5 +156,9 @@ do
 			Private.Enum.FeatureFlag.UnfillChannels,
 			"Unfill the cast bar when active; fills it when inactive."
 		),
-	}, "\n")
+		CreateFeatureFlagTooltip(
+			Private.Enum.FeatureFlag.HideWhenUninterruptible,
+			"Warning for healers: this effectively disables the addon unless you're a Restoration Shaman."
+		),
+	}, "\n\n")
 end

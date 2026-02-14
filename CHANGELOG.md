@@ -1,3 +1,9 @@
+## Version 1.0.1
+
+- new setting under Features: Hide When Uninterruptible
+  - only shows the cast bar if the cast is interruptible AND the player can interrupt
+  - if the player has no interrupt spell (all healers except Restoration Shaman), the addon effectively disables itself
+
 ## Version 1.0.0
 
 - fixed Background Opacity to actually work as intended

@@ -127,6 +127,7 @@ L.Settings.FeatureFlagLabels = {
 	[Private.Enum.FeatureFlag.PlayFocusTTSReminder] = "Text-zu-Sprache Erinnerung abspielen",
 	[Private.Enum.FeatureFlag.IgnoreFriendlies] = "Freundliche Ziele ignorieren",
 	[Private.Enum.FeatureFlag.UnfillChannels] = "Kanalisierungszauberanimation leert statt füllt",
+	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Nur anzeigen wenn Zauber unterbrechbar & kann unterbrechen",
 }
 L.Settings.FeatureFlagSettingTitles = {
 	[Private.Enum.FeatureFlag.ShowIcon] = "'Features' links hat weitere Infos im Tooltip",
@@ -154,5 +155,9 @@ do
 			Private.Enum.FeatureFlag.UnfillChannels,
 			"Leert die Leiste bei Kanalisierungszaubern wenn aktiv; füllt wenn inaktiv."
 		),
-	}, "\n")
+		CreateFeatureFlagTooltip(
+			Private.Enum.FeatureFlag.HideWhenUninterruptible,
+			"Achtung Heiler: effektiv deaktiviert diese Einstellung das Addon für alle Heiler bis auf Wiederherstellungsschamanen"
+		),
+	}, "\n\n")
 end

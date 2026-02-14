@@ -55,6 +55,7 @@ function Private.Settings.GetDefaultSettings()
 			[Private.Enum.FeatureFlag.PlayFocusTTSReminder] = false,
 			[Private.Enum.FeatureFlag.IgnoreFriendlies] = true,
 			[Private.Enum.FeatureFlag.UnfillChannels] = true,
+			[Private.Enum.FeatureFlag.HideWhenUninterruptible] = false,
 		},
 	}
 end

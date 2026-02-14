@@ -97,4 +97,5 @@ Private.Enum.FeatureFlag = {
 	PlayFocusTTSReminder = 10,
 	IgnoreFriendlies = 11,
 	UnfillChannels = 12,
+	HideWhenUninterruptible = 13,
 }

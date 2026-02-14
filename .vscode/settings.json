@@ -12,7 +12,7 @@
     "utf8": "disable"
   },
   "Lua.workspace.library": [
-    "~\\.vscode\\extensions\\ketho.wow-api-0.22.1\\Annotations\\Core"
+    "~\\.vscode\\extensions\\ketho.wow-api-0.22.2\\Annotations\\Core"
   ],
   "Lua.diagnostics.globals": [
     "EventUtil",
@@ -48,7 +48,23 @@
     "StaticPopupDialogs",
     "StaticPopup_Show",
     "IconDataProviderMixin",
-    "IconDataProviderExtraType"
+    "IconDataProviderExtraType",
+    "UIParent",
+    "CreateColorFromHexString",
+    "SetRaidTargetIconTexture",
+    "CreateAndInitFromMixin",
+    "ACCEPT",
+    "FormatPercentage",
+    "GameFontNormal",
+    "CopyTable",
+    "CreateColor",
+    "CallbackRegistryMixin",
+    "WOW_PROJECT_ID",
+    "WOW_PROJECT_MAINLINE",
+    "EventRegistry",
+    "DISABLED_FONT_COLOR",
+    "WHITE_FONT_COLOR",
+    "HUD_EDIT_MODE_MENU"
   ],
   "Lua.type.weakUnionCheck": true,
   "Lua.diagnostics.disable": ["assign-type-mismatch"]

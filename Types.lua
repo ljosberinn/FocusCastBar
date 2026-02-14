@@ -106,6 +106,7 @@
 ---@field private firstFrameTimestamp number
 ---@field private interruptHidingDelayTimer FunctionContainer?
 ---@field private elapsed number
+---@field private events table<WowEvent>
 ---@field OnLoad fun(self: AdvancedFocusCastBarMixin)
 ---@field IsPastLoadingScreen fun(self: AdvancedFocusCastBarMixin): boolean
 ---@field ToggleTargetMarkerIntegration fun(self: AdvancedFocusCastBarMixin)
@@ -138,6 +139,7 @@
 ---@field ToggleUnitIntegration fun(self: AdvancedFocusCastBarMixin)
 ---@field SetTargetNameVisibility fun(self: AdvancedFocusCastBarMixin, bool: boolean)
 ---@field GetMaybeColoredUnitName fun(self: AdvancedFocusCastBarMixin, unit: string): string
+---@field SetAlphaFromFeatureFlag fun(self: AdvancedFocusCastBarMixin, interruptDuration: LuaDurationObject)
 
 -------- library types
 

@@ -49,6 +49,7 @@ Alternatively, you can disable `Ignore Friendlies` in the `Features` dropdown, f
 ## Honorary Mentions
 
 - [plusmouse](https://www.curseforge.com/members/plusmouse/projects) for discovering the Midnight approach of interrupt ticks
+- Nnoggie for testing & feedback
 
 ## Legal
 

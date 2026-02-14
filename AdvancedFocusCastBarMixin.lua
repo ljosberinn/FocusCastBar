@@ -11,6 +11,25 @@ function AdvancedFocusCastBarMixin:OnLoad()
 	self:Hide()
 	self.elapsed = 0
 
+	self.events = {
+		-- start or update events
+		"UNIT_SPELLCAST_START",
+		"UNIT_SPELLCAST_DELAYED",
+		"UNIT_SPELLCAST_CHANNEL_START",
+		"UNIT_SPELLCAST_CHANNEL_UPDATE",
+		"UNIT_SPELLCAST_EMPOWER_START",
+		"UNIT_SPELLCAST_EMPOWER_UPDATE",
+		-- end or failed events
+		"UNIT_SPELLCAST_STOP",
+		"UNIT_SPELLCAST_FAILED",
+		"UNIT_SPELLCAST_INTERRUPTED",
+		"UNIT_SPELLCAST_CHANNEL_STOP",
+		"UNIT_SPELLCAST_EMPOWER_STOP",
+		-- meta events
+		"UNIT_SPELLCAST_INTERRUPTIBLE",
+		"UNIT_SPELLCAST_NOT_INTERRUPTIBLE",
+	}
+
 	-- color caching
 	self.colors = {
 		Uninterruptible = CreateColorFromHexString(AdvancedFocusCastBarSaved.Settings.ColorUninterruptible),
@@ -790,6 +809,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 						Private.Enum.FeatureFlag.UnfillChannels,
 						Private.Enum.FeatureFlag.PlayFocusTTSReminder,
 						Private.Enum.FeatureFlag.IgnoreFriendlies,
+						Private.Enum.FeatureFlag.HideWhenUninterruptible,
 					}
 
 					for index, id in ipairs(order) do
@@ -1288,26 +1308,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 end
 
 function AdvancedFocusCastBarMixin:ToggleUnitIntegration()
-	local events = {
-		-- start or update events
-		"UNIT_SPELLCAST_START",
-		"UNIT_SPELLCAST_DELAYED",
-		"UNIT_SPELLCAST_CHANNEL_START",
-		"UNIT_SPELLCAST_CHANNEL_UPDATE",
-		"UNIT_SPELLCAST_EMPOWER_START",
-		"UNIT_SPELLCAST_EMPOWER_UPDATE",
-		-- end or failed events
-		"UNIT_SPELLCAST_STOP",
-		"UNIT_SPELLCAST_FAILED",
-		"UNIT_SPELLCAST_INTERRUPTED",
-		"UNIT_SPELLCAST_CHANNEL_STOP",
-		"UNIT_SPELLCAST_EMPOWER_STOP",
-		-- meta events
-		"UNIT_SPELLCAST_INTERRUPTIBLE",
-		"UNIT_SPELLCAST_NOT_INTERRUPTIBLE",
-	}
-
-	for _, event in next, events do
+	for _, event in next, self.events do
 		self:UnregisterEvent(event)
 		self:RegisterUnitEvent(event, AdvancedFocusCastBarSaved.Settings.Unit)
 	end
@@ -1486,6 +1487,14 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 				self:ToggleTargetMarkerIntegration()
 			elseif id == Private.Enum.FeatureFlag.ShowTargetName then
 				self:ToggleTargetNameVisibility()
+			elseif id == Private.Enum.FeatureFlag.HideWhenUninterruptible then
+				if AdvancedFocusCastBarSaved.Settings.FeatureFlags[id] and self.interruptId == nil then
+					for _, event in next, self.events do
+						self:UnregisterEvent(event)
+					end
+				else
+					self:ToggleUnitIntegration()
+				end
 			end
 		end
 	end
@@ -1645,6 +1654,16 @@ function AdvancedFocusCastBarMixin:OnEditModeExit()
 	self:Hide()
 end
 
+function AdvancedFocusCastBarMixin:SetAlphaFromFeatureFlag(interruptDuration)
+	if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.HideWhenUninterruptible] then
+		self:SetAlphaFromBoolean(
+			self.castInformation.notInterruptible,
+			0,
+			C_CurveUtil.EvaluateColorValueFromBoolean(interruptDuration:IsZero(), 1, 0)
+		)
+	end
+end
+
 function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 	if self.interruptHidingDelayTimer ~= nil then
 		return
@@ -1686,11 +1705,12 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 			return
 		end
 
+		self:SetAlphaFromFeatureFlag(interruptDuration)
 		self:DeriveAndSetNextColor(interruptDuration)
 
 		if self.castInformation.isChannel then
 			self.CastBar.Positioner:SetValue(self.castInformation.duration:GetRemainingDuration())
-			self.CastBar.InterruptBar:SetValue(interruptDuration:GetRemainingDuration()) -- ?
+			self.CastBar.InterruptBar:SetValue(interruptDuration:GetRemainingDuration())
 		else
 			self.CastBar.Positioner:SetValue(self.castInformation.duration:GetElapsedDuration())
 			self.CastBar.InterruptBar:SetValue(interruptDuration:GetRemainingDuration())
@@ -1901,6 +1921,14 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 
 	-- presence means we're in edit mode
 	if self.demoInterval == nil then
+		if self.interruptId ~= nil then
+			local interruptDuration = C_Spell.GetSpellCooldownDuration(self.interruptId)
+
+			if interruptDuration ~= nil then
+				self:SetAlphaFromFeatureFlag(interruptDuration)
+			end
+		end
+
 		if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowTargetName] then
 			self:SetTargetNameVisibility(true)
 
@@ -2184,7 +2212,15 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 		or event == "PLAYER_SPECIALIZATION_CHANGED"
 		or event == "UPDATE_INSTANCE_INFO"
 	then
-		self.interruptId = self:DetectInterruptId()
+		local nextInterruptId = self:DetectInterruptId()
+
+		if nextInterruptId ~= self.interruptId then
+			self.interruptId = nextInterruptId
+
+			Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, Private.Enum.Setting.FeatureFlag, {
+				Private.Enum.FeatureFlag.HideWhenUninterruptible,
+			})
+		end
 
 		local _, instanceType, difficultyId = GetInstanceInfo()
 		-- equivalent to `instanceType == "none"`
