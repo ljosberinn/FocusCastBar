@@ -1,3 +1,8 @@
+## Version 1.0.3
+
+- basically uncapped dimension restrictions (they're still there, just a lot more permissive, go wild you degens)
+- fixed a bug where focusing a friendly mid cast would not prevent it from showing if Ignore Friendlies was active
+
 ## Version 1.0.2
 
 - fixed a bug where the interrupt tick was incorrectly placed for channels

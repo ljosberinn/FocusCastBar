@@ -1297,10 +1297,13 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 	Private.EventRegistry:RegisterCallback(Private.Enum.Events.SETTING_CHANGED, self.OnSettingsChange, self)
 
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-	self:RegisterEvent("LOADING_SCREEN_DISABLED")
-	self:RegisterEvent("UPDATE_INSTANCE_INFO")
-	self:RegisterEvent("FIRST_FRAME_RENDERED")
+	FrameUtil.RegisterFrameForEvents(self, {
+		"ZONE_CHANGED_NEW_AREA",
+		"LOADING_SCREEN_DISABLED",
+		"UPDATE_INSTANCE_INFO",
+		"FIRST_FRAME_RENDERED",
+	})
+
 	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player")
 
 	self:ToggleTargetMarkerIntegration()
@@ -1308,10 +1311,8 @@ function AdvancedFocusCastBarMixin:OnLoad()
 end
 
 function AdvancedFocusCastBarMixin:ToggleUnitIntegration()
-	for _, event in next, self.events do
-		self:UnregisterEvent(event)
-		self:RegisterUnitEvent(event, AdvancedFocusCastBarSaved.Settings.Unit)
-	end
+	FrameUtil.UnregisterFrameForEvents(self, self.events)
+	FrameUtil.RegisterFrameForUnitEvents(self, self.events, AdvancedFocusCastBarSaved.Settings.Unit)
 
 	if AdvancedFocusCastBarSaved.Settings.Unit == Private.Enum.Unit.Focus then
 		self:UnregisterEvent("PLAYER_TARGET_CHANGED")
@@ -1799,19 +1800,19 @@ function AdvancedFocusCastBarMixin:DetectInterruptId()
 	local playerClass = select(3, UnitClass("player"))
 
 	local classInterruptMap = {
-		[1] = { 6552 }, -- Warrior
-		[2] = { 96231, 31935 }, -- Paladin, Rebuke must come before Avenger's Shield
-		[3] = { 147362, 187707 }, -- Hunter
-		[4] = { 1766 }, -- Rogue
-		[5] = { 15487 }, -- Priest
-		[6] = { 47528 }, -- Death Knight
-		[7] = { 57994 }, -- Shaman
-		[8] = { 2139 }, -- Mage
-		[9] = { 19647, 89766, 119910, 1276467, 132409 }, -- Warlock
-		[10] = { 116705 }, -- Monk
-		[11] = { 38675, 78675, 106839 }, -- Druid
-		[12] = { 183752 }, -- Demon Hunter
-		[13] = { 351338 }, -- Evoker
+		[Constants.UICharacterClasses.Warrior] = { 6552 },
+		[Constants.UICharacterClasses.Paladin] = { 96231, 31935 }, -- Rebuke must come before Avenger's Shield
+		[Constants.UICharacterClasses.Hunter] = { 147362, 187707 },
+		[Constants.UICharacterClasses.Rogue] = { 1766 },
+		[Constants.UICharacterClasses.Priest] = { 15487 },
+		[Constants.UICharacterClasses.DeathKnight] = { 47528 },
+		[Constants.UICharacterClasses.Shaman] = { 57994 },
+		[Constants.UICharacterClasses.Mage] = { 2139 },
+		[Constants.UICharacterClasses.Warlock] = { 19647, 89766, 119910, 1276467, 132409 },
+		[Constants.UICharacterClasses.Monk] = { 116705 },
+		[Constants.UICharacterClasses.Druid] = { 38675, 78675, 106839 },
+		[Constants.UICharacterClasses.DemonHunter] = { 183752 },
+		[Constants.UICharacterClasses.Evoker] = { 351338 },
 	}
 
 	local eligibleInterrupts = classInterruptMap[playerClass]
@@ -2171,6 +2172,10 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 				end)
 			end
 
+			return
+		end
+
+		if self:UnitIsIrrelevant() then
 			return
 		end
 
