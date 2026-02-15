@@ -52,10 +52,11 @@ function Private.Settings.GetDefaultSettings()
 			[Private.Enum.FeatureFlag.UseTargetClassColor] = true,
 			[Private.Enum.FeatureFlag.ShowInterruptSource] = true,
 			[Private.Enum.FeatureFlag.UseInterruptSourceClassColor] = true,
-			[Private.Enum.FeatureFlag.PlayFocusTTSReminder] = false,
+			[Private.Enum.FeatureFlag.PlayTargetingTTSReminder] = false,
 			[Private.Enum.FeatureFlag.IgnoreFriendlies] = true,
 			[Private.Enum.FeatureFlag.UnfillChannels] = true,
 			[Private.Enum.FeatureFlag.HideWhenUninterruptible] = false,
+			[Private.Enum.FeatureFlag.PlaySoundOnCastStart] = false,
 		},
 	}
 end
@@ -91,6 +92,7 @@ function Private.Settings.Import(string)
 		if newValue ~= nil and type(newValue) == expectedType then
 			local eventKey = Private.Enum.Setting[key]
 			local event = Private.Enum.Events.SETTING_CHANGED
+
 			if
 				eventKey == Private.Enum.Setting.Point
 				or eventKey == Private.Enum.Setting.OffsetX
@@ -98,6 +100,7 @@ function Private.Settings.Import(string)
 			then
 				event = Private.Enum.Events.EDIT_MODE_POSITION_CHANGED
 			end
+
 			local hasChanges = false
 
 			if expectedType == "table" then

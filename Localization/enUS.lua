@@ -122,17 +122,20 @@ L.Settings.FeatureFlagLabels = {
 	[Private.Enum.FeatureFlag.UseTargetClassColor] = "Show Target Class Color",
 	[Private.Enum.FeatureFlag.ShowInterruptSource] = "Show Interrupt Source",
 	[Private.Enum.FeatureFlag.UseInterruptSourceClassColor] = "Use Interrupt Source Color",
-	[Private.Enum.FeatureFlag.PlayFocusTTSReminder] = "Play Focus TTS Reminder",
+	[Private.Enum.FeatureFlag.PlayTargetingTTSReminder] = "Play Targeting TTS Reminder",
 	[Private.Enum.FeatureFlag.IgnoreFriendlies] = "Ignore Friendlies",
 	[Private.Enum.FeatureFlag.UnfillChannels] = "(Un)Fill Channels",
-	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Only show if cast is interruptible & can interrupt",
+	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Only show when interruptible & can interrupt",
+	[Private.Enum.FeatureFlag.PlaySoundOnCastStart] = "Play TTS on Cast Start",
 }
 L.Settings.FeatureFlagSettingTitles = {
 	[Private.Enum.FeatureFlag.ShowIcon] = "For more info, hover 'Features' on the left",
 	[Private.Enum.FeatureFlag.ShowTargetName] = "Cast Target Settings",
 	[Private.Enum.FeatureFlag.ShowInterruptSource] = "Interrupt Source Settings",
-	[Private.Enum.FeatureFlag.UnfillChannels] = "Various",
+	[Private.Enum.FeatureFlag.PlaySoundOnCastStart] = "Sound Settings",
+	[Private.Enum.FeatureFlag.UnfillChannels] = "Other",
 }
+L.Settings.CastStartText = "Cast"
 
 do
 	local function CreateFeatureFlagTooltip(id, tooltip)
@@ -149,8 +152,15 @@ do
 			"Can have contrast problems depending on background and bar color."
 		),
 		CreateFeatureFlagTooltip(
-			Private.Enum.FeatureFlag.PlayFocusTTSReminder,
+			Private.Enum.FeatureFlag.PlayTargetingTTSReminder,
 			"Plays 'focus' (or 'target') text-to-speech when your current observed unit disappears as a reminder to pick a new one. Only in dungeons!"
+		),
+		CreateFeatureFlagTooltip(
+			Private.Enum.FeatureFlag.PlaySoundOnCastStart,
+			string.format(
+				"Plays '%s' text-to-speech when your observed unit starts casting. Unconditional, cannot verify whether you can interrupt or is interruptible. Only in dungeons!",
+				L.Settings.CastStartText
+			)
 		),
 		CreateFeatureFlagTooltip(
 			Private.Enum.FeatureFlag.UnfillChannels,

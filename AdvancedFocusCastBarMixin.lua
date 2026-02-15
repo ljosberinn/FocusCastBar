@@ -806,8 +806,9 @@ function AdvancedFocusCastBarMixin:OnLoad()
 						Private.Enum.FeatureFlag.UseTargetClassColor,
 						Private.Enum.FeatureFlag.ShowInterruptSource,
 						Private.Enum.FeatureFlag.UseInterruptSourceClassColor,
+						Private.Enum.FeatureFlag.PlaySoundOnCastStart,
+						Private.Enum.FeatureFlag.PlayTargetingTTSReminder,
 						Private.Enum.FeatureFlag.UnfillChannels,
-						Private.Enum.FeatureFlag.PlayFocusTTSReminder,
 						Private.Enum.FeatureFlag.IgnoreFriendlies,
 						Private.Enum.FeatureFlag.HideWhenUninterruptible,
 					}
@@ -1909,6 +1910,7 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 	else
 		self.CastBar:SetValue(self.castInformation.duration:GetElapsedDuration())
 	end
+
 	self:AdjustDirection(self.castInformation.isChannel)
 
 	self.Icon:SetTexture(self.castInformation.texture)
@@ -1984,6 +1986,10 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 		self.CustomElementsFrame.TargetNameText1:SetText(self:GetMaybeColoredUnitName("player"))
 		self:SetTargetNameVisibility(true)
 	end
+end
+
+function AdvancedFocusCastBarMixin:PlayTTS(text)
+	C_VoiceChat.SpeakText(self:FindAppropriateTTSVoiceID(), text, 3, C_TTSSettings.GetSpeechVolume())
 end
 
 function AdvancedFocusCastBarMixin:FindAppropriateTTSVoiceID()
@@ -2071,6 +2077,19 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 			self.interruptHidingDelayTimer = nil
 		end
 
+		if
+			event == "UNIT_SPELLCAST_START"
+			or event == "UNIT_SPELLCAST_CHANNEL_START"
+			or event == "UNIT_SPELLCAST_EMPOWER_START"
+		then
+			if
+				AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.PlaySoundOnCastStart]
+				and self.contentType == Private.Enum.ContentType.Dungeon
+			then
+				self:PlayTTS(Private.L.Settings.CastStartText)
+			end
+		end
+
 		self:ProcessCastInformation()
 		self:Show()
 	elseif
@@ -2156,18 +2175,13 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 			end
 
 			if
-				AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.PlayFocusTTSReminder]
+				AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.PlayTargetingTTSReminder]
 				and self.contentType == Private.Enum.ContentType.Dungeon
 			then
 				-- delay this as focus target dying may imply leaving combat
 				C_Timer.After(1, function()
 					if InCombatLockdown() then
-						C_VoiceChat.SpeakText(
-							self:FindAppropriateTTSVoiceID(),
-							AdvancedFocusCastBarSaved.Settings.Unit,
-							3,
-							C_TTSSettings.GetSpeechVolume()
-						)
+						self:PlayTTS(AdvancedFocusCastBarSaved.Settings.Unit)
 					end
 				end)
 			end
@@ -2189,6 +2203,7 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 			return
 		end
 
+		self:PlayTTS(Private.L.Settings.CastStartText)
 		self:ProcessCastInformation()
 		self:Show()
 	elseif event == "UNIT_SPELLCAST_INTERRUPTIBLE" then

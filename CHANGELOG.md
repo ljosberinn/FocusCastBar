@@ -2,6 +2,7 @@
 
 - basically uncapped dimension restrictions (they're still there, just a lot more permissive, go wild you degens)
 - fixed a bug where focusing a friendly mid cast would not prevent it from showing if Ignore Friendlies was active
+- added Play Sound on Cast Start setting (default off, only in dungeons, unconditional)
 
 ## Version 1.0.2
 
