@@ -1,3 +1,8 @@
+## Version 1.0.2
+
+- fixed a bug where the interrupt tick was incorrectly placed for channels
+- fixed interrupt order for Protection Paladins, Rebuke is now always preferred over Avenger's Shield
+
 ## Version 1.0.1
 
 - new setting under Features: Hide When Uninterruptible

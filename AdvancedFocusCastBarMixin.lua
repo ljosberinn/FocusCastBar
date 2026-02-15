@@ -1335,19 +1335,28 @@ function AdvancedFocusCastBarMixin:AdjustSpellNameTextWidth()
 end
 
 function AdvancedFocusCastBarMixin:AdjustDirection(isChannel)
-	self.CastBar:SetReverseFill(isChannel)
-	self.CastBar.Positioner:SetReverseFill(isChannel)
-	self.CastBar.InterruptBar:SetReverseFill(isChannel)
-
 	self.CastBar.InterruptBar:ClearAllPoints()
 	self.CastBar.InterruptBar.Tick:ClearAllPoints()
 
-	if isChannel then
-		self.CastBar.InterruptBar:SetPoint("RIGHT", self.CastBar.Positioner:GetStatusBarTexture(), "LEFT")
+	if isChannel and AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.UnfillChannels] then
+		self.CastBar:SetReverseFill(false)
+		self.CastBar.Positioner:SetReverseFill(false)
+		self.CastBar.InterruptBar:SetReverseFill(true)
+
+		self.CastBar.InterruptBar:SetPoint("RIGHT", self.CastBar.Positioner:GetStatusBarTexture(), "RIGHT")
 		self.CastBar.InterruptBar.Tick:SetPoint("RIGHT", self.CastBar.InterruptBar:GetStatusBarTexture(), "LEFT")
 	else
-		self.CastBar.InterruptBar:SetPoint("LEFT", self.CastBar.Positioner:GetStatusBarTexture(), "RIGHT")
-		self.CastBar.InterruptBar.Tick:SetPoint("LEFT", self.CastBar.InterruptBar:GetStatusBarTexture(), "RIGHT")
+		self.CastBar:SetReverseFill(isChannel)
+		self.CastBar.Positioner:SetReverseFill(isChannel)
+		self.CastBar.InterruptBar:SetReverseFill(isChannel)
+
+		if isChannel then
+			self.CastBar.InterruptBar:SetPoint("RIGHT", self.CastBar.Positioner:GetStatusBarTexture(), "LEFT")
+			self.CastBar.InterruptBar.Tick:SetPoint("RIGHT", self.CastBar.InterruptBar:GetStatusBarTexture(), "LEFT")
+		else
+			self.CastBar.InterruptBar:SetPoint("LEFT", self.CastBar.Positioner:GetStatusBarTexture(), "RIGHT")
+			self.CastBar.InterruptBar.Tick:SetPoint("LEFT", self.CastBar.InterruptBar:GetStatusBarTexture(), "RIGHT")
+		end
 	end
 end
 
@@ -1708,7 +1717,10 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 		self:SetAlphaFromFeatureFlag(interruptDuration)
 		self:DeriveAndSetNextColor(interruptDuration)
 
-		if self.castInformation.isChannel then
+		if
+			self.castInformation.isChannel
+			and AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.UnfillChannels]
+		then
 			self.CastBar.Positioner:SetValue(self.castInformation.duration:GetRemainingDuration())
 			self.CastBar.InterruptBar:SetValue(interruptDuration:GetRemainingDuration())
 		else
@@ -1788,7 +1800,7 @@ function AdvancedFocusCastBarMixin:DetectInterruptId()
 
 	local classInterruptMap = {
 		[1] = { 6552 }, -- Warrior
-		[2] = { 31935, 96231 }, -- Paladin
+		[2] = { 96231, 31935 }, -- Paladin, Rebuke must come before Avenger's Shield
 		[3] = { 147362, 187707 }, -- Hunter
 		[4] = { 1766 }, -- Rogue
 		[5] = { 15487 }, -- Priest
@@ -1892,10 +1904,11 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 		and AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.UnfillChannels]
 	then
 		self.CastBar:SetValue(totalDuration)
+		self.CastBar.Positioner:SetValue(totalDuration)
 	else
 		self.CastBar:SetValue(self.castInformation.duration:GetElapsedDuration())
-		self:AdjustDirection(self.castInformation.isChannel)
 	end
+	self:AdjustDirection(self.castInformation.isChannel)
 
 	self.Icon:SetTexture(self.castInformation.texture)
 	self.CastBar.SpellNameText:SetText(self.castInformation.name)
