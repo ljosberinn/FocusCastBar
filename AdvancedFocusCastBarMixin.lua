@@ -154,7 +154,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			if key == Private.Enum.Setting.Width then
 				return {
 					min = 10,
-					max = 400,
+					max = 2000,
 					step = 1,
 				}
 			end
@@ -162,7 +162,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			if key == Private.Enum.Setting.Height then
 				return {
 					min = 10,
-					max = 200,
+					max = 1000,
 					step = 1,
 				}
 			end
