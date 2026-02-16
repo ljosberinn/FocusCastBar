@@ -38,6 +38,7 @@ function Private.Settings.GetDefaultSettings()
 			[Private.Enum.FontFlags.OUTLINE] = true,
 			[Private.Enum.FontFlags.SHADOW] = false,
 		},
+		SecondaryFontScale = 0.66,
 		BackgroundOpacity = 0.35,
 		CustomTextsPosition = Private.Enum.CustomTextsPosition.BOTTOMRIGHT,
 		TickWidth = 3,

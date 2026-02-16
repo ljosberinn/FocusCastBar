@@ -47,6 +47,7 @@
 ---@field FontFlags table<FontFlags, boolean>
 ---@field Unit Unit
 ---@field FeatureFlags table<FeatureFlag, boolean>
+---@field SecondaryFontScale number
 
 ---@class AdvancedFocusCastBarSettings
 ---@field GetDefaultSettings fun(): AdvancedFocusCastBarSettings

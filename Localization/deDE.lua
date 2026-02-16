@@ -38,6 +38,10 @@ L.Settings.FontFlagsLabels = {
 	[Private.Enum.FontFlags.SHADOW] = "Schatten",
 }
 
+L.Settings.SecondaryFontScaleLabel = "Sekundärtextskalierung"
+L.Settings.SecondaryFontScaleTooltip =
+	"Kontrolliert die Schriftgröße des anvisierten Spielers & unterbrechenden Spielernamen in Relation zur allgemeinen Schriftgröße."
+
 L.Settings.FrameWidthLabel = "Breite"
 L.Settings.FrameWidthTooltip = nil
 

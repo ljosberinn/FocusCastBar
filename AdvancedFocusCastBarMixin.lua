@@ -111,6 +111,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 		---@param key Setting
 		---@return SliderSettings
 		local function GetSliderSettingsForOption(key)
+			if key == Private.Enum.Setting.SecondaryFontScale then
+				return {
+					min = 0.1,
+					max = 5,
+					step = 0.01,
+				}
+			end
+
 			if key == Private.Enum.Setting.TickWidth then
 				return {
 					min = 0,
@@ -199,6 +207,39 @@ function AdvancedFocusCastBarMixin:OnLoad()
 		---@return LibEditModeSetting
 		local function CreateSetting(key)
 			local L = Private.L.Settings
+
+			if key == Private.Enum.Setting.SecondaryFontScale then
+				local sliderSettings = GetSliderSettingsForOption(key)
+
+				---@param layoutName string
+				---@return number
+				local function Get(layoutName)
+					return AdvancedFocusCastBarSaved.Settings.SecondaryFontScale
+				end
+
+				---@param layoutName string
+				---@param value number
+				local function Set(layoutName, value)
+					value = math.floor(value * 100) / 100
+					if value ~= AdvancedFocusCastBarSaved.Settings.SecondaryFontScale then
+						AdvancedFocusCastBarSaved.Settings.SecondaryFontScale = value
+						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+					end
+				end
+
+				---@type LibEditModeSlider
+				return {
+					name = L.SecondaryFontScaleLabel,
+					kind = Enum.EditModeSettingDisplayType.Slider,
+					default = defaults.SecondaryFontScale,
+					desc = L.SecondaryFontScaleTooltip,
+					get = Get,
+					set = Set,
+					minValue = sliderSettings.min,
+					maxValue = sliderSettings.max,
+					valueStep = sliderSettings.step,
+				}
+			end
 
 			if key == Private.Enum.Setting.Opacity then
 				local sliderSettings = GetSliderSettingsForOption(key)
@@ -1194,6 +1235,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			CreateSetting(Private.Enum.Setting.Font),
 			CreateSetting(Private.Enum.Setting.FontSize),
 			CreateSetting(Private.Enum.Setting.FontFlags),
+			CreateSetting(Private.Enum.Setting.SecondaryFontScale),
 			CreateSetting(Private.Enum.Setting.ColorUninterruptible),
 			CreateSetting(Private.Enum.Setting.ColorInterruptibleCanInterrupt),
 			CreateSetting(Private.Enum.Setting.ColorInterruptibleCannotInterrupt),
@@ -1484,6 +1526,7 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 		key == Private.Enum.Setting.Font
 		or key == Private.Enum.Setting.FontSize
 		or key == Private.Enum.Setting.FontFlags
+		or key == Private.Enum.Setting.SecondaryFontScale
 	then
 		self:SetFontAndFontSize()
 	elseif key == Private.Enum.Setting.ColorUninterruptible then
@@ -1584,18 +1627,21 @@ function AdvancedFocusCastBarMixin:SetTargetNameVisibility(bool)
 end
 
 function AdvancedFocusCastBarMixin:SetFontAndFontSize()
-	local smallerSize = 0.66 * AdvancedFocusCastBarSaved.Settings.FontSize
+	local otherSize = AdvancedFocusCastBarSaved.Settings.SecondaryFontScale
+		* AdvancedFocusCastBarSaved.Settings.FontSize
 
 	local fontStrings = {
 		[self.CastBar.CastTimeText] = AdvancedFocusCastBarSaved.Settings.FontSize,
 		[self.CastBar.SpellNameText] = AdvancedFocusCastBarSaved.Settings.FontSize,
-		[self.CustomElementsFrame.TargetNameText1] = smallerSize,
-		[self.CustomElementsFrame.TargetNameText2] = smallerSize,
-		[self.CustomElementsFrame.TargetNameText3] = smallerSize,
-		[self.CustomElementsFrame.TargetNameText4] = smallerSize,
-		[self.CustomElementsFrame.TargetNameText5] = smallerSize,
-		[self.CustomElementsFrame.InterruptSourceText] = smallerSize,
+		[self.CustomElementsFrame.TargetNameText1] = otherSize,
+		[self.CustomElementsFrame.TargetNameText2] = otherSize,
+		[self.CustomElementsFrame.TargetNameText3] = otherSize,
+		[self.CustomElementsFrame.TargetNameText4] = otherSize,
+		[self.CustomElementsFrame.TargetNameText5] = otherSize,
+		[self.CustomElementsFrame.InterruptSourceText] = otherSize,
 	}
+
+	local targetYOffset = otherSize * 0.66 * -1
 
 	local flags = AdvancedFocusCastBarSaved.Settings.FontFlags[Private.Enum.FontFlags.OUTLINE] and "OUTLINE" or ""
 
@@ -1607,6 +1653,11 @@ function AdvancedFocusCastBarMixin:SetFontAndFontSize()
 			fontString:SetShadowColor(0, 0, 0, 1)
 		else
 			fontString:SetShadowOffset(0, 0)
+		end
+
+		if targetFontSize == otherSize then
+			fontString:ClearAllPoints()
+			fontString:SetPoint(AdvancedFocusCastBarSaved.Settings.CustomTextsPosition, 0, targetYOffset)
 		end
 	end
 end

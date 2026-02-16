@@ -37,6 +37,10 @@ L.Settings.FontFlagsLabels = {
 	[Private.Enum.FontFlags.SHADOW] = "Shadow",
 }
 
+L.Settings.SecondaryFontScaleLabel = "Secondary Font Scale"
+L.Settings.SecondaryFontScaleTooltip =
+	"Controls the ratio of Cast Target and Interrupt Source text in relation to the general font size."
+
 L.Settings.FrameWidthLabel = "Width"
 L.Settings.FrameWidthTooltip = nil
 

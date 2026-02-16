@@ -1,3 +1,8 @@
+## Version 1.0.5
+
+- added Secondary Font Scale option (defaults to the same as before)
+  - allows in/decreasing the size of Cast Target & Interrupt Source text
+
 ## Version 1.0.4
 
 - added Glow Color setting (defaults to the same as before)
