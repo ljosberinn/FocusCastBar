@@ -655,6 +655,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param value ColorMixin
 				local function Set(layoutName, value)
 					local color = value:GenerateHexColor()
+
 					if AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCanInterrupt ~= color then
 						AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCanInterrupt = color
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, color)
@@ -701,6 +702,34 @@ function AdvancedFocusCastBarMixin:OnLoad()
 					name = L.ColorInterruptibleCannotInterruptLabel,
 					desc = L.ColorInterruptibleCannotInterruptTooltip,
 					default = CreateColorFromHexString(defaults.ColorInterruptibleCannotInterrupt),
+					set = Set,
+					get = Get,
+					kind = LibEditMode.SettingType.ColorPicker,
+				}
+			end
+
+			if key == Private.Enum.Setting.ColorGlow then
+				---@param layoutName string
+				---@param value ColorMixin
+				local function Set(layoutName, value)
+					local color = value:GenerateHexColor()
+
+					if AdvancedFocusCastBarSaved.Settings.ColorGlow ~= color then
+						AdvancedFocusCastBarSaved.Settings.ColorGlow = color
+						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, color)
+					end
+				end
+
+				---@return colorRGBA
+				local function Get()
+					return CreateColorFromHexString(AdvancedFocusCastBarSaved.Settings.ColorGlow)
+				end
+
+				---@type LibEditModeColorPicker
+				return {
+					name = L.ColorGlowLabel,
+					desc = L.ColorGlowTooltip,
+					default = CreateColorFromHexString(defaults.ColorGlow),
 					set = Set,
 					get = Get,
 					kind = LibEditMode.SettingType.ColorPicker,
@@ -1169,6 +1198,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			CreateSetting(Private.Enum.Setting.ColorInterruptibleCanInterrupt),
 			CreateSetting(Private.Enum.Setting.ColorInterruptibleCannotInterrupt),
 			CreateSetting(Private.Enum.Setting.ColorInterruptTick),
+			CreateSetting(Private.Enum.Setting.ColorGlow),
 			CreateSetting(Private.Enum.Setting.TickWidth),
 			CreateSetting(Private.Enum.Setting.CustomTextsPosition),
 			CreateSetting(Private.Enum.Setting.Point),
@@ -1462,6 +1492,11 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 		self.colors.InterruptibleCanInterrupt = CreateColorFromHexString(value)
 	elseif key == Private.Enum.Setting.ColorInterruptibleCannotInterrupt then
 		self.colors.InterruptibleCannotInterrupt = CreateColorFromHexString(value)
+	elseif key == Private.Enum.Setting.ColorGlow then
+		if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowImportantSpellsGlow] then
+			self:HideGlow()
+			self:ShowGlow(false)
+		end
 	elseif key == Private.Enum.Setting.ColorInterruptTick then
 		self.colors.InterruptTick = CreateColorFromHexString(value)
 	elseif key == Private.Enum.Setting.BackgroundOpacity then
@@ -1743,9 +1778,11 @@ function AdvancedFocusCastBarMixin:ShowGlow(isImportant)
 		or self
 
 	if frame._PixelGlow == nil then
+		local color = CreateColorFromHexString(AdvancedFocusCastBarSaved.Settings.ColorGlow)
+
 		LibCustomGlow.PixelGlow_Start(
 			frame, -- frame
-			nil, -- color
+			color, -- color
 			nil, -- N
 			nil, -- frequency
 			nil, -- length

@@ -64,7 +64,8 @@
     "EventRegistry",
     "DISABLED_FONT_COLOR",
     "WHITE_FONT_COLOR",
-    "HUD_EDIT_MODE_MENU"
+    "HUD_EDIT_MODE_MENU",
+    "FrameUtil"
   ],
   "Lua.type.weakUnionCheck": true,
   "Lua.diagnostics.disable": ["assign-type-mismatch"]

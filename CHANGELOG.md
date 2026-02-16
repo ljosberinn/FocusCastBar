@@ -1,3 +1,7 @@
+## Version 1.0.4
+
+- added Glow Color setting (defaults to the same as before)
+
 ## Version 1.0.3
 
 - basically uncapped dimension restrictions (they're still there, just a lot more permissive, go wild you degens)

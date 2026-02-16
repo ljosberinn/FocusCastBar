@@ -31,6 +31,7 @@ function Private.Settings.GetDefaultSettings()
 		ColorInterruptibleCanInterrupt = "FF00FF00",
 		ColorInterruptibleCannotInterrupt = "FFFFA800",
 		ColorInterruptTick = "FFFDFFF7",
+		ColorGlow = "FFF2F252",
 		Font = "Fonts\\FRIZQT__.TTF",
 		FontSize = 17,
 		FontFlags = {

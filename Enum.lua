@@ -69,6 +69,7 @@ Private.Enum.Setting = {
 	FontFlags = 20,
 	Unit = 21,
 	FeatureFlag = 22,
+	ColorGlow = 23,
 }
 
 ---@enum FontFlags

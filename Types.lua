@@ -37,6 +37,7 @@
 ---@field ColorInterruptibleCanInterrupt string
 ---@field ColorInterruptibleCannotInterrupt string
 ---@field ColorInterruptTick string
+---@field ColorGlow string
 ---@field Font string
 ---@field FontSize number
 ---@field TickWidth number

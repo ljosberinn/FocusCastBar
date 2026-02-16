@@ -66,6 +66,8 @@ L.Settings.ColorInterruptibleCannotInterruptTooltip =
 
 L.Settings.ColorInterruptTickLabel = "Indikatorfarbe"
 
+L.Settings.ColorGlowLabel = "Hervorhebungsanimationsfarbe"
+
 L.Settings.FontSizeLabel = "Schriftgröße"
 L.Settings.FontSizeTooltip = nil
 
