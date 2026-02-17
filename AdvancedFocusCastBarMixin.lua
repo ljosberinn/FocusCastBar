@@ -1655,7 +1655,7 @@ function AdvancedFocusCastBarMixin:SetFontAndFontSize()
 			fontString:SetShadowOffset(0, 0)
 		end
 
-		if targetFontSize == otherSize then
+		if fontString ~= self.CastBar.CastTimeText and fontString ~= self.CastBar.SpellNameText then
 			fontString:ClearAllPoints()
 			fontString:SetPoint(AdvancedFocusCastBarSaved.Settings.CustomTextsPosition, 0, targetYOffset)
 		end

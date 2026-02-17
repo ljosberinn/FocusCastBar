@@ -1,3 +1,7 @@
+## Version 1.0.6
+
+- fixed a bug scaling other texts if secondary font scaling was set to exactly 1
+
 ## Version 1.0.5
 
 - added Secondary Font Scale option (defaults to the same as before)
