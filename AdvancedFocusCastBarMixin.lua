@@ -1252,7 +1252,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 		---@param title string
 		---@param text string
 		---@param button1 string
-		local function CreateEditablePopup(title, text, button1)
+		local function CreateReadOnlyPopup(title, text, button1)
 			return {
 				id = addonName,
 				whileDead = true,
@@ -1300,12 +1300,12 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			}
 		end
 
-		local function OnImportButtonClick()
-			StaticPopupDialogs[addonName] = {
+		local function CreateWritePopup(title, button1, OnAccept)
+			return {
 				id = addonName,
 				whileDead = true,
-				text = Private.L.Settings.Import,
-				button1 = Private.L.Settings.Import,
+				text = title,
+				button1 = button1,
 				button2 = CLOSE,
 				hasEditBox = true,
 				hasWideEditBox = true,
@@ -1313,15 +1313,24 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				hideOnEscape = true,
 				OnAccept = function(popupSelf)
 					local editBox = popupSelf:GetEditBox()
-					local importString = editBox:GetText()
 
+					OnAccept(editBox:GetText())
+				end,
+			}
+		end
+
+		local function OnImportButtonClick()
+			StaticPopupDialogs[addonName] = CreateWritePopup(
+				Private.L.Settings.Import,
+				Private.L.Settings.Import,
+				function(importString)
 					local success, hasAnyChange = Private.Settings.Import(importString)
 
 					if hasAnyChange and LibEditMode:IsInEditMode() then
 						LibEditMode:RefreshFrameSettings(self)
 					end
-				end,
-			}
+				end
+			)
 
 			StaticPopup_Hide(addonName)
 			StaticPopup_Show(addonName)
@@ -1329,7 +1338,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 		local function OnExportButtonClick()
 			StaticPopupDialogs[addonName] =
-				CreateEditablePopup(Private.L.Settings.Export, Private.Settings.Export(), ACCEPT)
+				CreateReadOnlyPopup(Private.L.Settings.Export, Private.Settings.Export(), ACCEPT)
 
 			StaticPopup_Hide(addonName)
 			StaticPopup_Show(addonName)
@@ -1340,13 +1349,32 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				C_EncodingUtil.DecodeBase64("oURsaW5rWB1odHRwczovL2Rpc2NvcmQuZ2cvQzVTVGpZUnNDRA==")
 			).link
 
-			StaticPopupDialogs[addonName] = CreateEditablePopup("Discord", link, ACCEPT)
+			StaticPopupDialogs[addonName] = CreateReadOnlyPopup("Discord", link, ACCEPT)
+
+			StaticPopup_Hide(addonName)
+			StaticPopup_Show(addonName)
+		end
+
+		local function OnCustomTTSOnCastStartTextClick()
+			StaticPopupDialogs[addonName] = CreateWritePopup("placeholder", "placeholder", function(newText)
+				if newText == "" then
+					newText = nil
+				end
+
+				if newText ~= AdvancedFocusCastBarSaved.Settings.CustomTTSOnCastStartText then
+					AdvancedFocusCastBarSaved.Settings.CustomTTSOnCastStartText = newText
+				end
+			end)
 
 			StaticPopup_Hide(addonName)
 			StaticPopup_Show(addonName)
 		end
 
 		LibEditMode:AddFrameSettingsButtons(self, {
+			{
+				click = OnCustomTTSOnCastStartTextClick,
+				text = Private.L.Settings.CustomizeTTSOnCastStartButtonText,
+			},
 			{
 				click = OnImportButtonClick,
 				text = Private.L.Settings.Import,
@@ -2174,7 +2202,9 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 				AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.PlayTTSOnCastStart]
 				and self.contentType == Private.Enum.ContentType.Dungeon
 			then
-				self:PlayTTS(Private.L.Settings.CastStartText)
+				local text = AdvancedFocusCastBarSaved.Settings.CustomTTSOnCastStartText
+					or Private.L.Settings.CastStartText
+				self:PlayTTS(text)
 			end
 		end
 

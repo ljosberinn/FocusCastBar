@@ -142,6 +142,7 @@ L.Settings.FeatureFlagSettingTitles = {
 	[Private.Enum.FeatureFlag.UnfillChannels] = "Other",
 }
 L.Settings.CastStartText = "Cast"
+L.Settings.CustomizeTTSOnCastStartButtonText = "Customize TTS On Cast Start Text"
 
 do
 	local function CreateFeatureFlagTooltip(id, tooltip)
