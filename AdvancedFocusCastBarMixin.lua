@@ -1577,7 +1577,7 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 			elseif id == Private.Enum.FeatureFlag.ShowTargetName then
 				self:ToggleTargetNameVisibility()
 			elseif id == Private.Enum.FeatureFlag.HideWhenUninterruptible then
-				if AdvancedFocusCastBarSaved.Settings.FeatureFlags[id] and self.interruptId == nil then
+				if AdvancedFocusCastBarSaved.Settings.FeatureFlags[id] and #self.interruptIds == 0 then
 					for _, event in next, self.events do
 						self:UnregisterEvent(event)
 					end
@@ -1751,13 +1751,19 @@ function AdvancedFocusCastBarMixin:OnEditModeExit()
 	self:Hide()
 end
 
-function AdvancedFocusCastBarMixin:SetAlphaFromFeatureFlag(interruptDuration)
+function AdvancedFocusCastBarMixin:SetAlphaFromFeatureFlag()
 	if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.HideWhenUninterruptible] then
-		self:SetAlphaFromBoolean(
-			self.castInformation.notInterruptible,
-			0,
-			C_CurveUtil.EvaluateColorValueFromBoolean(interruptDuration:IsZero(), 1, 0)
-		)
+		local anyReady = 0
+
+		for i = 1, #self.interruptIds do
+			anyReady = C_CurveUtil.EvaluateColorValueFromBoolean(
+				C_Spell.GetSpellCooldownDuration(self.interruptIds[i]):IsZero(),
+				1,
+				anyReady
+			)
+		end
+
+		self:SetAlphaFromBoolean(self.castInformation.notInterruptible, 0, anyReady)
 	end
 end
 
@@ -1787,23 +1793,29 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 		self.CastBar.CastTimeText:SetFormattedText("%.1f", self.castInformation.duration:GetRemainingDuration())
 	end
 
-	if self.interruptId ~= nil then
+	if #self.interruptIds > 0 then
 		if AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity < 1 then
-			local inRange = C_Spell.IsSpellInRange(self.interruptId, AdvancedFocusCastBarSaved.Settings.Unit)
+			for i = 1, #self.interruptIds do
+				local id = self.interruptIds[i]
+				local inRange = C_Spell.IsSpellInRange(id, AdvancedFocusCastBarSaved.Settings.Unit)
 
-			if inRange ~= nil then
-				self:SetAlpha(inRange == true and 1 or AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity)
+				if inRange then
+					self:SetAlpha(1)
+					break
+				else
+					self:SetAlpha(AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity)
+				end
 			end
 		end
 
-		local interruptDuration = C_Spell.GetSpellCooldownDuration(self.interruptId)
+		local interruptDuration = C_Spell.GetSpellCooldownDuration(self.interruptIds[1])
 
 		if interruptDuration == nil then
 			return
 		end
 
-		self:SetAlphaFromFeatureFlag(interruptDuration)
-		self:DeriveAndSetNextColor(interruptDuration)
+		self:SetAlphaFromFeatureFlag()
+		self:DeriveAndSetNextColor()
 
 		if
 			self.castInformation.isChannel
@@ -1816,11 +1828,12 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 			self.CastBar.InterruptBar:SetValue(interruptDuration:GetRemainingDuration())
 		end
 
-		self.CastBar.InterruptBar:SetAlphaFromBoolean(
-			interruptDuration:IsZero(),
-			0,
-			C_CurveUtil.EvaluateColorValueFromBoolean(self.castInformation.notInterruptible, 0, 1)
-		)
+		local interruptBarAlpha = C_CurveUtil.EvaluateColorValueFromBoolean(self.castInformation.notInterruptible, 0, 1)
+		for i = 1, #self.interruptIds do
+			local duration = i == 1 and interruptDuration or C_Spell.GetSpellCooldownDuration(self.interruptIds[i])
+			interruptBarAlpha = C_CurveUtil.EvaluateColorValueFromBoolean(duration:IsZero(), 0, interruptBarAlpha)
+		end
+		self.CastBar.InterruptBar:SetAlpha(interruptBarAlpha)
 	end
 end
 
@@ -1885,7 +1898,7 @@ function AdvancedFocusCastBarMixin:UnitIsIrrelevant()
 	return false
 end
 
-function AdvancedFocusCastBarMixin:DetectInterruptId()
+function AdvancedFocusCastBarMixin:DetectAndDiffInterruptIds()
 	local playerClass = select(3, UnitClass("player"))
 
 	local classInterruptMap = {
@@ -1905,6 +1918,8 @@ function AdvancedFocusCastBarMixin:DetectInterruptId()
 	}
 
 	local eligibleInterrupts = classInterruptMap[playerClass]
+	---@type table<number>
+	local ids = {}
 
 	for i = 1, #eligibleInterrupts do
 		local id = eligibleInterrupts[i]
@@ -1913,29 +1928,47 @@ function AdvancedFocusCastBarMixin:DetectInterruptId()
 			C_SpellBook.IsSpellKnownOrInSpellBook(id)
 			or C_SpellBook.IsSpellKnownOrInSpellBook(id, Enum.SpellBookSpellBank.Pet)
 		then
-			return id
+			table.insert(ids, id)
 		end
 	end
 
-	return nil
+	local hasChanges = self.interruptIds == nil or #ids ~= #self.interruptIds
+
+	if not hasChanges then
+		for i = 1, #ids do
+			if ids[i] ~= self.interruptIds[i] then
+				hasChanges = true
+				break
+			end
+		end
+	end
+
+	if hasChanges then
+		self.interruptIds = ids
+
+		Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, Private.Enum.Setting.FeatureFlag, {
+			Private.Enum.FeatureFlag.HideWhenUninterruptible,
+		})
+	end
 end
 
-function AdvancedFocusCastBarMixin:DeriveAndSetNextColor(interruptDuration)
-	if self.interruptId == nil then
+function AdvancedFocusCastBarMixin:DeriveAndSetNextColor()
+	if #self.interruptIds == 0 then
 		return
 	end
 
-	local bool = (interruptDuration or C_Spell.GetSpellCooldownDuration(self.interruptId)):IsZero()
-
-	self.CastBar:GetStatusBarTexture():SetVertexColorFromBoolean(
-		self.castInformation.notInterruptible,
-		self.colors.Uninterruptible,
-		C_CurveUtil.EvaluateColorFromBoolean(
-			bool,
+	local color = self.colors.InterruptibleCannotInterrupt
+	for i = 1, #self.interruptIds do
+		color = C_CurveUtil.EvaluateColorFromBoolean(
+			C_Spell.GetSpellCooldownDuration(self.interruptIds[i]):IsZero(),
 			self.colors.InterruptibleCanInterrupt,
-			self.colors.InterruptibleCannotInterrupt
+			color
 		)
-	)
+	end
+
+	self.CastBar
+		:GetStatusBarTexture()
+		:SetVertexColorFromBoolean(self.castInformation.notInterruptible, self.colors.Uninterruptible, color)
 end
 
 function AdvancedFocusCastBarMixin:QueryCastInformation()
@@ -2014,8 +2047,8 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 		self:ShowGlow(false)
 	end
 
-	-- interruptId won't change while the castbar is visible, so its set once outside to prevent spamming this
-	if self.interruptId == nil then
+	-- interruptIds won't change while the castbar is visible, so this is set once outside to prevent spamming
+	if #self.interruptIds == 0 then
 		self.CastBar:GetStatusBarTexture():SetVertexColorFromBoolean(
 			self.castInformation.notInterruptible,
 			self.colors.Uninterruptible,
@@ -2025,12 +2058,8 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 
 	-- presence means we're in edit mode
 	if self.demoInterval == nil then
-		if self.interruptId ~= nil then
-			local interruptDuration = C_Spell.GetSpellCooldownDuration(self.interruptId)
-
-			if interruptDuration ~= nil then
-				self:SetAlphaFromFeatureFlag(interruptDuration)
-			end
+		if #self.interruptIds > 0 then
+			self:SetAlphaFromFeatureFlag()
 		end
 
 		if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowTargetName] then
@@ -2333,15 +2362,7 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 		or event == "PLAYER_SPECIALIZATION_CHANGED"
 		or event == "UPDATE_INSTANCE_INFO"
 	then
-		local nextInterruptId = self:DetectInterruptId()
-
-		if nextInterruptId ~= self.interruptId then
-			self.interruptId = nextInterruptId
-
-			Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, Private.Enum.Setting.FeatureFlag, {
-				Private.Enum.FeatureFlag.HideWhenUninterruptible,
-			})
-		end
+		self:DetectAndDiffInterruptIds()
 
 		local _, instanceType, difficultyId = GetInstanceInfo()
 		-- equivalent to `instanceType == "none"`

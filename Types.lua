@@ -98,7 +98,7 @@
 ---@field Border AdvancedFocusCastBarBorder
 ---@field CustomElementsFrame AdvancedFocusCastBarCustomElementsFrame
 ---@field Selection EditModeSelection
----@field private interruptId number?
+---@field private interruptIds number[]
 ---@field private contentType number?
 ---@field private role number?
 ---@field private castInformation CastInformation?
@@ -127,8 +127,8 @@
 ---@field HideGlow fun(self: AdvancedFocusCastBarMixin)
 ---@field LoadConditionsProhibitExecution fun(self: AdvancedFocusCastBarMixin): boolean
 ---@field UnitIsIrrelevant fun(self: AdvancedFocusCastBarMixin): boolean
----@field DetectInterruptId fun(self: AdvancedFocusCastBarMixin): number?
----@field DeriveAndSetNextColor fun(self: AdvancedFocusCastBarMixin, interruptDuration: LuaDurationObject?)
+---@field DetectInterruptIds fun(self: AdvancedFocusCastBarMixin): number[]
+---@field DeriveAndSetNextColor fun(self: AdvancedFocusCastBarMixin)
 ---@field QueryCastInformation fun(self: AdvancedFocusCastBarMixin): CastInformation?
 ---@field ProcessCastInformation fun(self: AdvancedFocusCastBarMixin)
 ---@field FindAppropriateTTSVoiceID fun(self: AdvancedFocusCastBarMixin): number
@@ -141,7 +141,7 @@
 ---@field ToggleUnitIntegration fun(self: AdvancedFocusCastBarMixin)
 ---@field SetTargetNameVisibility fun(self: AdvancedFocusCastBarMixin, bool: boolean)
 ---@field GetMaybeColoredUnitName fun(self: AdvancedFocusCastBarMixin, unit: string): string
----@field SetAlphaFromFeatureFlag fun(self: AdvancedFocusCastBarMixin, interruptDuration: LuaDurationObject)
+---@field SetAlphaFromFeatureFlag fun(self: AdvancedFocusCastBarMixin)
 ---@field PlayTTS fun(self: AdvancedFocusCastBarMixin, text: string)
 
 -------- library types
