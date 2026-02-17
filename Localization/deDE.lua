@@ -135,12 +135,14 @@ L.Settings.FeatureFlagLabels = {
 	[Private.Enum.FeatureFlag.UnfillChannels] = "Kanalisierungszauberanimation leert statt füllt",
 	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Nur anzeigen wenn unterbrechbar & kann unterbrechen",
 	[Private.Enum.FeatureFlag.PlaySoundOnCastStart] = "Text-zu-Sprache bei Beginn eines Zaubers abspielen",
+	[Private.Enum.FeatureFlag.ShowAvailableInterrupts] = "Verfügbare Unterbrechungszauber anzeigen",
 }
 L.Settings.FeatureFlagSettingTitles = {
 	[Private.Enum.FeatureFlag.ShowIcon] = "'Features' links hat weitere Infos im Tooltip",
 	[Private.Enum.FeatureFlag.ShowTargetName] = "Anvisiertes Ziel",
 	[Private.Enum.FeatureFlag.ShowInterruptSource] = "Unterbrechungsquelle",
 	[Private.Enum.FeatureFlag.PlaySoundOnCastStart] = "Toneinstellungen",
+	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Unterbrechungszustandseinstellungen",
 	[Private.Enum.FeatureFlag.UnfillChannels] = "Weiteres",
 }
 L.Settings.CastStartText = "Wirkt"
@@ -174,6 +176,10 @@ do
 		CreateFeatureFlagTooltip(
 			Private.Enum.FeatureFlag.HideWhenUninterruptible,
 			"Achtung Heiler: effektiv deaktiviert diese Einstellung das Addon für alle Heiler bis auf Wiederherstellungsschamanen"
+		),
+		CreateFeatureFlagTooltip(
+			Private.Enum.FeatureFlag.ShowAvailableInterrupts,
+			"Nützlich für Spezialisierungen mit mehreren Unterbrechungszaubern. Da das Addon mehrere Unterbrechungszauber gleichzeitig unterstützt kann man sich so anzeigen, welcher Zauber aktuell verfügbar ist."
 		),
 	}, "\n\n")
 end

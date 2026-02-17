@@ -59,6 +59,7 @@ function Private.Settings.GetDefaultSettings()
 			[Private.Enum.FeatureFlag.UnfillChannels] = true,
 			[Private.Enum.FeatureFlag.HideWhenUninterruptible] = false,
 			[Private.Enum.FeatureFlag.PlaySoundOnCastStart] = false,
+			[Private.Enum.FeatureFlag.ShowAvailableInterrupts] = false,
 		},
 	}
 end

@@ -101,4 +101,5 @@ Private.Enum.FeatureFlag = {
 	UnfillChannels = 12,
 	HideWhenUninterruptible = 13,
 	PlaySoundOnCastStart = 14,
+	ShowAvailableInterrupts = 15,
 }

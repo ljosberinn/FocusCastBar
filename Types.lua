@@ -92,10 +92,15 @@
 ---@class EditModeSelection : Frame
 ---@field Label FontString
 
+---@class AvailableInterruptsFrame : Frame
+---@field InterruptIcon1 Texture
+---@field InterruptIcon2 Texture
+
 ---@class AdvancedFocusCastBarMixin : Frame
 ---@field Icon Texture
 ---@field CastBar CustomCastBar
 ---@field Border AdvancedFocusCastBarBorder
+---@field AvailableInterruptsFrame AvailableInterruptsFrame
 ---@field CustomElementsFrame AdvancedFocusCastBarCustomElementsFrame
 ---@field Selection EditModeSelection
 ---@field private interruptIds number[]
@@ -143,6 +148,8 @@
 ---@field GetMaybeColoredUnitName fun(self: AdvancedFocusCastBarMixin, unit: string): string
 ---@field SetAlphaFromFeatureFlag fun(self: AdvancedFocusCastBarMixin)
 ---@field PlayTTS fun(self: AdvancedFocusCastBarMixin, text: string)
+---@field SetInterruptIcons fun(self: AdvancedFocusCastBarMixin)
+---@field ToggleAvailableInterruptIconVisibility fun(self: AdvancedFocusCastBarMixin)
 
 -------- library types
 

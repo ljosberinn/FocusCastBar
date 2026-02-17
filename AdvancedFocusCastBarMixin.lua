@@ -878,9 +878,10 @@ function AdvancedFocusCastBarMixin:OnLoad()
 						Private.Enum.FeatureFlag.UseInterruptSourceClassColor,
 						Private.Enum.FeatureFlag.PlaySoundOnCastStart,
 						Private.Enum.FeatureFlag.PlayTargetingTTSReminder,
+						Private.Enum.FeatureFlag.HideWhenUninterruptible,
+						Private.Enum.FeatureFlag.ShowAvailableInterrupts,
 						Private.Enum.FeatureFlag.UnfillChannels,
 						Private.Enum.FeatureFlag.IgnoreFriendlies,
-						Private.Enum.FeatureFlag.HideWhenUninterruptible,
 					}
 
 					for index, id in ipairs(order) do
@@ -1375,9 +1376,8 @@ function AdvancedFocusCastBarMixin:OnLoad()
 		"LOADING_SCREEN_DISABLED",
 		"UPDATE_INSTANCE_INFO",
 		"FIRST_FRAME_RENDERED",
+		"SPELLS_CHANGED",
 	})
-
-	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player")
 
 	self:ToggleTargetMarkerIntegration()
 	self:ToggleUnitIntegration()
@@ -1503,6 +1503,23 @@ function AdvancedFocusCastBarMixin:AdjustIconLayout(shown)
 			AdvancedFocusCastBarSaved.Settings.Height
 		)
 	end
+
+	for i = 1, 2 do
+		local icon = self.AvailableInterruptsFrame["InterruptIcon" .. i]
+		local dimension = AdvancedFocusCastBarSaved.Settings.Height
+		PixelUtil.SetSize(icon, dimension, dimension)
+
+		local spacing = i == 1 and 0 or 2
+
+		icon:ClearAllPoints()
+		icon:SetPoint(
+			"TOPLEFT",
+			self.AvailableInterruptsFrame,
+			"TOPLEFT",
+			(dimension * (i - 1)) + spacing,
+			dimension + 1
+		)
+	end
 end
 
 function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
@@ -1577,6 +1594,10 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 			elseif id == Private.Enum.FeatureFlag.ShowTargetName then
 				self:ToggleTargetNameVisibility()
 			elseif id == Private.Enum.FeatureFlag.HideWhenUninterruptible then
+				if self.demoInterval ~= nil and not AdvancedFocusCastBarSaved.Settings.FeatureFlags[id] then
+					self:SetAlpha(1)
+				end
+
 				if AdvancedFocusCastBarSaved.Settings.FeatureFlags[id] and #self.interruptIds == 0 then
 					for _, event in next, self.events do
 						self:UnregisterEvent(event)
@@ -1584,8 +1605,28 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 				else
 					self:ToggleUnitIntegration()
 				end
+			elseif id == Private.Enum.FeatureFlag.ShowAvailableInterrupts then
+				self:SetInterruptIcons()
+				self:ToggleAvailableInterruptIconVisibility()
 			end
 		end
+	end
+end
+
+function AdvancedFocusCastBarMixin:SetInterruptIcons()
+	for i = 1, #self.interruptIds do
+		local texture = self.AvailableInterruptsFrame["InterruptIcon" .. i]
+		texture:SetTexture(C_Spell.GetSpellTexture(self.interruptIds[i]))
+	end
+end
+
+function AdvancedFocusCastBarMixin:ToggleAvailableInterruptIconVisibility()
+	local enabled = AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowAvailableInterrupts]
+		and #self.interruptIds > 0
+
+	for i = 1, 2 do
+		local icon = self.AvailableInterruptsFrame["InterruptIcon" .. i]
+		icon:SetShown(enabled)
 	end
 end
 
@@ -1828,11 +1869,22 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 			self.CastBar.InterruptBar:SetValue(interruptDuration:GetRemainingDuration())
 		end
 
+		local showAvailableInterrupts =
+			AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowAvailableInterrupts]
+
 		local interruptBarAlpha = C_CurveUtil.EvaluateColorValueFromBoolean(self.castInformation.notInterruptible, 0, 1)
 		for i = 1, #self.interruptIds do
 			local duration = i == 1 and interruptDuration or C_Spell.GetSpellCooldownDuration(self.interruptIds[i])
-			interruptBarAlpha = C_CurveUtil.EvaluateColorValueFromBoolean(duration:IsZero(), 0, interruptBarAlpha)
+			local isZero = duration:IsZero()
+
+			interruptBarAlpha = C_CurveUtil.EvaluateColorValueFromBoolean(isZero, 0, interruptBarAlpha)
+
+			if showAvailableInterrupts then
+				local frame = self.AvailableInterruptsFrame["InterruptIcon" .. i]
+				frame:SetAlphaFromBoolean(isZero, 1, 0)
+			end
 		end
+
 		self.CastBar.InterruptBar:SetAlpha(interruptBarAlpha)
 	end
 end
@@ -1945,6 +1997,8 @@ function AdvancedFocusCastBarMixin:DetectAndDiffInterruptIds()
 
 	if hasChanges then
 		self.interruptIds = ids
+		self:SetInterruptIcons()
+		self:ToggleAvailableInterruptIconVisibility()
 
 		Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, Private.Enum.Setting.FeatureFlag, {
 			Private.Enum.FeatureFlag.HideWhenUninterruptible,
@@ -2055,6 +2109,8 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 			self.colors.InterruptibleCannotInterrupt
 		)
 	end
+
+	self:ToggleAvailableInterruptIconVisibility()
 
 	-- presence means we're in edit mode
 	if self.demoInterval == nil then
@@ -2359,7 +2415,7 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 	elseif
 		event == "ZONE_CHANGED_NEW_AREA"
 		or event == "LOADING_SCREEN_DISABLED"
-		or event == "PLAYER_SPECIALIZATION_CHANGED"
+		or event == "SPELLS_CHANGED"
 		or event == "UPDATE_INSTANCE_INFO"
 	then
 		self:DetectAndDiffInterruptIds()

@@ -1,3 +1,11 @@
+## Version 1.0.7
+
+- fixed a bug where gaining or losing access to interrupt spells wasn't reliably detected
+- the addon will now evaluate its state (conditional visibility, colors) based on multiple interrupt abilities if you play a a spec with multiple
+- added Show Available Interrupts setting (default off)
+  - in the top left of the cast bar, shows icons of which interrupt spells are currently available
+  - customization for this will follow in a later version
+
 ## Version 1.0.6
 
 - fixed a bug scaling other texts if secondary font scaling was set to exactly 1
