@@ -215,9 +215,6 @@
 ---@class FontString
 ---@field SetAlphaFromBoolean fun(self: FontString, bool: boolean, alphaIfTrue: number?, alphaIfFalse: number?)
 
----@class StatusBar
----@field SetTimerDuration fun(self: StatusBar, duration: LuaDurationObject)
-
 ---@param unit string
 ---@return LuaDurationObject|nil
 function UnitCastingDuration(unit)
