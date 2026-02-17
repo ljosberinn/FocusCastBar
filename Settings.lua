@@ -60,6 +60,8 @@ function Private.Settings.GetDefaultSettings()
 			[Private.Enum.FeatureFlag.HideWhenUninterruptible] = false,
 			[Private.Enum.FeatureFlag.PlaySoundOnCastStart] = false,
 		},
+		SeparateTarget = false,
+		TargetSettings = nil,
 	}
 end
 

@@ -6,6 +6,7 @@ local L = Private.L
 L.EditMode = {}
 
 L.EditMode.AddonName = "Advanced Focus Cast Bar"
+L.EditMode.TargetAddonName = "Advanced Target Cast Bar"
 
 L.Settings = {}
 

@@ -10,6 +10,7 @@ AdvancedFocusCastBarMixin = {}
 function AdvancedFocusCastBarMixin:OnLoad()
 	self:Hide()
 	self.elapsed = 0
+	self.overrideUnit = self:GetName() == "AdvancedTargetCastBarParent" and Private.Enum.Unit.Target or nil
 
 	self.events = {
 		-- start or update events
@@ -106,7 +107,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			point = defaults.Point,
 			x = defaults.OffsetX,
 			y = defaults.OffsetY,
-		}, Private.L.EditMode.AddonName)
+		}, self.overrideUnit == nil and Private.L.EditMode.AddonName or Private.L.EditMode.TargetAddonName)
 
 		---@param key Setting
 		---@return SliderSettings
@@ -203,10 +204,54 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			)
 		end
 
+		---@param key string
+		local function GetSettingValue(key)
+			if self.overrideUnit == nil then
+				return AdvancedFocusCastBarSaved.Settings[key]
+			end
+
+			return AdvancedFocusCastBarSaved.Settings.TargetSettings[key]
+		end
+
+		---@param key string
+		local function SetSettingValue(key, value)
+			if self.overrideUnit == nil then
+				AdvancedFocusCastBarSaved.Settings[key] = value
+			else
+				AdvancedFocusCastBarSaved.Settings.TargetSettings[key] = value
+			end
+		end
+
 		---@param key Setting
 		---@return LibEditModeSetting
 		local function CreateSetting(key)
 			local L = Private.L.Settings
+
+			if key == Private.Enum.Setting.SeparateTarget then
+				---@param layoutName string
+				---@return boolean
+				local function Get(layoutName)
+					return GetSettingValue("SeparateTarget")
+				end
+
+				---@param layoutName string
+				---@param value boolean
+				local function Set(layoutName, value)
+					SetSettingValue("SeparateTarget", value)
+					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
+				end
+
+				---@type LibEditModeCheckbox
+				return {
+					default = defaults.SeparateTarget,
+					kind = Enum.EditModeSettingDisplayType.Checkbox,
+					name = L.SeparateTarget,
+					get = Get,
+					set = Set,
+					desc = L.SeparateTargetTooltip,
+					disabled = self.overrideUnit ~= nil,
+				}
+			end
 
 			if key == Private.Enum.Setting.SecondaryFontScale then
 				local sliderSettings = GetSliderSettingsForOption(key)
@@ -214,7 +259,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param layoutName string
 				---@return number
 				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.SecondaryFontScale
+					return GetSettingValue("SecondaryFontScale")
 				end
 
 				---@param layoutName string
@@ -222,7 +267,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				local function Set(layoutName, value)
 					value = math.floor(value * 100) / 100
 					if value ~= AdvancedFocusCastBarSaved.Settings.SecondaryFontScale then
-						AdvancedFocusCastBarSaved.Settings.SecondaryFontScale = value
+						SetSettingValue("SecondaryFontScale", value)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 					end
 				end
@@ -247,7 +292,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param layoutName string
 				---@return number
 				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.Opacity
+					return GetSettingValue("Opacity")
 				end
 
 				---@param layoutName string
@@ -255,7 +300,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				local function Set(layoutName, value)
 					value = math.floor(value * 100) / 100
 					if value ~= AdvancedFocusCastBarSaved.Settings.Opacity then
-						AdvancedFocusCastBarSaved.Settings.Opacity = value
+						SetSettingValue("Opacity", value)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 					end
 				end
@@ -281,7 +326,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param layoutName string
 				---@return number
 				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity
+					return GetSettingValue("OutOfRangeOpacity")
 				end
 
 				---@param layoutName string
@@ -289,7 +334,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				local function Set(layoutName, value)
 					value = math.floor(value * 100) / 100
 					if value ~= AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity then
-						AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity = value
+						SetSettingValue("OutOfRangeOpacity", value)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 					end
 				end
@@ -315,7 +360,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param layoutName string
 				---@return number
 				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.BackgroundOpacity
+					return GetSettingValue("BackgroundOpacity")
 				end
 
 				---@param layoutName string
@@ -323,7 +368,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				local function Set(layoutName, value)
 					value = math.floor(value * 100) / 100
 					if value ~= AdvancedFocusCastBarSaved.Settings.BackgroundOpacity then
-						AdvancedFocusCastBarSaved.Settings.BackgroundOpacity = value
+						SetSettingValue("BackgroundOpacity", value)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 					end
 				end
@@ -349,14 +394,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param layoutName string
 				---@return number
 				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.TickWidth
+					return GetSettingValue("TickWidth")
 				end
 
 				---@param layoutName string
 				---@param value number
 				local function Set(layoutName, value)
 					if value ~= AdvancedFocusCastBarSaved.Settings.TickWidth then
-						AdvancedFocusCastBarSaved.Settings.TickWidth = value
+						SetSettingValue("TickWidth", value)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 					end
 				end
@@ -381,14 +426,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param layoutName string
 				---@return number
 				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.FontSize
+					return GetSettingValue("FontSize")
 				end
 
 				---@param layoutName string
 				---@param value number
 				local function Set(layoutName, value)
 					if value ~= AdvancedFocusCastBarSaved.Settings.FontSize then
-						AdvancedFocusCastBarSaved.Settings.FontSize = value
+						SetSettingValue("FontSize", value)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 					end
 				end
@@ -412,7 +457,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param value string
 				local function Set(layoutName, value)
 					if AdvancedFocusCastBarSaved.Settings.Font ~= value then
-						AdvancedFocusCastBarSaved.Settings.Font = value
+						SetSettingValue("Font", value)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 					end
 				end
@@ -478,7 +523,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 						local path = byLabel[label]
 
 						local function IsEnabled()
-							return AdvancedFocusCastBarSaved.Settings.Font == path
+							return GetSettingValue("Font") == path
 						end
 
 						local function SetProxy()
@@ -547,15 +592,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param layoutName string
 				---@param value string
 				local function Set(layoutName, value)
-					AdvancedFocusCastBarSaved.Settings.CustomTextsPosition = value
-
+					SetSettingValue("CustomTextsPosition", value)
 					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 				end
 
 				local function Generator(owner, rootDescription, data)
 					for customTextsPositionKey, value in pairs(Private.Enum.CustomTextsPosition) do
 						local function IsEnabled()
-							return AdvancedFocusCastBarSaved.Settings.CustomTextsPosition == value
+							return GetSettingValue("CustomTextsPosition") == value
 						end
 
 						local function SetProxy()
@@ -584,15 +628,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param layoutName string
 				---@param value string
 				local function Set(layoutName, value)
-					AdvancedFocusCastBarSaved.Settings.Unit = value
-
+					SetSettingValue("Unit", value)
 					Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 				end
 
 				local function Generator(owner, rootDescription, data)
 					for unitKey, value in pairs(Private.Enum.Unit) do
 						local function IsEnabled()
-							return AdvancedFocusCastBarSaved.Settings.Unit == value
+							return GetSettingValue("Unit") == value
 						end
 
 						local function SetProxy()
@@ -612,6 +655,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 					multiple = false,
 					generator = Generator,
 					set = Set,
+					disabled = self.overrideUnit ~= nil or AdvancedFocusCastBarSaved.Settings.SeparateTarget,
 				}
 			end
 
@@ -620,7 +664,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param value string
 				local function Set(layoutName, value)
 					if AdvancedFocusCastBarSaved.Settings.Texture ~= value then
-						AdvancedFocusCastBarSaved.Settings.Texture = value
+						SetSettingValue("Texture", value)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 					end
 				end
@@ -634,7 +678,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 						local path = byLabel[label]
 
 						local function IsEnabled()
-							return AdvancedFocusCastBarSaved.Settings.Texture == path
+							return GetSettingValue("Texture") == path
 						end
 
 						local function SetProxy()
@@ -670,14 +714,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 					local color = value:GenerateHexColor()
 
 					if AdvancedFocusCastBarSaved.Settings.ColorUninterruptible ~= color then
-						AdvancedFocusCastBarSaved.Settings.ColorUninterruptible = color
+						SetSettingValue("ColorUninterruptible", color)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, color)
 					end
 				end
 
 				---@return colorRGBA
 				local function Get()
-					return CreateColorFromHexString(AdvancedFocusCastBarSaved.Settings.ColorUninterruptible)
+					return CreateColorFromHexString(GetSettingValue("ColorUninterruptible"))
 				end
 
 				---@type LibEditModeColorPicker
@@ -698,14 +742,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 					local color = value:GenerateHexColor()
 
 					if AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCanInterrupt ~= color then
-						AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCanInterrupt = color
+						SetSettingValue("ColorInterruptibleCanInterrupt", color)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, color)
 					end
 				end
 
 				---@return colorRGBA
 				local function Get()
-					return CreateColorFromHexString(AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCanInterrupt)
+					return CreateColorFromHexString(GetSettingValue("ColorInterruptibleCanInterrupt"))
 				end
 
 				---@type LibEditModeColorPicker
@@ -726,16 +770,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 					local color = value:GenerateHexColor()
 
 					if AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCannotInterrupt ~= color then
-						AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCannotInterrupt = color
+						SetSettingValue("ColorInterruptibleCannotInterrupt", color)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, color)
 					end
 				end
 
 				---@return colorRGBA
 				local function Get()
-					return CreateColorFromHexString(
-						AdvancedFocusCastBarSaved.Settings.ColorInterruptibleCannotInterrupt
-					)
+					return CreateColorFromHexString(GetSettingValue("ColorInterruptibleCannotInterrupt"))
 				end
 
 				---@type LibEditModeColorPicker
@@ -756,14 +798,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 					local color = value:GenerateHexColor()
 
 					if AdvancedFocusCastBarSaved.Settings.ColorGlow ~= color then
-						AdvancedFocusCastBarSaved.Settings.ColorGlow = color
+						SetSettingValue("ColorGlow", color)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, color)
 					end
 				end
 
 				---@return colorRGBA
 				local function Get()
-					return CreateColorFromHexString(AdvancedFocusCastBarSaved.Settings.ColorGlow)
+					return CreateColorFromHexString(GetSettingValue("ColorGlow"))
 				end
 
 				---@type LibEditModeColorPicker
@@ -784,14 +826,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 					local color = value:GenerateHexColor()
 
 					if AdvancedFocusCastBarSaved.Settings.ColorInterruptTick ~= color then
-						AdvancedFocusCastBarSaved.Settings.ColorInterruptTick = color
+						SetSettingValue("ColorInterruptTick", color)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, color)
 					end
 				end
 
 				---@return colorRGBA
 				local function Get()
-					return CreateColorFromHexString(AdvancedFocusCastBarSaved.Settings.ColorInterruptTick)
+					return CreateColorFromHexString(GetSettingValue("ColorInterruptTick"))
 				end
 
 				---@type LibEditModeColorPicker
@@ -809,7 +851,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				local function Generator(owner, rootDescription, data)
 					for label, id in pairs(Private.Enum.ContentType) do
 						local function IsEnabled()
-							return AdvancedFocusCastBarSaved.Settings.LoadConditionContentType[id]
+							return GetSettingValue("LoadConditionContentType")[id]
 						end
 
 						local function Toggle()
@@ -883,6 +925,23 @@ function AdvancedFocusCastBarMixin:OnLoad()
 						Private.Enum.FeatureFlag.HideWhenUninterruptible,
 					}
 
+					---@param feature number
+					---@return boolean
+					local function IsFeatureFlagAvailable(feature)
+						if self.overrideUnit == nil then
+							return true
+						end
+
+						if
+							feature == Private.Enum.FeatureFlag.PlaySoundOnCastStart
+							or feature == Private.Enum.FeatureFlag.PlayTargetingTTSReminder
+						then
+							return false
+						end
+
+						return true
+					end
+
 					for index, id in ipairs(order) do
 						local title = L.FeatureFlagSettingTitles[id]
 
@@ -924,10 +983,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 						end
 
 						local translated = L.FeatureFlagLabels[id]
-						rootDescription:CreateCheckbox(translated, IsEnabled, Toggle, {
+						local checkbox = rootDescription:CreateCheckbox(translated, IsEnabled, Toggle, {
 							value = id,
 							multiple = true,
 						})
+
+						if not IsFeatureFlagAvailable(id) then
+							checkbox:SetEnabled(false)
+						end
 					end
 				end
 
@@ -1090,14 +1153,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param layoutName string
 				---@return number
 				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.Width
+					return GetSettingValue("Width")
 				end
 
 				---@param layoutName string
 				---@param value number
 				local function Set(layoutName, value)
 					if value ~= AdvancedFocusCastBarSaved.Settings.Width then
-						AdvancedFocusCastBarSaved.Settings.Width = value
+						SetSettingValue("Width", value)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 					end
 				end
@@ -1122,14 +1185,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param layoutName string
 				---@return number
 				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.Height
+					return GetSettingValue("Height")
 				end
 
 				---@param layoutName string
 				---@param value number
 				local function Set(layoutName, value)
 					if value ~= AdvancedFocusCastBarSaved.Settings.Height then
-						AdvancedFocusCastBarSaved.Settings.Height = value
+						SetSettingValue("Height", value)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.SETTING_CHANGED, key, value)
 					end
 				end
@@ -1154,15 +1217,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param layoutName string
 				---@return number
 				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.OffsetX
+					return GetSettingValue("OffsetX")
 				end
 
 				---@param layoutName string
 				---@param value number
 				local function Set(layoutName, value)
 					if value ~= AdvancedFocusCastBarSaved.Settings.OffsetX then
-						AdvancedFocusCastBarSaved.Settings.OffsetX = value
-
+						SetSettingValue("OffsetX", value)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.EDIT_MODE_POSITION_CHANGED)
 					end
 				end
@@ -1187,15 +1249,14 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				---@param layoutName string
 				---@return number
 				local function Get(layoutName)
-					return AdvancedFocusCastBarSaved.Settings.OffsetY
+					return GetSettingValue("OffsetY")
 				end
 
 				---@param layoutName string
 				---@param value number
 				local function Set(layoutName, value)
 					if value ~= AdvancedFocusCastBarSaved.Settings.OffsetY then
-						AdvancedFocusCastBarSaved.Settings.OffsetY = value
-
+						SetSettingValue("OffsetY", value)
 						Private.EventRegistry:TriggerEvent(Private.Enum.Events.EDIT_MODE_POSITION_CHANGED)
 					end
 				end
@@ -1222,32 +1283,40 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			)
 		end
 
-		LibEditMode:AddFrameSettings(self, {
-			CreateSetting(Private.Enum.Setting.Width),
-			CreateSetting(Private.Enum.Setting.Height),
-			CreateSetting(Private.Enum.Setting.LoadConditionContentType),
-			CreateSetting(Private.Enum.Setting.LoadConditionRole),
-			CreateSetting(Private.Enum.Setting.Texture),
-			CreateSetting(Private.Enum.Setting.FeatureFlag),
-			CreateSetting(Private.Enum.Setting.Opacity),
-			CreateSetting(Private.Enum.Setting.OutOfRangeOpacity),
-			CreateSetting(Private.Enum.Setting.BackgroundOpacity),
-			CreateSetting(Private.Enum.Setting.Font),
-			CreateSetting(Private.Enum.Setting.FontSize),
-			CreateSetting(Private.Enum.Setting.FontFlags),
-			CreateSetting(Private.Enum.Setting.SecondaryFontScale),
-			CreateSetting(Private.Enum.Setting.ColorUninterruptible),
-			CreateSetting(Private.Enum.Setting.ColorInterruptibleCanInterrupt),
-			CreateSetting(Private.Enum.Setting.ColorInterruptibleCannotInterrupt),
-			CreateSetting(Private.Enum.Setting.ColorInterruptTick),
-			CreateSetting(Private.Enum.Setting.ColorGlow),
-			CreateSetting(Private.Enum.Setting.TickWidth),
-			CreateSetting(Private.Enum.Setting.CustomTextsPosition),
-			CreateSetting(Private.Enum.Setting.Point),
-			CreateSetting(Private.Enum.Setting.OffsetX),
-			CreateSetting(Private.Enum.Setting.OffsetY),
-			CreateSetting(Private.Enum.Setting.Unit),
-		})
+		do
+			local settings = {
+				CreateSetting(Private.Enum.Setting.Width),
+				CreateSetting(Private.Enum.Setting.Height),
+				CreateSetting(Private.Enum.Setting.LoadConditionContentType),
+				CreateSetting(Private.Enum.Setting.LoadConditionRole),
+				CreateSetting(Private.Enum.Setting.Texture),
+				CreateSetting(Private.Enum.Setting.FeatureFlag),
+				CreateSetting(Private.Enum.Setting.Opacity),
+				CreateSetting(Private.Enum.Setting.OutOfRangeOpacity),
+				CreateSetting(Private.Enum.Setting.BackgroundOpacity),
+				CreateSetting(Private.Enum.Setting.Font),
+				CreateSetting(Private.Enum.Setting.FontSize),
+				CreateSetting(Private.Enum.Setting.FontFlags),
+				CreateSetting(Private.Enum.Setting.SecondaryFontScale),
+				CreateSetting(Private.Enum.Setting.ColorUninterruptible),
+				CreateSetting(Private.Enum.Setting.ColorInterruptibleCanInterrupt),
+				CreateSetting(Private.Enum.Setting.ColorInterruptibleCannotInterrupt),
+				CreateSetting(Private.Enum.Setting.ColorInterruptTick),
+				CreateSetting(Private.Enum.Setting.ColorGlow),
+				CreateSetting(Private.Enum.Setting.TickWidth),
+				CreateSetting(Private.Enum.Setting.CustomTextsPosition),
+				CreateSetting(Private.Enum.Setting.Point),
+				CreateSetting(Private.Enum.Setting.OffsetX),
+				CreateSetting(Private.Enum.Setting.OffsetY),
+			}
+
+			if self.overrideUnit == nil then
+				table.insert(settings, CreateSetting(Private.Enum.Setting.SeparateTarget))
+				table.insert(settings, CreateSetting(Private.Enum.Setting.Unit))
+			end
+
+			LibEditMode:AddFrameSettings(self, settings)
+		end
 
 		---@param title string
 		---@param text string
@@ -1383,11 +1452,17 @@ function AdvancedFocusCastBarMixin:OnLoad()
 	self:ToggleUnitIntegration()
 end
 
-function AdvancedFocusCastBarMixin:ToggleUnitIntegration()
-	FrameUtil.UnregisterFrameForEvents(self, self.events)
-	FrameUtil.RegisterFrameForUnitEvents(self, self.events, AdvancedFocusCastBarSaved.Settings.Unit)
+function AdvancedFocusCastBarMixin:GetAssignedUnit()
+	return self.overrideUnit or AdvancedFocusCastBarSaved.Settings.Unit
+end
 
-	if AdvancedFocusCastBarSaved.Settings.Unit == Private.Enum.Unit.Focus then
+function AdvancedFocusCastBarMixin:ToggleUnitIntegration()
+	local unit = self:GetAssignedUnit()
+
+	FrameUtil.UnregisterFrameForEvents(self, self.events)
+	FrameUtil.RegisterFrameForUnitEvents(self, self.events, unit)
+
+	if unit == Private.Enum.Unit.Focus then
 		self:UnregisterEvent("PLAYER_TARGET_CHANGED")
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 	else
@@ -1586,6 +1661,21 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 				end
 			end
 		end
+	elseif key == Private.Enum.Setting.SeparateTarget then
+		if value and AdvancedFocusCastBarSaved.Settings.TargetSettings == nil then
+			local copiedSettings = {}
+
+			for settingKey, settingValue in pairs(AdvancedFocusCastBarSaved.Settings) do
+				if type(settingValue) == "table" then
+				else
+					copiedSettings[settingKey] = settingValue
+				end
+			end
+
+			AdvancedFocusCastBarSaved.Settings.TargetSettings = copiedSettings
+
+			print("prompt for reload here")
+		end
 	end
 end
 
@@ -1655,7 +1745,7 @@ function AdvancedFocusCastBarMixin:SetFontAndFontSize()
 			fontString:SetShadowOffset(0, 0)
 		end
 
-		if targetFontSize == otherSize then
+		if fontString ~= self.CastBar.CastTimeText and fontString ~= self.CastBar.SpellNameText then
 			fontString:ClearAllPoints()
 			fontString:SetPoint(AdvancedFocusCastBarSaved.Settings.CustomTextsPosition, 0, targetYOffset)
 		end
@@ -1664,11 +1754,24 @@ end
 
 function AdvancedFocusCastBarMixin:RestoreEditModePosition()
 	self:ClearAllPoints()
+
+	local point, offsetX, offsetY
+
+	if self.overrideUnit == nil then
+		point = AdvancedFocusCastBarSaved.Settings.Point
+		offsetX = AdvancedFocusCastBarSaved.Settings.OffsetX
+		offsetY = AdvancedFocusCastBarSaved.Settings.OffsetY
+	else
+		point = AdvancedFocusCastBarSaved.Settings.TargetSettings.Point
+		offsetX = AdvancedFocusCastBarSaved.Settings.TargetSettings.OffsetX
+		offsetY = AdvancedFocusCastBarSaved.Settings.TargetSettings.OffsetY
+	end
+
 	self:SetPoint(
 		---@diagnostic disable-next-line: param-type-mismatch
-		AdvancedFocusCastBarSaved.Settings.Point,
-		AdvancedFocusCastBarSaved.Settings.OffsetX,
-		AdvancedFocusCastBarSaved.Settings.OffsetY
+		point,
+		offsetX,
+		offsetY
 	)
 end
 
@@ -1676,9 +1779,15 @@ function AdvancedFocusCastBarMixin:OnEditModePositionChange(frame, layoutName, p
 	x = math.floor(x)
 	y = math.floor(y)
 
-	AdvancedFocusCastBarSaved.Settings.Point = point
-	AdvancedFocusCastBarSaved.Settings.OffsetX = x
-	AdvancedFocusCastBarSaved.Settings.OffsetY = y
+	if self.overrideUnit == nil then
+		AdvancedFocusCastBarSaved.Settings.Point = point
+		AdvancedFocusCastBarSaved.Settings.OffsetX = x
+		AdvancedFocusCastBarSaved.Settings.OffsetY = y
+	else
+		AdvancedFocusCastBarSaved.Settings.TargetSettings.Point = point
+		AdvancedFocusCastBarSaved.Settings.TargetSettings.OffsetX = x
+		AdvancedFocusCastBarSaved.Settings.TargetSettings.OffsetY = y
+	end
 
 	Private.EventRegistry:TriggerEvent(Private.Enum.Events.EDIT_MODE_POSITION_CHANGED)
 end
@@ -1707,7 +1816,7 @@ function AdvancedFocusCastBarMixin:LoopPreview()
 	self.castInformation = {
 		duration = dummyDuration,
 		isChannel = math.random(0, 1) == 1,
-		name = addonName,
+		name = self.overrideUnit == nil and addonName or "AdvancedTargetCastBar",
 		notInterruptible = math.random(0, 1) == 1,
 		texture = self:GetRandomIcon(),
 		isImportant = math.random(0, 1) == 1,
@@ -1789,7 +1898,7 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 
 	if self.interruptId ~= nil then
 		if AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity < 1 then
-			local inRange = C_Spell.IsSpellInRange(self.interruptId, AdvancedFocusCastBarSaved.Settings.Unit)
+			local inRange = C_Spell.IsSpellInRange(self.interruptId, self:GetAssignedUnit())
 
 			if inRange ~= nil then
 				self:SetAlpha(inRange == true and 1 or AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity)
@@ -1871,13 +1980,15 @@ function AdvancedFocusCastBarMixin:LoadConditionsProhibitExecution()
 end
 
 function AdvancedFocusCastBarMixin:UnitIsIrrelevant()
-	if not UnitExists(AdvancedFocusCastBarSaved.Settings.Unit) then
+	local unit = self:GetAssignedUnit()
+
+	if not UnitExists(unit) then
 		return true
 	end
 
 	if
 		AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.IgnoreFriendlies]
-		and not UnitCanAttack("player", AdvancedFocusCastBarSaved.Settings.Unit)
+		and not UnitCanAttack("player", unit)
 	then
 		return true
 	end
@@ -1939,11 +2050,12 @@ function AdvancedFocusCastBarMixin:DeriveAndSetNextColor(interruptDuration)
 end
 
 function AdvancedFocusCastBarMixin:QueryCastInformation()
-	local duration = UnitCastingDuration(AdvancedFocusCastBarSaved.Settings.Unit)
+	local unit = self:GetAssignedUnit()
+	local duration = UnitCastingDuration(unit)
 	local isChannel = false
 
 	if duration == nil then
-		duration = UnitChannelDuration(AdvancedFocusCastBarSaved.Settings.Unit)
+		duration = UnitChannelDuration(unit)
 		isChannel = true
 	end
 
@@ -1951,13 +2063,12 @@ function AdvancedFocusCastBarMixin:QueryCastInformation()
 		return
 	end
 
-	local name, texture, notInterruptible, spellId
+	local name, texture, notInterruptible, spellId, _
 
 	if isChannel then
-		_, name, texture, _, _, _, notInterruptible, spellId = UnitChannelInfo(AdvancedFocusCastBarSaved.Settings.Unit)
+		_, name, texture, _, _, _, notInterruptible, spellId = UnitChannelInfo(unit)
 	else
-		_, name, texture, _, _, _, _, notInterruptible, spellId =
-			UnitCastingInfo(AdvancedFocusCastBarSaved.Settings.Unit)
+		_, name, texture, _, _, _, _, notInterruptible, spellId = UnitCastingInfo(unit)
 	end
 
 	return {
@@ -2000,7 +2111,6 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 	end
 
 	self:AdjustDirection(self.castInformation.isChannel)
-
 	self.Icon:SetTexture(self.castInformation.texture)
 	self.CastBar.SpellNameText:SetText(self.castInformation.name)
 	self:DeriveAndSetNextColor()
@@ -2035,6 +2145,7 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 
 		if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowTargetName] then
 			self:SetTargetNameVisibility(true)
+			local castingUnit = self:GetAssignedUnit()
 
 			if IsInGroup() then
 				local partyMembers = GetNumGroupMembers()
@@ -2045,12 +2156,12 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 					---@type FontString
 					local frame = self.CustomElementsFrame["TargetNameText" .. i]
 					frame:SetText(self:GetMaybeColoredUnitName(unit))
-					frame:SetAlphaFromBoolean(UnitIsSpellTarget(AdvancedFocusCastBarSaved.Settings.Unit, unit), 1, 0)
+					frame:SetAlphaFromBoolean(UnitIsSpellTarget(castingUnit, unit), 1, 0)
 				end
 			else
 				self.CustomElementsFrame.TargetNameText1:SetText(self:GetMaybeColoredUnitName("player"))
 				self.CustomElementsFrame.TargetNameText1:SetAlphaFromBoolean(
-					UnitIsSpellTarget(AdvancedFocusCastBarSaved.Settings.Unit, "player"),
+					UnitIsSpellTarget(castingUnit, "player"),
 					1,
 					0
 				)
@@ -2397,13 +2508,7 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 			self.role = Private.Enum.Role.Damager
 		end
 	elseif event == Private.Enum.Events.EDIT_MODE_POSITION_CHANGED then
-		self:ClearAllPoints()
-		self:SetPoint(
-			---@diagnostic disable-next-line: param-type-mismatch
-			AdvancedFocusCastBarSaved.Settings.Point,
-			AdvancedFocusCastBarSaved.Settings.OffsetX,
-			AdvancedFocusCastBarSaved.Settings.OffsetY
-		)
+		self:RestoreEditModePosition()
 	elseif event == "FIRST_FRAME_RENDERED" then
 		self.firstFrameTimestamp = GetTime()
 		self:UnregisterEvent("FIRST_FRAME_RENDERED")
@@ -2412,4 +2517,8 @@ end
 
 table.insert(Private.LoginFnQueue, function()
 	CreateFrame("Frame", "AdvancedFocusCastBarParent", UIParent, "AdvancedFocusCastBarFrameTemplate")
+
+	if AdvancedFocusCastBarSaved.Settings.SeparateTarget then
+		CreateFrame("Frame", "AdvancedTargetCastBarParent", UIParent, "AdvancedFocusCastBarFrameTemplate")
+	end
 end)
