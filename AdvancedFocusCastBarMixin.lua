@@ -876,7 +876,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 						Private.Enum.FeatureFlag.UseTargetClassColor,
 						Private.Enum.FeatureFlag.ShowInterruptSource,
 						Private.Enum.FeatureFlag.UseInterruptSourceClassColor,
-						Private.Enum.FeatureFlag.PlaySoundOnCastStart,
+						Private.Enum.FeatureFlag.PlayTTSOnCastStart,
 						Private.Enum.FeatureFlag.PlayTargetingTTSReminder,
 						Private.Enum.FeatureFlag.UnfillChannels,
 						Private.Enum.FeatureFlag.IgnoreFriendlies,
@@ -2171,7 +2171,7 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 			or event == "UNIT_SPELLCAST_EMPOWER_START"
 		then
 			if
-				AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.PlaySoundOnCastStart]
+				AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.PlayTTSOnCastStart]
 				and self.contentType == Private.Enum.ContentType.Dungeon
 			then
 				self:PlayTTS(Private.L.Settings.CastStartText)
