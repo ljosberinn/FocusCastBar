@@ -876,7 +876,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 						Private.Enum.FeatureFlag.UseTargetClassColor,
 						Private.Enum.FeatureFlag.ShowInterruptSource,
 						Private.Enum.FeatureFlag.UseInterruptSourceClassColor,
-						Private.Enum.FeatureFlag.PlaySoundOnCastStart,
+						Private.Enum.FeatureFlag.PlayTTSOnCastStart,
 						Private.Enum.FeatureFlag.PlayTargetingTTSReminder,
 						Private.Enum.FeatureFlag.UnfillChannels,
 						Private.Enum.FeatureFlag.IgnoreFriendlies,
@@ -1252,7 +1252,8 @@ function AdvancedFocusCastBarMixin:OnLoad()
 		---@param title string
 		---@param text string
 		---@param button1 string
-		local function CreateEditablePopup(title, text, button1)
+		---@return table
+		local function CreateReadOnlyPopup(title, text, button1)
 			return {
 				id = addonName,
 				whileDead = true,
@@ -1300,28 +1301,53 @@ function AdvancedFocusCastBarMixin:OnLoad()
 			}
 		end
 
-		local function OnImportButtonClick()
-			StaticPopupDialogs[addonName] = {
+		---@param title string
+		---@param button1 string
+		---@param initialText string
+		---@param OnAccept fun(text: string)
+		---@return table
+		local function CreateWritablePopup(title, button1, initialText, OnAccept)
+			local dialogInfo = {
 				id = addonName,
 				whileDead = true,
-				text = Private.L.Settings.Import,
-				button1 = Private.L.Settings.Import,
+				text = title,
+				button1 = button1,
 				button2 = CLOSE,
 				hasEditBox = true,
 				hasWideEditBox = true,
 				editBoxWidth = 350,
 				hideOnEscape = true,
+				editBoxText = initialText,
 				OnAccept = function(popupSelf)
 					local editBox = popupSelf:GetEditBox()
-					local importString = editBox:GetText()
 
+					OnAccept(strtrim(editBox:GetText()))
+				end,
+			}
+
+			if initialText ~= "" then
+				dialogInfo.OnShow = function(popupSelf)
+					local editBox = popupSelf:GetEditBox()
+					editBox:SetText(initialText)
+				end
+			end
+
+			return dialogInfo
+		end
+
+		local function OnImportButtonClick()
+			StaticPopupDialogs[addonName] = CreateWritablePopup(
+				Private.L.Settings.Import,
+				Private.L.Settings.Import,
+				"",
+				function(importString)
 					local success, hasAnyChange = Private.Settings.Import(importString)
 
 					if hasAnyChange and LibEditMode:IsInEditMode() then
 						LibEditMode:RefreshFrameSettings(self)
 					end
-				end,
-			}
+				end
+			)
 
 			StaticPopup_Hide(addonName)
 			StaticPopup_Show(addonName)
@@ -1329,7 +1355,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 		local function OnExportButtonClick()
 			StaticPopupDialogs[addonName] =
-				CreateEditablePopup(Private.L.Settings.Export, Private.Settings.Export(), ACCEPT)
+				CreateReadOnlyPopup(Private.L.Settings.Export, Private.Settings.Export(), ACCEPT)
 
 			StaticPopup_Hide(addonName)
 			StaticPopup_Show(addonName)
@@ -1340,13 +1366,37 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				C_EncodingUtil.DecodeBase64("oURsaW5rWB1odHRwczovL2Rpc2NvcmQuZ2cvQzVTVGpZUnNDRA==")
 			).link
 
-			StaticPopupDialogs[addonName] = CreateEditablePopup("Discord", link, ACCEPT)
+			StaticPopupDialogs[addonName] = CreateReadOnlyPopup("Discord", link, ACCEPT)
+
+			StaticPopup_Hide(addonName)
+			StaticPopup_Show(addonName)
+		end
+
+		local function OnCustomTTSOnCastStartTextClick()
+			StaticPopupDialogs[addonName] = CreateWritablePopup(
+				Private.L.Settings.CustomizeTTSOnCastStartButtonText,
+				ACCEPT,
+				AdvancedFocusCastBarSaved.Settings.CustomTTSOnCastStartText or Private.L.Settings.CastStartText,
+				function(newText)
+					if newText == "" then
+						newText = nil
+					end
+
+					if newText ~= AdvancedFocusCastBarSaved.Settings.CustomTTSOnCastStartText then
+						AdvancedFocusCastBarSaved.Settings.CustomTTSOnCastStartText = newText
+					end
+				end
+			)
 
 			StaticPopup_Hide(addonName)
 			StaticPopup_Show(addonName)
 		end
 
 		LibEditMode:AddFrameSettingsButtons(self, {
+			{
+				click = OnCustomTTSOnCastStartTextClick,
+				text = Private.L.Settings.CustomizeTTSOnCastStartButtonText,
+			},
 			{
 				click = OnImportButtonClick,
 				text = Private.L.Settings.Import,
@@ -1443,6 +1493,16 @@ function AdvancedFocusCastBarMixin:ToggleTargetMarkerIntegration()
 		self:RegisterEvent("RAID_TARGET_UPDATE")
 	else
 		self:UnregisterEvent("RAID_TARGET_UPDATE")
+	end
+end
+
+function AdvancedFocusCastBarMixin:MaybePlayCastStartTTS()
+	if
+		AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.PlayTTSOnCastStart]
+		and self.contentType ~= Private.Enum.ContentType.Raid
+	then
+		local text = AdvancedFocusCastBarSaved.Settings.CustomTTSOnCastStartText or Private.L.Settings.CastStartText
+		self:PlayTTS(text)
 	end
 end
 
@@ -1975,6 +2035,11 @@ function AdvancedFocusCastBarMixin:GetMaybeColoredUnitName(unit)
 
 	if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.UseTargetClassColor] then
 		local class = select(2, UnitClass(unit))
+
+		if class == nil then
+			return name
+		end
+
 		local color = C_ClassColor.GetClassColor(class)
 
 		return color:WrapTextInColorCode(name)
@@ -2033,7 +2098,10 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 			end
 		end
 
-		if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowTargetName] then
+		if
+			self.contentType ~= Private.Enum.ContentType.Raid
+			and AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowTargetName]
+		then
 			self:SetTargetNameVisibility(true)
 
 			if IsInGroup() then
@@ -2170,12 +2238,7 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 			or event == "UNIT_SPELLCAST_CHANNEL_START"
 			or event == "UNIT_SPELLCAST_EMPOWER_START"
 		then
-			if
-				AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.PlaySoundOnCastStart]
-				and self.contentType == Private.Enum.ContentType.Dungeon
-			then
-				self:PlayTTS(Private.L.Settings.CastStartText)
-			end
+			self:MaybePlayCastStartTTS()
 		end
 
 		self:ProcessCastInformation()
@@ -2291,7 +2354,7 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 			return
 		end
 
-		self:PlayTTS(Private.L.Settings.CastStartText)
+		self:MaybePlayCastStartTTS()
 		self:ProcessCastInformation()
 		self:Show()
 	elseif event == "UNIT_SPELLCAST_INTERRUPTIBLE" then

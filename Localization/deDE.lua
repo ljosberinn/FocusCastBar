@@ -134,16 +134,17 @@ L.Settings.FeatureFlagLabels = {
 	[Private.Enum.FeatureFlag.IgnoreFriendlies] = "Freundliche Ziele ignorieren",
 	[Private.Enum.FeatureFlag.UnfillChannels] = "Kanalisierungszauberanimation leert statt füllt",
 	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Nur anzeigen wenn unterbrechbar & kann unterbrechen",
-	[Private.Enum.FeatureFlag.PlaySoundOnCastStart] = "Text-zu-Sprache bei Beginn eines Zaubers abspielen",
+	[Private.Enum.FeatureFlag.PlayTTSOnCastStart] = "Text-zu-Sprache bei Beginn eines Zaubers abspielen",
 }
 L.Settings.FeatureFlagSettingTitles = {
 	[Private.Enum.FeatureFlag.ShowIcon] = "'Features' links hat weitere Infos im Tooltip",
 	[Private.Enum.FeatureFlag.ShowTargetName] = "Anvisiertes Ziel",
 	[Private.Enum.FeatureFlag.ShowInterruptSource] = "Unterbrechungsquelle",
-	[Private.Enum.FeatureFlag.PlaySoundOnCastStart] = "Toneinstellungen",
+	[Private.Enum.FeatureFlag.PlayTTSOnCastStart] = "Toneinstellungen",
 	[Private.Enum.FeatureFlag.UnfillChannels] = "Weiteres",
 }
 L.Settings.CastStartText = "Wirkt"
+L.Settings.CustomizeTTSOnCastStartButtonText = "Text-zu-Sprache bei Beginn eines Zaubers anpassen"
 
 do
 	local function CreateFeatureFlagTooltip(id, tooltip)
@@ -161,7 +162,7 @@ do
 			"Spielt 'Fokus' (oder 'Ziel') Text-zu-Sprache ab wenn die derzeitg beobachtete Einheit verschwindet, bspw. weil sie getötet wurde, zur Erinnerung ein neues Ziel zu wählen. Nur in Instanzen aktiv!"
 		),
 		CreateFeatureFlagTooltip(
-			Private.Enum.FeatureFlag.PlaySoundOnCastStart,
+			Private.Enum.FeatureFlag.PlayTTSOnCastStart,
 			string.format(
 				"Spielt '%s' Text-zu-Sprache ab wenn die beobachtete Einheit anfängt zu wirken. Bedingungslos, kann nicht prüfen ob du unterbrechen kannst oder ob der Zauber unterbrechbar ist. Nur in Instanzen!",
 				L.Settings.CastStartText

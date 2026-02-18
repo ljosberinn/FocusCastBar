@@ -100,5 +100,5 @@ Private.Enum.FeatureFlag = {
 	IgnoreFriendlies = 11,
 	UnfillChannels = 12,
 	HideWhenUninterruptible = 13,
-	PlaySoundOnCastStart = 14,
+	PlayTTSOnCastStart = 14,
 }
