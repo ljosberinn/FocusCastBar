@@ -132,7 +132,7 @@ L.Settings.FeatureFlagLabels = {
 	[Private.Enum.FeatureFlag.IgnoreFriendlies] = "Ignore Friendlies",
 	[Private.Enum.FeatureFlag.UnfillChannels] = "(Un)Fill Channels",
 	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Only Show When Interruptible & Can Interrupt",
-	[Private.Enum.FeatureFlag.PlaySoundOnCastStart] = "Play TTS on Cast Start",
+	[Private.Enum.FeatureFlag.PlayTTSOnCastStart] = "Play TTS on Cast Start",
 	[Private.Enum.FeatureFlag.ShowAvailableInterrupts] = "Show Available Interrupts",
 	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Only show when interruptible & can interrupt",
 }
@@ -140,7 +140,7 @@ L.Settings.FeatureFlagSettingTitles = {
 	[Private.Enum.FeatureFlag.ShowIcon] = "For more info, hover 'Features' on the left",
 	[Private.Enum.FeatureFlag.ShowTargetName] = "Cast Target Settings",
 	[Private.Enum.FeatureFlag.ShowInterruptSource] = "Interrupt Source Settings",
-	[Private.Enum.FeatureFlag.PlaySoundOnCastStart] = "Sound Settings",
+	[Private.Enum.FeatureFlag.PlayTTSOnCastStart] = "Sound Settings",
 	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Interrupt State Settings",
 	[Private.Enum.FeatureFlag.UnfillChannels] = "Other",
 }

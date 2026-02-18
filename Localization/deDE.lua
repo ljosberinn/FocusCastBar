@@ -134,14 +134,14 @@ L.Settings.FeatureFlagLabels = {
 	[Private.Enum.FeatureFlag.IgnoreFriendlies] = "Freundliche Ziele ignorieren",
 	[Private.Enum.FeatureFlag.UnfillChannels] = "Kanalisierungszauberanimation leert statt füllt",
 	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Nur anzeigen wenn unterbrechbar & kann unterbrechen",
-	[Private.Enum.FeatureFlag.PlaySoundOnCastStart] = "Text-zu-Sprache bei Beginn eines Zaubers abspielen",
+	[Private.Enum.FeatureFlag.PlayTTSOnCastStart] = "Text-zu-Sprache bei Beginn eines Zaubers abspielen",
 	[Private.Enum.FeatureFlag.ShowAvailableInterrupts] = "Verfügbare Unterbrechungszauber anzeigen",
 }
 L.Settings.FeatureFlagSettingTitles = {
 	[Private.Enum.FeatureFlag.ShowIcon] = "'Features' links hat weitere Infos im Tooltip",
 	[Private.Enum.FeatureFlag.ShowTargetName] = "Anvisiertes Ziel",
 	[Private.Enum.FeatureFlag.ShowInterruptSource] = "Unterbrechungsquelle",
-	[Private.Enum.FeatureFlag.PlaySoundOnCastStart] = "Toneinstellungen",
+	[Private.Enum.FeatureFlag.PlayTTSOnCastStart] = "Toneinstellungen",
 	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Unterbrechungszustandseinstellungen",
 	[Private.Enum.FeatureFlag.UnfillChannels] = "Weiteres",
 }
