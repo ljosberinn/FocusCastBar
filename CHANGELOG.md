@@ -1,10 +1,17 @@
-## Version 1.0.7
+## Version 1.0.8
 
 - fixed a bug where gaining or losing access to interrupt spells wasn't reliably detected
 - the addon will now evaluate its state (conditional visibility, colors) based on multiple interrupt abilities if you play a a spec with multiple
 - added Show Available Interrupts setting (default off)
   - in the top left of the cast bar, shows icons of which interrupt spells are currently available
   - customization for this will follow in a later version
+
+## Version 1.0.7
+
+- added ability to customize the TTS on Cast Start text
+  - see Edit Mode button
+- fixed a bug trying to show target name when in raid
+- fixed a bug where the TTS on Cast Start option wasn't respecting the content type when swapping focus to a currently casting unit in raid
 
 ## Version 1.0.6
 

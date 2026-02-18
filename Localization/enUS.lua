@@ -134,6 +134,7 @@ L.Settings.FeatureFlagLabels = {
 	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Only Show When Interruptible & Can Interrupt",
 	[Private.Enum.FeatureFlag.PlaySoundOnCastStart] = "Play TTS on Cast Start",
 	[Private.Enum.FeatureFlag.ShowAvailableInterrupts] = "Show Available Interrupts",
+	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Only show when interruptible & can interrupt",
 }
 L.Settings.FeatureFlagSettingTitles = {
 	[Private.Enum.FeatureFlag.ShowIcon] = "For more info, hover 'Features' on the left",
@@ -144,6 +145,7 @@ L.Settings.FeatureFlagSettingTitles = {
 	[Private.Enum.FeatureFlag.UnfillChannels] = "Other",
 }
 L.Settings.CastStartText = "Cast"
+L.Settings.CustomizeTTSOnCastStartButtonText = "Customize TTS On Cast Start Text"
 
 do
 	local function CreateFeatureFlagTooltip(id, tooltip)
@@ -164,7 +166,7 @@ do
 			"Plays 'focus' (or 'target') text-to-speech when your current observed unit disappears as a reminder to pick a new one. Only in dungeons!"
 		),
 		CreateFeatureFlagTooltip(
-			Private.Enum.FeatureFlag.PlaySoundOnCastStart,
+			Private.Enum.FeatureFlag.PlayTTSOnCastStart,
 			string.format(
 				"Plays '%s' text-to-speech when your observed unit starts casting. Unconditional, cannot verify whether you can interrupt or is interruptible. Only in dungeons!",
 				L.Settings.CastStartText
