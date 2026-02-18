@@ -1,3 +1,10 @@
+## Version 1.0.7
+
+- added ability to customize the TTS on Cast Start text
+  - see Edit Mode button
+- fixed a bug trying to show target name when in raid
+- fixed a bug where the TTS on Cast Start option wasn't respecting the content type when swapping focus to a currently casting unit in raid
+
 ## Version 1.0.6
 
 - fixed a bug scaling other texts if secondary font scaling was set to exactly 1

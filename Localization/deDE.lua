@@ -144,7 +144,7 @@ L.Settings.FeatureFlagSettingTitles = {
 	[Private.Enum.FeatureFlag.UnfillChannels] = "Weiteres",
 }
 L.Settings.CastStartText = "Wirkt"
-L.Settings.CustomizeTTSOnCastStartButtonText = "Customize TTS On Cast Start Text"
+L.Settings.CustomizeTTSOnCastStartButtonText = "Text-zu-Sprache bei Beginn eines Zaubers anpassen"
 
 do
 	local function CreateFeatureFlagTooltip(id, tooltip)
