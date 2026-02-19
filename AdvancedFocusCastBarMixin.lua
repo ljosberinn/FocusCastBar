@@ -2374,7 +2374,7 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 
 			self.CustomElementsFrame.InterruptSourceText:SetFormattedText(
 				Private.L.Settings.InterruptSourceText,
-				interruptColor == nil and interruptName or interruptColor:WrapTextInColorCode(interruptName)
+				interruptColor:WrapTextInColorCode(interruptName)
 			)
 
 			self.CustomElementsFrame.InterruptSourceText:Show()
