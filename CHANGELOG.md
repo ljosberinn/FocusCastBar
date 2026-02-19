@@ -5,6 +5,8 @@
 - added Show Available Interrupts setting (default off)
   - in the top left of the cast bar, shows icons of which interrupt spells are currently available
   - customization for this will follow in a later version
+- minor performance increase detecting interrupt ids
+- removed listening to `LOADING_SCREEN_DISABLED` event
 
 ## Version 1.0.7
 

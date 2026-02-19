@@ -135,8 +135,8 @@
 ---@field LoadConditionsProhibitExecution fun(self: AdvancedFocusCastBarMixin): boolean
 ---@field UnitIsIrrelevant fun(self: AdvancedFocusCastBarMixin): boolean
 ---@field DetectAndDiffInterruptIds fun(self: AdvancedFocusCastBarMixin)
----@field GetInterruptIconTextureAtIndex fun(self: AdvancedFocusCastBarMixin, i: number): Texture
----@field GetTargetNameFontStringAtIndex fun(self: AdvancedFocusCastBarMixin, i: number): FontString
+---@field GetInterruptIconAtIndex fun(self: AdvancedFocusCastBarMixin, i: number): Texture
+---@field GetTargetNameAtIndex fun(self: AdvancedFocusCastBarMixin, i: number): FontString
 ---@field DeriveAndSetNextColor fun(self: AdvancedFocusCastBarMixin)
 ---@field QueryCastInformation fun(self: AdvancedFocusCastBarMixin): CastInformation?
 ---@field ProcessCastInformation fun(self: AdvancedFocusCastBarMixin)
