@@ -2265,23 +2265,21 @@ function AdvancedFocusCastBarMixin:PlayTTS(text)
 end
 
 function AdvancedFocusCastBarMixin:FindAppropriateTTSVoiceID()
-	if self.ttsVoiceId then
-		return self.ttsVoiceId
+	local expectsAlternateVoice = C_TTSSettings.GetSetting(Enum.TtsBoolSetting.AlternateSystemVoice)
+	local voice = TextToSpeech_GetSelectedVoice(
+		expectsAlternateVoice and Enum.TtsVoiceType.Alternate or Enum.TtsVoiceType.Standard
+	)
+	if voice == nil then
+		voice = TextToSpeech_GetSelectedVoice(
+			expectsAlternateVoice and Enum.TtsVoiceType.Standard or Enum.TtsVoiceType.Alternate
+		)
 	end
 
-	local ttsVoiceId = C_TTSSettings.GetVoiceOptionID(Enum.TtsVoiceType.Standard)
-	local patternToLookFor = "English"
-
-	for _, voice in pairs(C_VoiceChat.GetTtsVoices()) do
-		if string.find(voice.name, patternToLookFor) ~= nil then
-			self.ttsVoiceId = voice.voiceID
-			return voice.voiceID
-		end
+	if voice == nil then
+		return C_TTSSettings.GetVoiceOptionID(Enum.TtsVoiceType.Standard)
 	end
 
-	self.ttsVoiceId = ttsVoiceId
-
-	return ttsVoiceId
+	return voice.voiceID
 end
 
 function AdvancedFocusCastBarMixin:OnEvent(event, ...)

@@ -65,7 +65,8 @@
     "DISABLED_FONT_COLOR",
     "WHITE_FONT_COLOR",
     "HUD_EDIT_MODE_MENU",
-    "FrameUtil"
+    "FrameUtil",
+    "TextToSpeech_GetSelectedVoice"
   ],
   "Lua.type.weakUnionCheck": true,
   "Lua.diagnostics.disable": ["assign-type-mismatch"]

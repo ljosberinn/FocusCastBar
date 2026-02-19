@@ -111,7 +111,6 @@
 ---@field private castInformation CastInformation?
 ---@field private colors AdvancedFocusCastBarColors
 ---@field private demoInterval table?
----@field private ttsVoiceId number?
 ---@field private firstFrameTimestamp number
 ---@field private interruptHidingDelayTimer FunctionContainer?
 ---@field private elapsed number
