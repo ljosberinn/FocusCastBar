@@ -30,6 +30,46 @@ function AdvancedFocusCastBarMixin:OnLoad()
 		"UNIT_SPELLCAST_NOT_INTERRUPTIBLE",
 	}
 
+	do
+		local generalEvents = {
+			"ZONE_CHANGED_NEW_AREA",
+			"UPDATE_INSTANCE_INFO",
+			"FIRST_FRAME_RENDERED",
+			"SPELLS_CHANGED",
+		}
+
+		local classInterruptMap = {
+			[Constants.UICharacterClasses.Warrior] = { 6552 },
+			[Constants.UICharacterClasses.Paladin] = { 96231, 31935 }, -- Rebuke must come before Avenger's Shield
+			[Constants.UICharacterClasses.Hunter] = { 147362, 187707 },
+			[Constants.UICharacterClasses.Rogue] = { 1766 },
+			[Constants.UICharacterClasses.Priest] = { 15487 },
+			[Constants.UICharacterClasses.DeathKnight] = { 47528 },
+			[Constants.UICharacterClasses.Shaman] = { 57994 },
+			[Constants.UICharacterClasses.Mage] = { 2139 },
+			[Constants.UICharacterClasses.Warlock] = {
+				19647, -- spell lock
+				89766, -- axe toss
+				119910, -- spell lock
+				132409, -- spell lock
+				1276467, -- grimoire: fel ravager
+			},
+			[Constants.UICharacterClasses.Monk] = { 116705 },
+			[Constants.UICharacterClasses.Druid] = { 38675, 78675, 106839 },
+			[Constants.UICharacterClasses.DemonHunter] = { 183752 },
+			[Constants.UICharacterClasses.Evoker] = { 351338 },
+		}
+
+		local playerClass = select(3, UnitClass("player"))
+		self.eligibleInterruptIds = classInterruptMap[playerClass]
+
+		if playerClass == Constants.UICharacterClasses.Warlock then
+			table.insert(generalEvents, "SPELL_UPDATE_COOLDOWN")
+		end
+
+		FrameUtil.RegisterFrameForEvents(self, generalEvents)
+	end
+
 	-- color caching
 	self.colors = {
 		Uninterruptible = CreateColorFromHexString(AdvancedFocusCastBarSaved.Settings.ColorUninterruptible),
@@ -888,7 +928,7 @@ function AdvancedFocusCastBarMixin:OnLoad()
 						local title = L.FeatureFlagSettingTitles[id]
 
 						if title then
-							if index > 0 then
+							if index > 1 then
 								rootDescription:CreateDivider()
 							end
 
@@ -1421,14 +1461,6 @@ function AdvancedFocusCastBarMixin:OnLoad()
 
 	Private.EventRegistry:RegisterCallback(Private.Enum.Events.SETTING_CHANGED, self.OnSettingsChange, self)
 
-	FrameUtil.RegisterFrameForEvents(self, {
-		"ZONE_CHANGED_NEW_AREA",
-		"LOADING_SCREEN_DISABLED",
-		"UPDATE_INSTANCE_INFO",
-		"FIRST_FRAME_RENDERED",
-		"SPELLS_CHANGED",
-	})
-
 	self:ToggleTargetMarkerIntegration()
 	self:ToggleUnitIntegration()
 end
@@ -1673,20 +1705,29 @@ function AdvancedFocusCastBarMixin:OnSettingsChange(key, value)
 	end
 end
 
+function AdvancedFocusCastBarMixin:GetTargetNameFontStringAtIndex(i)
+	return self.CustomElementsFrame["TargetNameText" .. i]
+end
+
+function AdvancedFocusCastBarMixin:GetInterruptIconTextureAtIndex(i)
+	return self.AvailableInterruptsFrame["InterruptIcon" .. i]
+end
+
 function AdvancedFocusCastBarMixin:SetInterruptIcons()
 	for i = 1, #self.interruptIds do
-		local texture = self.AvailableInterruptsFrame["InterruptIcon" .. i]
+		local texture = self:GetInterruptIconTextureAtIndex(i)
 		texture:SetTexture(C_Spell.GetSpellTexture(self.interruptIds[i]))
 	end
 end
 
 function AdvancedFocusCastBarMixin:ToggleAvailableInterruptIconVisibility()
+	local interruptCount = #self.interruptIds
 	local enabled = AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowAvailableInterrupts]
-		and #self.interruptIds > 0
+		and interruptCount > 0
 
 	for i = 1, 2 do
-		local icon = self.AvailableInterruptsFrame["InterruptIcon" .. i]
-		icon:SetShown(enabled)
+		local texture = self:GetInterruptIconTextureAtIndex(i)
+		texture:SetShown(enabled and i <= interruptCount)
 	end
 end
 
@@ -1703,10 +1744,10 @@ function AdvancedFocusCastBarMixin:AdjustCustomTextsPosition()
 		or -1
 
 	for i = 1, 5 do
-		local CustomElementsFrame = self.CustomElementsFrame["TargetNameText" .. i]
+		local targetName = self:GetTargetNameFontStringAtIndex(i)
 
-		CustomElementsFrame:ClearAllPoints()
-		CustomElementsFrame:SetPoint(point, self, point, 0, 8 * factor)
+		targetName:ClearAllPoints()
+		targetName:SetPoint(point, self, point, 0, 8 * factor)
 	end
 end
 
@@ -1722,8 +1763,8 @@ end
 
 function AdvancedFocusCastBarMixin:SetTargetNameVisibility(bool)
 	for i = 1, 5 do
-		local targetNameFrame = self.CustomElementsFrame["TargetNameText" .. i]
-		targetNameFrame:SetShown(bool)
+		local targetName = self:GetTargetNameFontStringAtIndex(i)
+		targetName:SetShown(bool)
 	end
 end
 
@@ -1929,9 +1970,6 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 			self.CastBar.InterruptBar:SetValue(interruptDuration:GetRemainingDuration())
 		end
 
-		local showAvailableInterrupts =
-			AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowAvailableInterrupts]
-
 		local interruptBarAlpha = C_CurveUtil.EvaluateColorValueFromBoolean(self.castInformation.notInterruptible, 0, 1)
 		for i = 1, #self.interruptIds do
 			local duration = i == 1 and interruptDuration or C_Spell.GetSpellCooldownDuration(self.interruptIds[i])
@@ -1939,9 +1977,9 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 
 			interruptBarAlpha = C_CurveUtil.EvaluateColorValueFromBoolean(isZero, 0, interruptBarAlpha)
 
-			if showAvailableInterrupts then
-				local frame = self.AvailableInterruptsFrame["InterruptIcon" .. i]
-				frame:SetAlphaFromBoolean(isZero, 1, 0)
+			if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowAvailableInterrupts] then
+				local texture = self:GetInterruptIconTextureAtIndex(i)
+				texture:SetAlphaFromBoolean(isZero, 1, 0)
 			end
 		end
 
@@ -2011,36 +2049,23 @@ function AdvancedFocusCastBarMixin:UnitIsIrrelevant()
 end
 
 function AdvancedFocusCastBarMixin:DetectAndDiffInterruptIds()
-	local playerClass = select(3, UnitClass("player"))
-
-	local classInterruptMap = {
-		[Constants.UICharacterClasses.Warrior] = { 6552 },
-		[Constants.UICharacterClasses.Paladin] = { 96231, 31935 }, -- Rebuke must come before Avenger's Shield
-		[Constants.UICharacterClasses.Hunter] = { 147362, 187707 },
-		[Constants.UICharacterClasses.Rogue] = { 1766 },
-		[Constants.UICharacterClasses.Priest] = { 15487 },
-		[Constants.UICharacterClasses.DeathKnight] = { 47528 },
-		[Constants.UICharacterClasses.Shaman] = { 57994 },
-		[Constants.UICharacterClasses.Mage] = { 2139 },
-		[Constants.UICharacterClasses.Warlock] = { 19647, 89766, 119910, 1276467, 132409 },
-		[Constants.UICharacterClasses.Monk] = { 116705 },
-		[Constants.UICharacterClasses.Druid] = { 38675, 78675, 106839 },
-		[Constants.UICharacterClasses.DemonHunter] = { 183752 },
-		[Constants.UICharacterClasses.Evoker] = { 351338 },
-	}
-
-	local eligibleInterrupts = classInterruptMap[playerClass]
 	---@type table<number>
 	local ids = {}
 
-	for i = 1, #eligibleInterrupts do
-		local id = eligibleInterrupts[i]
+	for i = 1, #self.eligibleInterruptIds do
+		local id = self.eligibleInterruptIds[i]
 
 		if
 			C_SpellBook.IsSpellKnownOrInSpellBook(id)
 			or C_SpellBook.IsSpellKnownOrInSpellBook(id, Enum.SpellBookSpellBank.Pet)
 		then
 			table.insert(ids, id)
+
+			-- limit to two as there's only 2 icons in XML
+			-- but there can be 3 in this lookup if you reload as Demo WL with Grimoire on cd...
+			if #ids == 2 then
+				break
+			end
 		end
 	end
 
@@ -2196,13 +2221,18 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 					local unit = i == partyMembers and "player" or "party" .. i
 
 					---@type FontString
-					local frame = self.CustomElementsFrame["TargetNameText" .. i]
-					frame:SetText(self:GetMaybeColoredUnitName(unit))
-					frame:SetAlphaFromBoolean(UnitIsSpellTarget(AdvancedFocusCastBarSaved.Settings.Unit, unit), 1, 0)
+					local targetName = self:GetTargetNameFontStringAtIndex(i)
+					targetName:SetText(self:GetMaybeColoredUnitName(unit))
+					targetName:SetAlphaFromBoolean(
+						UnitIsSpellTarget(AdvancedFocusCastBarSaved.Settings.Unit, unit),
+						1,
+						0
+					)
 				end
 			else
-				self.CustomElementsFrame.TargetNameText1:SetText(self:GetMaybeColoredUnitName("player"))
-				self.CustomElementsFrame.TargetNameText1:SetAlphaFromBoolean(
+				local targetName = self:GetTargetNameFontStringAtIndex(1)
+				targetName:SetText(self:GetMaybeColoredUnitName("player"))
+				targetName:SetAlphaFromBoolean(
 					UnitIsSpellTarget(AdvancedFocusCastBarSaved.Settings.Unit, "player"),
 					1,
 					0
@@ -2224,7 +2254,8 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 			self.CustomElementsFrame.TargetMarker:Hide()
 		end
 
-		self.CustomElementsFrame.TargetNameText1:SetText(self:GetMaybeColoredUnitName("player"))
+		local targetName = self:GetTargetNameFontStringAtIndex(1)
+		targetName:SetText(self:GetMaybeColoredUnitName("player"))
 		self:SetTargetNameVisibility(true)
 	end
 end
@@ -2251,47 +2282,6 @@ function AdvancedFocusCastBarMixin:FindAppropriateTTSVoiceID()
 	self.ttsVoiceId = ttsVoiceId
 
 	return ttsVoiceId
-end
-
-function AdvancedFocusCastBarMixin:QueueDelayedHide()
-	-- for channel interrupts, the state has been cleared so we just use dummy values instead
-	self.CastBar:SetMinMaxValues(0, 1)
-	self.CastBar:SetValue(1)
-	self.CastBar:SetStatusBarColor(
-		self.colors.InterruptibleCannotInterrupt.r,
-		self.colors.InterruptibleCannotInterrupt.g,
-		self.colors.InterruptibleCannotInterrupt.b
-	)
-
-	if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowImportantSpellsGlow] then
-		self:ShowGlow(false)
-	end
-
-	local showCastTime = AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowCastTime]
-
-	if showCastTime then
-		self.CastBar.CastTimeText:Hide()
-	end
-
-	local showTargetName = AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowTargetName]
-
-	if showTargetName then
-		self:SetTargetNameVisibility(false)
-	end
-
-	self.interruptHidingDelayTimer = C_Timer.NewTimer(1, function()
-		if showCastTime then
-			self.CastBar.CastTimeText:Show()
-		end
-
-		if showTargetName then
-			self:SetTargetNameVisibility(true)
-		end
-
-		self.CustomElementsFrame.InterruptSourceText:Hide()
-		self.interruptHidingDelayTimer = nil
-		self:Hide()
-	end)
 end
 
 function AdvancedFocusCastBarMixin:OnEvent(event, ...)
@@ -2362,41 +2352,76 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 			return
 		end
 
-		local delayHiding = false
+		local delayHide = false
 
 		if
 			AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowInterruptSource]
 			and interruptedBy ~= nil
 		then
-			if interruptedBy ~= nil then
-				delayHiding = true
+			delayHide = true
+			local interruptName = UnitNameFromGUID(interruptedBy)
+			local interruptColor = nil
 
-				local interruptName = UnitNameFromGUID(interruptedBy)
-				local interruptColor = nil
-
-				if
-					AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.UseInterruptSourceClassColor]
-				then
-					local className = select(2, UnitClassFromGUID(interruptedBy))
-					-- unsure if className yields something for pets, so nilcheck it until confirmed
-					interruptColor = className == nil and nil or C_ClassColor.GetClassColor(className)
-				end
-
-				if interruptColor == nil then
-					interruptColor = CreateColor(1, 1, 1)
-				end
-
-				self.CustomElementsFrame.InterruptSourceText:SetFormattedText(
-					Private.L.Settings.InterruptSourceText,
-					interruptColor == nil and interruptName or interruptColor:WrapTextInColorCode(interruptName)
-				)
-
-				self.CustomElementsFrame.InterruptSourceText:Show()
+			if
+				AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.UseInterruptSourceClassColor]
+			then
+				local className = select(2, UnitClassFromGUID(interruptedBy))
+				-- unsure if className yields something for pets, so nilcheck it until confirmed
+				interruptColor = className == nil and nil or C_ClassColor.GetClassColor(className)
 			end
+
+			if interruptColor == nil then
+				interruptColor = CreateColor(1, 1, 1)
+			end
+
+			self.CustomElementsFrame.InterruptSourceText:SetFormattedText(
+				Private.L.Settings.InterruptSourceText,
+				interruptColor == nil and interruptName or interruptColor:WrapTextInColorCode(interruptName)
+			)
+
+			self.CustomElementsFrame.InterruptSourceText:Show()
 		end
 
-		if delayHiding then
-			self:QueueDelayedHide()
+		if delayHide then
+			-- for channel interrupts, the state has been cleared so we just use dummy values instead
+			self.CastBar:SetMinMaxValues(0, 1)
+			self.CastBar:SetValue(1)
+			self.CastBar:SetStatusBarColor(
+				self.colors.InterruptibleCannotInterrupt.r,
+				self.colors.InterruptibleCannotInterrupt.g,
+				self.colors.InterruptibleCannotInterrupt.b
+			)
+
+			if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowImportantSpellsGlow] then
+				self:ShowGlow(false)
+			end
+
+			local showCastTime = AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowCastTime]
+
+			if showCastTime then
+				self.CastBar.CastTimeText:Hide()
+			end
+
+			local showTargetName =
+				AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.ShowTargetName]
+
+			if showTargetName then
+				self:SetTargetNameVisibility(false)
+			end
+
+			self.interruptHidingDelayTimer = C_Timer.NewTimer(1, function()
+				if showCastTime then
+					self.CastBar.CastTimeText:Show()
+				end
+
+				if showTargetName then
+					self:SetTargetNameVisibility(true)
+				end
+
+				self.CustomElementsFrame.InterruptSourceText:Hide()
+				self.interruptHidingDelayTimer = nil
+				self:Hide()
+			end)
 		else
 			self:Hide()
 		end
@@ -2475,12 +2500,7 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 			SetRaidTargetIconTexture(self.CustomElementsFrame.TargetMarker, index)
 			self.CustomElementsFrame.TargetMarker:Show()
 		end
-	elseif
-		event == "ZONE_CHANGED_NEW_AREA"
-		or event == "LOADING_SCREEN_DISABLED"
-		or event == "SPELLS_CHANGED"
-		or event == "UPDATE_INSTANCE_INFO"
-	then
+	elseif event == "ZONE_CHANGED_NEW_AREA" or event == "SPELLS_CHANGED" or event == "UPDATE_INSTANCE_INFO" then
 		self:DetectAndDiffInterruptIds()
 
 		local _, instanceType, difficultyId = GetInstanceInfo()
@@ -2544,6 +2564,12 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 			AdvancedFocusCastBarSaved.Settings.OffsetX,
 			AdvancedFocusCastBarSaved.Settings.OffsetY
 		)
+	elseif event == "SPELL_UPDATE_COOLDOWN" then
+		local id, baseSpellId = ...
+
+		if id == 132409 or baseSpellId == 1276467 or id == nil then
+			self:DetectAndDiffInterruptIds()
+		end
 	elseif event == "FIRST_FRAME_RENDERED" then
 		self.firstFrameTimestamp = GetTime()
 		self:UnregisterEvent("FIRST_FRAME_RENDERED")

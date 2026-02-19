@@ -105,6 +105,7 @@
 ---@field CustomElementsFrame AdvancedFocusCastBarCustomElementsFrame
 ---@field Selection EditModeSelection
 ---@field private interruptIds number[]
+---@field private eligibleInterruptIds number[]
 ---@field private contentType number?
 ---@field private role number?
 ---@field private castInformation CastInformation?
@@ -133,7 +134,9 @@
 ---@field HideGlow fun(self: AdvancedFocusCastBarMixin)
 ---@field LoadConditionsProhibitExecution fun(self: AdvancedFocusCastBarMixin): boolean
 ---@field UnitIsIrrelevant fun(self: AdvancedFocusCastBarMixin): boolean
----@field DetectInterruptIds fun(self: AdvancedFocusCastBarMixin): number[]
+---@field DetectAndDiffInterruptIds fun(self: AdvancedFocusCastBarMixin)
+---@field GetInterruptIconTextureAtIndex fun(self: AdvancedFocusCastBarMixin, i: number): Texture
+---@field GetTargetNameFontStringAtIndex fun(self: AdvancedFocusCastBarMixin, i: number): FontString
 ---@field DeriveAndSetNextColor fun(self: AdvancedFocusCastBarMixin)
 ---@field QueryCastInformation fun(self: AdvancedFocusCastBarMixin): CastInformation?
 ---@field ProcessCastInformation fun(self: AdvancedFocusCastBarMixin)
@@ -143,7 +146,6 @@
 ---@field AdjustSpellNameTextWidth fun(self: AdvancedFocusCastBarMixin)
 ---@field AdjustDirection fun(self: AdvancedFocusCastBarMixin, isChannel: boolean)
 ---@field AdjustCustomTextsPosition fun(self: AdvancedFocusCastBarMixin)
----@field QueueDelayedHide fun(self: AdvancedFocusCastBarMixin)
 ---@field ToggleUnitIntegration fun(self: AdvancedFocusCastBarMixin)
 ---@field SetTargetNameVisibility fun(self: AdvancedFocusCastBarMixin, bool: boolean)
 ---@field GetMaybeColoredUnitName fun(self: AdvancedFocusCastBarMixin, unit: string): string
@@ -219,6 +221,9 @@
 ---@class Frame
 ---@field SetAlphaFromBoolean fun(self: Frame, bool: boolean, alphaIfTrue: number?, alphaIfFalse: number?)
 ---@field SetShown fun(self: Frame, bool: boolean)
+
+---@class Texture
+---@field SetAlphaFromBoolean fun(self: Texture, bool: boolean, alphaIfTrue: number?, alphaIfFalse: number?)
 
 ---@class FontString
 ---@field SetAlphaFromBoolean fun(self: FontString, bool: boolean, alphaIfTrue: number?, alphaIfFalse: number?)
