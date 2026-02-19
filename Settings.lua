@@ -60,7 +60,7 @@ function Private.Settings.GetDefaultSettings()
 			[Private.Enum.FeatureFlag.HideWhenUninterruptible] = false,
 			[Private.Enum.FeatureFlag.PlayTTSOnCastStart] = false,
 		},
-		CustomTTSOnCastStartText = nil,
+		CustomTTSOnCastStartText = "",
 	}
 end
 

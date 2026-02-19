@@ -1,3 +1,7 @@
+## Version 1.0.9
+
+- fixed a bug where the custom TTS on Cast Start text wasn't imported correctly
+
 ## Version 1.0.8
 
 - fixed a bug where the users Text-to-speech preferences weren't respected

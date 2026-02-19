@@ -1378,10 +1378,6 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				ACCEPT,
 				AdvancedFocusCastBarSaved.Settings.CustomTTSOnCastStartText or Private.L.Settings.CastStartText,
 				function(newText)
-					if newText == "" then
-						newText = nil
-					end
-
 					if newText ~= AdvancedFocusCastBarSaved.Settings.CustomTTSOnCastStartText then
 						AdvancedFocusCastBarSaved.Settings.CustomTTSOnCastStartText = newText
 					end
