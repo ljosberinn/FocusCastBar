@@ -1,3 +1,7 @@
+## Version 1.0.10
+
+- fixed a bug where sometimes an ongoing cast would linger after a loading screen
+
 ## Version 1.0.9
 
 - fixed a bug where the custom TTS on Cast Start text wasn't imported correctly

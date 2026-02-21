@@ -2390,6 +2390,14 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 		or event == "PLAYER_SPECIALIZATION_CHANGED"
 		or event == "UPDATE_INSTANCE_INFO"
 	then
+		if
+			event == "LOADING_SCREEN_DISABLED"
+			and not UnitExists(AdvancedFocusCastBarSaved.Settings.Unit)
+			and self:IsShown()
+		then
+			self:Hide()
+		end
+
 		local nextInterruptId = self:DetectInterruptId()
 
 		if nextInterruptId ~= self.interruptId then
