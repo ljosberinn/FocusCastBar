@@ -1419,10 +1419,6 @@ function AdvancedFocusCastBarMixin:OnLoad()
 				ACCEPT,
 				AdvancedFocusCastBarSaved.Settings.CustomTTSOnCastStartText or Private.L.Settings.CastStartText,
 				function(newText)
-					if newText == "" then
-						newText = nil
-					end
-
 					if newText ~= AdvancedFocusCastBarSaved.Settings.CustomTTSOnCastStartText then
 						AdvancedFocusCastBarSaved.Settings.CustomTTSOnCastStartText = newText
 					end
@@ -2498,7 +2494,20 @@ function AdvancedFocusCastBarMixin:OnEvent(event, ...)
 			SetRaidTargetIconTexture(self.CustomElementsFrame.TargetMarker, index)
 			self.CustomElementsFrame.TargetMarker:Show()
 		end
-	elseif event == "ZONE_CHANGED_NEW_AREA" or event == "SPELLS_CHANGED" or event == "UPDATE_INSTANCE_INFO" then
+	elseif
+		event == "ZONE_CHANGED_NEW_AREA"
+		or event == "LOADING_SCREEN_DISABLED"
+		or event == "PLAYER_SPECIALIZATION_CHANGED"
+		or event == "UPDATE_INSTANCE_INFO"
+	then
+		if event == "LOADING_SCREEN_DISABLED" then
+			if not UnitExists(AdvancedFocusCastBarSaved.Settings.Unit) and self:IsShown() then
+				self:Hide()
+			end
+
+			return
+		end
+
 		self:DetectAndDiffInterruptIds()
 
 		local _, instanceType, difficultyId = GetInstanceInfo()

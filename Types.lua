@@ -48,7 +48,7 @@
 ---@field Unit Unit
 ---@field FeatureFlags table<FeatureFlag, boolean>
 ---@field SecondaryFontScale number
----@field CustomTTSOnCastStartText string?
+---@field CustomTTSOnCastStartText string
 
 ---@class AdvancedFocusCastBarSettings
 ---@field GetDefaultSettings fun(): AdvancedFocusCastBarSettings

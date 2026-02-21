@@ -1,4 +1,4 @@
-## Version 1.0.9
+## Version 1.0.11
 
 - fixed a bug where gaining or losing access to interrupt spells wasn't reliably detected
 - the addon will now evaluate its state (conditional visibility, colors) based on multiple interrupt abilities if you play a a spec with multiple
@@ -7,6 +7,14 @@
   - customization for this will follow in a later version
 - minor performance increase detecting interrupt ids
 - removed listening to `LOADING_SCREEN_DISABLED` event
+
+## Version 1.0.10
+
+- fixed a bug where sometimes an ongoing cast would linger after a loading screen
+
+## Version 1.0.9
+
+- fixed a bug where the custom TTS on Cast Start text wasn't imported correctly
 
 ## Version 1.0.8
 
