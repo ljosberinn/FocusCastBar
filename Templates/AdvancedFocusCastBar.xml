@@ -56,6 +56,22 @@
                     <Anchor point="BOTTOMRIGHT" x="1" y="-1" />
                 </Anchors>
             </Frame>
+            <Frame parentKey="AvailableInterruptsFrame" setAllPoints="true">
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <Texture parentKey="InterruptIcon1" hidden="true">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" x="0" y="-16" />
+                            </Anchors>
+                        </Texture>
+                        <Texture parentKey="InterruptIcon2" hidden="true">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" x="0" y="-16" />
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Frame>
             <Frame parentKey="CustomElementsFrame" setAllPoints="true">
                 <Layers>
                     <Layer level="OVERLAY">

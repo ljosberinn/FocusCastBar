@@ -131,14 +131,17 @@ L.Settings.FeatureFlagLabels = {
 	[Private.Enum.FeatureFlag.PlayTargetingTTSReminder] = "Play Targeting TTS Reminder",
 	[Private.Enum.FeatureFlag.IgnoreFriendlies] = "Ignore Friendlies",
 	[Private.Enum.FeatureFlag.UnfillChannels] = "(Un)Fill Channels",
-	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Only show when interruptible & can interrupt",
+	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Only Show When Interruptible & Can Interrupt",
 	[Private.Enum.FeatureFlag.PlayTTSOnCastStart] = "Play TTS on Cast Start",
+	[Private.Enum.FeatureFlag.ShowAvailableInterrupts] = "Show Available Interrupts",
+	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Only show when interruptible & can interrupt",
 }
 L.Settings.FeatureFlagSettingTitles = {
 	[Private.Enum.FeatureFlag.ShowIcon] = "For more info, hover 'Features' on the left",
 	[Private.Enum.FeatureFlag.ShowTargetName] = "Cast Target Settings",
 	[Private.Enum.FeatureFlag.ShowInterruptSource] = "Interrupt Source Settings",
 	[Private.Enum.FeatureFlag.PlayTTSOnCastStart] = "Sound Settings",
+	[Private.Enum.FeatureFlag.HideWhenUninterruptible] = "Interrupt State Settings",
 	[Private.Enum.FeatureFlag.UnfillChannels] = "Other",
 }
 L.Settings.CastStartText = "Cast"
@@ -176,6 +179,10 @@ do
 		CreateFeatureFlagTooltip(
 			Private.Enum.FeatureFlag.HideWhenUninterruptible,
 			"Warning for healers: this effectively disables the addon unless you're a Restoration Shaman."
+		),
+		CreateFeatureFlagTooltip(
+			Private.Enum.FeatureFlag.ShowAvailableInterrupts,
+			"Useful for specs with multiple interrupts. As the cast bar respects availability of either, use this to show icons of which interrupt is currently available."
 		),
 	}, "\n\n")
 end

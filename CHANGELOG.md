@@ -1,3 +1,13 @@
+## Version 1.0.11
+
+- fixed a bug where gaining or losing access to interrupt spells wasn't reliably detected
+- the addon will now evaluate its state (conditional visibility, colors) based on multiple interrupt abilities if you play a a spec with multiple
+- added Show Available Interrupts setting (default off)
+  - in the top left of the cast bar, shows icons of which interrupt spells are currently available
+  - customization for this will follow in a later version
+- minor performance increase detecting interrupt ids
+- removed listening to `LOADING_SCREEN_DISABLED` event
+
 ## Version 1.0.10
 
 - fixed a bug where sometimes an ongoing cast would linger after a loading screen

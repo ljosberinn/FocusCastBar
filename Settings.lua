@@ -58,6 +58,7 @@ function Private.Settings.GetDefaultSettings()
 			[Private.Enum.FeatureFlag.IgnoreFriendlies] = true,
 			[Private.Enum.FeatureFlag.UnfillChannels] = true,
 			[Private.Enum.FeatureFlag.HideWhenUninterruptible] = false,
+			[Private.Enum.FeatureFlag.ShowAvailableInterrupts] = false,
 			[Private.Enum.FeatureFlag.PlayTTSOnCastStart] = false,
 		},
 		CustomTTSOnCastStartText = "",
