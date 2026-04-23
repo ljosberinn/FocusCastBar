@@ -1806,7 +1806,17 @@ function AdvancedFocusCastBarMixin:OnEditModeExit()
 	self:SetScript("OnEvent", self.OnEvent)
 	self:Hide()
 end
+function AdvancedFocusCastBarMixin:GetOpacityWithRangeCheck(theOpacity)
+	if AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity < 1 then
+		local inRange = C_Spell.IsSpellInRange(self.interruptId, AdvancedFocusCastBarSaved.Settings.Unit)
 
+		if inRange ~= nil then
+			theOpacity = inRange == true and theOpacity or AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity
+		end
+	end
+
+	return theOpacity
+end
 function AdvancedFocusCastBarMixin:SetAlphaFromFeatureFlag(interruptDuration, opacity)
 	if AdvancedFocusCastBarSaved.Settings.FeatureFlags[Private.Enum.FeatureFlag.HideWhenUninterruptible] then
 		self:SetAlphaFromBoolean(
@@ -1847,13 +1857,7 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 	local theOpacity = AdvancedFocusCastBarSaved.Settings.Opacity
 
 	if self.interruptId ~= nil then
-		if AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity < 1 then
-			local inRange = C_Spell.IsSpellInRange(self.interruptId, AdvancedFocusCastBarSaved.Settings.Unit)
-
-			if inRange ~= nil then
-				theOpacity = inRange == true and theOpacity or AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity
-			end
-		end
+		theOpacity = self:GetOpacityWithRangeCheck(theOpacity)
 
 		local interruptDuration = C_Spell.GetSpellCooldownDuration(self.interruptId)
 
@@ -2101,14 +2105,7 @@ function AdvancedFocusCastBarMixin:ProcessCastInformation()
 			if interruptDuration ~= nil then
 				-- ensure initial opacity is correct when out of range.
 				local theOpacity = AdvancedFocusCastBarSaved.Settings.Opacity
-
-				if AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity < 1 then
-					local inRange = C_Spell.IsSpellInRange(self.interruptId, AdvancedFocusCastBarSaved.Settings.Unit)
-
-					if inRange ~= nil then
-						theOpacity = inRange == true and theOpacity or AdvancedFocusCastBarSaved.Settings.OutOfRangeOpacity
-					end
-				end
+				theOpacity = self:GetOpacityWithRangeCheck(theOpacity)
 
 				self:SetAlphaFromFeatureFlag(interruptDuration, theOpacity)
 			end
