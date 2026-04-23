@@ -1843,9 +1843,7 @@ function AdvancedFocusCastBarMixin:OnUpdate(elapsed)
 		self.CastBar.CastTimeText:SetFormattedText("%.1f", self.castInformation.duration:GetRemainingDuration())
 	end
 
-	-- changing the opacity multiple times can result in some unexpected output (i.e. alternating between 0 and 1 would look like .5 
-	-- similar to how an LED works) so use this to avoid setting alpha as much. 
-	-- additionally, this ensures following calls will have the expected opacity since they're all pointing to the same value
+	-- ensure the following calls will have the expected opacity since they're all pointing to the same value
 	local theOpacity = AdvancedFocusCastBarSaved.Settings.Opacity
 
 	if self.interruptId ~= nil then
