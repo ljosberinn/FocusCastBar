@@ -141,7 +141,7 @@
 ---@field ToggleUnitIntegration fun(self: AdvancedFocusCastBarMixin)
 ---@field SetTargetNameVisibility fun(self: AdvancedFocusCastBarMixin, bool: boolean)
 ---@field GetMaybeColoredUnitName fun(self: AdvancedFocusCastBarMixin, unit: string): string
----@field SetAlphaFromFeatureFlag fun(self: AdvancedFocusCastBarMixin, interruptDuration: LuaDurationObject)
+---@field SetAlphaFromFeatureFlag fun(self: AdvancedFocusCastBarMixin, interruptDuration: LuaDurationObject, opacity: number)
 ---@field PlayTTS fun(self: AdvancedFocusCastBarMixin, text: string)
 
 -------- library types
