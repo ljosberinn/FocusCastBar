@@ -1,4 +1,3 @@
-## Version 1.0.13
+## Version 1.0.14
 
-- fix incompatibilities with range alpha and only showing when interruptible
-  - thanks to RoastedRowlet
+- fix crash when more than 5 party members are in the party while in a key
