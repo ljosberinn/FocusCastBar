@@ -74,11 +74,7 @@
 
 ---@class AdvancedFocusCastBarCustomElementsFrame : Frame
 ---@field TargetMarker Texture
----@field TargetNameText1 FontString
----@field TargetNameText2 FontString
----@field TargetNameText3 FontString
----@field TargetNameText4 FontString
----@field TargetNameText5 FontString
+---@field TargetNameText FontString
 ---@field InterruptSourceText FontString
 
 ---@class AdvancedFocusCastBarBorder : BackdropTemplate

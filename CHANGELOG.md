@@ -1,3 +1,4 @@
-## Version 1.0.14
+## Version 1.0.15
 
-- fix crash when more than 5 party members are in the party while in a key
+- updated Interface versions
+- fixed a bug where the targets cast wasn't shown after recent API changes
