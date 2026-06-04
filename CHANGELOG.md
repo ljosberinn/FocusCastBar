@@ -1,4 +1,3 @@
-## Version 1.0.15
+## Version 1.0.16
 
-- updated Interface versions
-- fixed a bug where the targets cast wasn't shown after recent API changes
+- fixed a bug where, if the observed target had their cast interrupted and instantly started casting another, when Show Interrupt Source is enabled, the second cast would get hidden
