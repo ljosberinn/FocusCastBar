@@ -22,7 +22,7 @@ Enum.lua
 Init.lua
 
 Localization\enUS.lua
-Localization\[TextLocale].lua [AllowLoadTextLocale deDE]
+Localization\[TextLocale].lua [AllowLoadTextLocale deDE frFR zhCN esES esMX koKR ruRU itIT ptBR zhTW]
 
 Settings.lua
 AdvancedFocusCastBarMixin.lua
