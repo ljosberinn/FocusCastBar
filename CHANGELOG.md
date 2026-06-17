@@ -1,3 +1,3 @@
-## Version 1.0.16
+## Version 1.0.17
 
-- fixed a bug where, if the observed target had their cast interrupted and instantly started casting another, when Show Interrupt Source is enabled, the second cast would get hidden
+- fix a bug where :SetPoint could fail because of using an invalid point
