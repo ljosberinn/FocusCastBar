@@ -108,6 +108,7 @@
 ---@field OnLoad fun(self: AdvancedFocusCastBarMixin)
 ---@field IsPastLoadingScreen fun(self: AdvancedFocusCastBarMixin): boolean
 ---@field ToggleTargetMarkerIntegration fun(self: AdvancedFocusCastBarMixin)
+---@field UpdateTargetMarker fun(self: AdvancedFocusCastBarMixin)
 ---@field AdjustIconLayout fun(self: AdvancedFocusCastBarMixin, shown: boolean)
 ---@field OnSettingsChange fun(self: AdvancedFocusCastBarMixin, key: Setting, value: any)
 ---@field ToggleTargetNameVisibility fun(self: AdvancedFocusCastBarMixin)

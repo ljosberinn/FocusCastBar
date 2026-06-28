@@ -1,4 +1,3 @@
-## Version 1.0.17
+## Version 1.0.18
 
-- fix a bug where :SetPoint could fail because of using an invalid point
-- added localization for frFR, zhCN, esES, esMX, koKR, ruRU, itIT, ptBR, zhTW locales
+- fixed a bug where the raid target marker would not update when changing the observed unit from one marked unit to another
