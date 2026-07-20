@@ -48,7 +48,9 @@
 ---@field Unit Unit
 ---@field FeatureFlags table<FeatureFlag, boolean>
 ---@field SecondaryFontScale number
+---@field TargetMarkerScale number
 ---@field CustomTTSOnCastStartText string
+---@field CustomSound number|string
 
 ---@class AdvancedFocusCastBarSettings
 ---@field GetDefaultSettings fun(): AdvancedFocusCastBarSettings
@@ -189,6 +191,7 @@
 ---@field copy fun(self: LuaDurationObject): LuaDurationObject
 ---@field EvaluateElapsedPercent fun(self: LuaDurationObject, curve: LuaCurveObject, modifier: number?): number
 ---@field EvaluateRemainingPercent fun(self: LuaDurationObject, curve: LuaCurveObject, modifier: number?): number
+---@field FormatRemainingDuration fun(self: LuaDurationObject, formatter: LuaNumericRuleFormatter, modifier: number?): string
 ---@field GetElapsedDuration fun(self: LuaDurationObject, modifier: number?): number
 ---@field GetElapsedPercent fun(self: LuaDurationObject, modifier: number?): number
 ---@field GetEndTime fun(self: LuaDurationObject, modifier: number?): number
@@ -204,6 +207,14 @@
 ---@field SetTimeFromStart fun(self: LuaDurationObject, startTime: number, duration: number, modRate: number?)
 ---@field SetTimeSpan fun(self: LuaDurationObject, startTime: number, endTime: number)
 ---@field SetToDefaults fun(self: LuaDurationObject)
+
+---@class LuaNumericRuleBreakpoint
+---@field threshold number
+---@field step number
+---@field format string
+
+---@class LuaNumericRuleFormatter
+---@field SetBreakpoints fun(self: LuaNumericRuleFormatter, breakpoints: LuaNumericRuleBreakpoint[])
 
 ---@class Frame
 ---@field SetAlphaFromBoolean fun(self: Frame, bool: boolean, alphaIfTrue: number?, alphaIfFalse: number?)
