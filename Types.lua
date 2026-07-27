@@ -132,6 +132,14 @@
 ---@field ProcessCastInformation fun(self: AdvancedFocusCastBarMixin)
 ---@field FindAppropriateTTSVoiceID fun(self: AdvancedFocusCastBarMixin): number
 ---@field OnEvent fun(self: AdvancedFocusCastBarMixin, event: string, ...)
+---@field OnCastStartOrUpdate fun(self: AdvancedFocusCastBarMixin, event: string)
+---@field OnCastStopOrFail fun(self: AdvancedFocusCastBarMixin, event: string, ...)
+---@field OnWatchedUnitChanged fun(self: AdvancedFocusCastBarMixin)
+---@field OnInterruptibleChanged fun(self: AdvancedFocusCastBarMixin)
+---@field OnRaidTargetUpdate fun(self: AdvancedFocusCastBarMixin)
+---@field OnZoneOrSpecChanged fun(self: AdvancedFocusCastBarMixin, event: string)
+---@field OnFirstFrameRendered fun(self: AdvancedFocusCastBarMixin)
+---@field RefreshGlow fun(self: AdvancedFocusCastBarMixin)
 ---@field GetRandomIcon fun(self: AdvancedFocusCastBarMixin): number
 ---@field AdjustSpellNameTextWidth fun(self: AdvancedFocusCastBarMixin)
 ---@field AdjustDirection fun(self: AdvancedFocusCastBarMixin, isChannel: boolean)
