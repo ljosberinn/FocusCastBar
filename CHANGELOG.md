@@ -1,3 +1,3 @@
-## Version 1.0.21
+## Version 1.0.22
 
-- fixed a bug where Warlocks sometimes couldn't rely on the interrupt color
+- 12.1.5 compatibility

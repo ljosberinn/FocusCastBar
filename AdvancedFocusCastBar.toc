@@ -1,4 +1,4 @@
-## Interface: 120007, 120100
+## Interface: 120105
 ## Title: Advanced Focus Cast Bar
 ## DefaultState: Enabled
 ## SavedVariables: AdvancedFocusCastBarSaved
